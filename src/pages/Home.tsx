@@ -6,6 +6,7 @@ import { FaTruckFast } from "react-icons/fa6";
 import { IoMdTime } from "react-icons/io";
 import { FaPeopleCarryBox } from "react-icons/fa6";
 import { MdOutlineUpdate } from "react-icons/md";
+import { Link } from "react-router-dom";
 
 export default function Home() {
   return (
@@ -20,12 +21,12 @@ export default function Home() {
           </div>
           <CalendarChooser />
         </div>
-        <div className="bg-primary p-3">
+        <div className="bg-primary shadow-md rounded overflow-hidden">
           {/* header */}
-          <div className="font-semibold text-xl mb-5">
+          <div className=" text-white text-xl bg-[#625afa] p-3 shadow-md">
             Thông tin giao đá trong ngày
           </div>
-          <div className="flex flex-col gap-5 max-h-[15rem] overflow-scroll">
+          <div className="flex flex-col gap-5 max-h-[15rem] overflow-scroll p-2">
             {Array.of("A", "B", "C", "D", "E", "F", "G").map((v) => (
               <div className="flex gap-5">
                 {/* Thông tin sơ bộ người nhận */}
@@ -76,13 +77,19 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="bg-primary p-5 flex items-center gap-10">
-          <TbTruckDelivery size={"5rem"} />
-          <div className="">
-            <div className="font-bold text-xl">Giao hàng hôm nay</div>
-            <div>Cập nhật thông tin giao đá ngày hôm nay</div>
+        <Link to={"/attend"}>
+          <div className="bg-[#625afa] p-5 flex items-center gap-10 rounded shadow-md">
+            <TbTruckDelivery size={"5rem"} color="white" />
+            <div className="">
+              <div className="font-semibold text-xl text-white">
+                Giao hàng hôm nay
+              </div>
+              <div className="text-white">
+                Cập nhật thông tin giao đá ngày hôm nay
+              </div>
+            </div>
           </div>
-        </div>
+        </Link>
       </div>
       <div className="h-16"></div>
       <BottomNav />
