@@ -1,6 +1,5 @@
 import BottomNav from "@/components/BottomNav";
-import TopNav from "@/components/TopNav";
-import { Button } from "@/components/ui/button";
+import z from "zod";
 import {
   Form,
   FormControl,
@@ -10,60 +9,49 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import z from "zod";
-import { GrAd } from "react-icons/gr";
-import { MdDriveFileRenameOutline } from "react-icons/md";
-import { MdOutlinePhone } from "react-icons/md";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import AttendNavbar from "@/components/Attend/AttendNavbar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { MdOutlineKeyboardArrowDown } from "react-icons/md";
+import { FaCheck } from "react-icons/fa6";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+
+const customers = [
+  { customerName: "Nguyễn văn A", customerId: 1 },
+  { customerName: "Nguyễn văn B", customerId: 2 },
+  { customerName: "Nguyễn văn C", customerId: 3 },
+] as const;
 
 const formSchema = z.object({
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
+  customerId: z.number().nonnegative({
+    message: "Please select a customer.",
+  }),
 });
-
-function ProfileInfo() {
-  return (
-    <div className="flex flex-col gap-5">
-      {/* row */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="bg-indigo-500 p-2 rounded-md">
-            <GrAd color="white" />
-          </div>
-          <div className="font-medium text-xl">Tài khoản</div>
-        </div>
-        <span className="font-normal">@username</span>
-      </div>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="bg-indigo-500 p-2 rounded-md">
-            <MdDriveFileRenameOutline color="white" />
-          </div>
-          <div className="font-medium text-xl">Họ tên</div>
-        </div>
-        <span className="font-normal">Nguyễn Văn A</span>
-      </div>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="bg-indigo-500 p-2 rounded-md">
-            <MdOutlinePhone color="white" />
-          </div>
-          <div className="font-medium text-xl">SĐT</div>
-        </div>
-        <span className="font-normal">+84 123 456 789</span>
-      </div>
-    </div>
-  );
-}
 
 function ProfileFormEditing() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
+      customerId: 0,
     },
   });
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -90,6 +78,72 @@ function ProfileFormEditing() {
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="customerId"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Chọn khách hàng</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className={cn(
+                        "justify-between",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value
+                        ? customers.find(
+                            (customer) => customer.customerId === field.value
+                          )?.customerName
+                        : "Lựa chọn khách hàng"}
+                      <MdOutlineKeyboardArrowDown className="opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-0">
+                  <Command>
+                    <CommandInput
+                      placeholder="Tìm kiếm khách hàng..."
+                      className="h-9"
+                    />
+                    <CommandList>
+                      <CommandEmpty>Không tìm thấy khách hàng.</CommandEmpty>
+                      <CommandGroup>
+                        {customers.map((customer) => (
+                          <CommandItem
+                            value={customer.customerId + ""}
+                            key={customer.customerId}
+                            onSelect={() => {
+                              form.setValue("customerId", customer.customerId);
+                            }}
+                          >
+                            {customer.customerName}
+                            <FaCheck
+                              className={cn(
+                                "ml-auto",
+                                customer.customerId === field.value
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              <FormDescription>
+                This is the language that will be used in the dashboard.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <Button type="submit">Submit</Button>
       </form>
     </Form>
@@ -99,24 +153,13 @@ function ProfileFormEditing() {
 export function Attend() {
   return (
     <div className="h-[100vh]">
-      <TopNav />
+      <AttendNavbar />
       <div className="h-16"></div>
-      <div className="m-10 bg-gray-50 shadow-md overflow-hidden rounded-md">
-        <div className="bg-indigo-500 h-30 flex items-center">
-          <div className="rounded-full w-20 h-20 m-3 overflow-hidden">
-            <img
-              src="https://static.vecteezy.com/system/resources/previews/036/594/092/non_2x/man-empty-avatar-photo-placeholder-for-social-networks-resumes-forums-and-dating-sites-male-and-female-no-photo-images-for-unfilled-user-profile-free-vector.jpg"
-              alt=""
-            />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-white">@username</span>
-            <span className="font-bold text-3xl text-white">Nguyễn văn A</span>
-          </div>
-        </div>
-        <div className="p-3 ">
-          <ProfileInfo />
-        </div>
+      <div className="mx-3 my-2 rounded-md shadow-md overflow-hidden">
+        <img src="/image.png" width={"100%"} alt="" />
+      </div>
+      <div className="m-3 ">
+        <ProfileFormEditing />
       </div>
       <BottomNav />
     </div>
