@@ -1,20 +1,24 @@
-import { useNavigate } from "react-router-dom";
+import { FaIceCream } from "react-icons/fa6";
 import { FaArrowLeft } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 export default function AttendNavbar() {
   const navigate = useNavigate();
+
   return (
-    <>
-      <nav className="fixed top-0 left-0 right-0 h-16 bg-primary flex z-50 items-center justify-center px-3">
-        <FaArrowLeft
-          size={28}
-          className="absolute left-4 cursor-pointer"
-          onClick={() => navigate(-1)}
-        />
-        <div className="flex gap-2">
-          <h1 className="text-2xl font-semibold">Thêm thông tin giao hàng</h1>
-        </div>
-      </nav>
-    </>
+    <nav className="sticky top-0 z-30 w-full bg-white/30 backdrop-blur-lg border-b border-white/30 shadow-md rounded-b-2xl px-4 py-3 flex items-center gap-3">
+      <button
+        type="button"
+        aria-label="Quay lại"
+        onClick={() => navigate(-1)}
+        className="p-2 rounded-full hover:bg-pink-100 transition"
+      >
+        <FaArrowLeft className="text-pink-400 text-xl" />
+      </button>
+      <FaIceCream className="text-pink-400 text-2xl" />
+      <span className="text-lg font-bold text-gray-800 tracking-wide">
+        Thêm thông tin giao hàng
+      </span>
+    </nav>
   );
 }
