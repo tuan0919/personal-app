@@ -66,7 +66,7 @@ function ProfileFormEditing() {
     },
   });
 
-  function onSubmit(values: any) {
+  function onSubmit(values: unknown) {
     console.log(values);
   }
 
