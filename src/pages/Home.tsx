@@ -1,97 +1,234 @@
 import BottomNav from "@/components/BottomNav";
-import { CalendarChooser } from "@/components/Home/CalendarChooser";
 import TopNav from "@/components/TopNav";
-import { TbTruckDelivery } from "react-icons/tb";
-import { FaTruckFast } from "react-icons/fa6";
-import { IoMdTime } from "react-icons/io";
-import { FaPeopleCarryBox } from "react-icons/fa6";
-import { MdOutlineUpdate } from "react-icons/md";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import {
+  FaCube,
+  FaIceCream,
+  FaMoneyBillWave,
+  FaTruckFast,
+  FaPeopleCarryBox,
+} from "react-icons/fa6";
+import { TbTruckDelivery } from "react-icons/tb";
+import { MdOutlineUpdate } from "react-icons/md";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationLink,
+} from "@/components/ui/pagination";
+import { FaPlusCircle, FaUserCircle } from "react-icons/fa";
+import { allOrders, revenueChart, summary } from "@/static/mock-data";
+import { CalendarChooser } from "@/components/Home/CalendarChooser";
+import { StatCard } from "@/components/Home/StatCard";
+import { RevenueLineChart } from "@/components/Home/RevenueLineChart";
 
 export default function Home() {
+  // State ngày chọn
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+    new Date()
+  );
+  // State phân trang
+  const [currentPage, setCurrentPage] = useState(1);
+  const ordersPerPage = 4;
+
+  // Lọc đơn theo ngày chọn
+  const selectedDateStr = selectedDate
+    ? format(selectedDate, "yyyy-MM-dd")
+    : "";
+  const ordersToday = allOrders.filter((o) => o.date === selectedDateStr);
+
+  // Phân trang
+  const totalPages = Math.max(1, Math.ceil(ordersToday.length / ordersPerPage));
+  const pagedOrders = ordersToday.slice(
+    (currentPage - 1) * ordersPerPage,
+    currentPage * ordersPerPage
+  );
+
+  // Khi đổi ngày, reset về page 1
+  function handleDateChange(date: Date | undefined) {
+    setSelectedDate(date);
+    setCurrentPage(1);
+  }
+
   return (
-    <div className="h-[100vh]">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-100 via-orange-50 to-yellow-50">
       <TopNav />
-      <div className="h-16"></div>
-      <div className="flex flex-col py-16 px-10 gap-10">
-        <div className="flex items-center justify-between">
-          <div className="flex flex-col gap-2">
-            <span className="text-2xl font-medium">Ngày hôm nay</span>
-            <span>27/06/2025</span>
+      <main className="flex-1 overflow-y-auto px-3 pt-4 pb-24 sm:px-4">
+        {/* Thêm thông tin giao đá */}
+        <section className="mb-4">
+          <Link
+            to="/attend"
+            className="block w-full bg-gradient-to-r from-pink-400 via-pink-300 to-green-300 text-white font-bold rounded-2xl shadow-lg px-4 py-3 text-center text-base flex items-center justify-center gap-2 hover:opacity-90 transition"
+          >
+            <FaPlusCircle className="text-xl" />
+            Thêm thông tin giao đá
+          </Link>
+        </section>
+
+        {/* Thống kê trong ngày */}
+        <section className="mb-4">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
+            <StatCard
+              icon={<FaIceCream className="text-white text-xl" />}
+              title="Đá cây"
+              value={`${summary.daCay} cây`}
+              gradient="from-pink-400 via-pink-300 to-pink-500"
+            />
+            <StatCard
+              icon={<FaCube className="text-white text-xl" />}
+              title="Đá bi"
+              value={`${summary.daBi} bịch`}
+              gradient="from-sky-400 via-blue-300 to-blue-500"
+            />
+            <StatCard
+              icon={<FaMoneyBillWave className="text-white text-xl" />}
+              title="Doanh thu"
+              value={summary.doanhThu.toLocaleString("vi-VN")}
+              gradient="from-green-400 via-green-300 to-emerald-500"
+            />
           </div>
-          <CalendarChooser />
-        </div>
-        <div className="bg-primary shadow-md rounded overflow-hidden">
-          {/* header */}
-          <div className=" text-white text-xl bg-[#625afa] p-3 shadow-md">
-            Thông tin giao đá trong ngày
+        </section>
+
+        {/* Đơn giao đá theo ngày */}
+        <section className="mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="font-semibold text-gray-700 text-sm sm:text-base">
+              Đơn giao đá theo ngày
+            </h2>
+            <CalendarChooser date={selectedDate} onChange={handleDateChange} />
           </div>
-          <div className="flex flex-col gap-5 max-h-[15rem] overflow-scroll p-2">
-            {Array.of("A", "B", "C", "D", "E", "F", "G").map((v) => (
-              <div className="flex gap-5">
-                {/* Thông tin sơ bộ người nhận */}
-                <div className="flex flex-col items-center justify-center">
-                  <div className="w-[3rem] rounded-sm overflow-hidden">
-                    <img
-                      src="https://static.vecteezy.com/system/resources/previews/036/594/092/non_2x/man-empty-avatar-photo-placeholder-for-social-networks-resumes-forums-and-dating-sites-male-and-female-no-photo-images-for-unfilled-user-profile-free-vector.jpg"
-                      alt=""
-                      width={"100%"}
+          <div className="bg-white/80 backdrop-blur-md border border-white/40 rounded-2xl shadow max-h-64 overflow-y-auto">
+            <ul className="divide-y divide-gray-100">
+              {pagedOrders.length === 0 && (
+                <li className="p-4 text-center text-gray-400 text-sm">
+                  Không có đơn giao nào trong ngày này.
+                </li>
+              )}
+              {pagedOrders.map((o) => (
+                <li key={o.id} className="px-3 py-2">
+                  <div className="flex items-start gap-3">
+                    <TbTruckDelivery className="text-pink-400 text-2xl shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-gray-800 text-[13px] sm:text-sm line-clamp-1">
+                        {o.customer}
+                      </p>
+                      <div className="mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] sm:text-xs text-gray-600">
+                        <span>
+                          <FaIceCream className="inline mr-0.5 text-pink-400" />
+                          {o.daCay} cây
+                        </span>
+                        <span>
+                          <FaCube className="inline mr-0.5 text-sky-400" />
+                          {o.daBi} bịch
+                        </span>
+                        <span>
+                          <FaMoneyBillWave className="inline mr-0.5 text-emerald-400" />
+                          {o.revenue.toLocaleString("vi-VN")} ₫
+                        </span>
+                      </div>
+                      <div className="mt-0.5 flex items-center gap-1 text-[11px] sm:text-xs text-gray-500">
+                        <FaUserCircle className="shrink-0" />
+                        <span>Đã giao bởi</span>
+                        <span className="font-medium">{o.shipper}</span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center mt-2">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      aria-disabled={currentPage === 1}
+                      className={cn(
+                        currentPage === 1 && "pointer-events-none opacity-50"
+                      )}
                     />
-                  </div>
-                  <div className="font-semibold">Nguyễn văn {v}</div>
-                </div>
-                {/* Thông tin sơ bộ người giao */}
-                <div className="">
-                  <div className="flex gap-1 items-center">
-                    <FaTruckFast className="text-green-800" />:
-                    <span className="font-semibold text-green-800">
-                      Tuấn nguyễn
-                    </span>
-                  </div>
-                  <div className="flex gap-1 items-center">
-                    <IoMdTime className="text-yellow-800" />:
-                    <span className=" text-yellow-800">14:52:40</span>
-                  </div>
-                  <div className="flex gap-1 items-center">
-                    <MdOutlineUpdate className="text-red-800" />:
-                    <span className=" text-red-800">14:52:51</span>
-                  </div>
-                  <div className="flex gap-1 items-center">
-                    <FaPeopleCarryBox className="text-blue-800" />:
-                    <span className=" text-blue-800">20 đá cây</span>
-                  </div>
-                </div>
-              </div>
+                  </PaginationItem>
+                  {Array.from({ length: totalPages }).map((_, idx) => (
+                    <PaginationItem key={idx}>
+                      <PaginationLink
+                        isActive={currentPage === idx + 1}
+                        onClick={() => setCurrentPage(idx + 1)}
+                      >
+                        {idx + 1}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() =>
+                        setCurrentPage((p) => Math.min(totalPages, p + 1))
+                      }
+                      aria-disabled={currentPage === totalPages}
+                      className={cn(
+                        currentPage === totalPages &&
+                          "pointer-events-none opacity-50"
+                      )}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+        </section>
+
+        {/* Biểu đồ doanh thu trong ngày */}
+        <section className="mb-4">
+          <h2 className="mb-2 font-semibold text-gray-700 text-sm sm:text-base">
+            Biểu đồ doanh thu trong ngày
+          </h2>
+          <div className="bg-white/80 backdrop-blur-md border border-white/40 rounded-2xl shadow p-3">
+            <RevenueLineChart data={revenueChart} />
+          </div>
+        </section>
+
+        {/* Quick actions */}
+        <section className="mt-8 mb-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              {
+                label: "Đang giao",
+                icon: <FaTruckFast className="text-xl text-pink-500" />,
+              },
+              {
+                label: "Chờ bốc",
+                icon: <FaPeopleCarryBox className="text-xl text-pink-500" />,
+              },
+              {
+                label: "Cập nhật",
+                icon: <MdOutlineUpdate className="text-xl text-pink-500" />,
+              },
+              {
+                label: "Lịch sử",
+                icon: <TbTruckDelivery className="text-xl text-pink-500" />,
+              },
+            ].map((x) => (
+              <Link
+                key={x.label}
+                to="#"
+                className="flex flex-col items-center justify-center bg-white/80 backdrop-blur-md border border-white/40 rounded-xl shadow p-2 gap-1"
+              >
+                {x.icon}
+                <span className="text-[11px] sm:text-xs text-gray-700">
+                  {x.label}
+                </span>
+              </Link>
             ))}
           </div>
-          <div className="flex mt-5 text-xl font-semibold">Tổng cộng</div>
-          <div className="flex justify-around mt-5">
-            <div className="flex flex-col justify-center items-center rounded-full border-4 w-24 h-24 border-blue-700">
-              <span className="font-black text-3xl text-blue-700">100</span>
-              <span className="font-semibold text-blue-700">Đá cây</span>
-            </div>
-
-            <div className="flex flex-col justify-center items-center rounded-full border-4 w-24 h-24 border-blue-700">
-              <span className="font-black text-3xl text-blue-700">11</span>
-              <span className="font-semibold text-blue-700">Khách</span>
-            </div>
-          </div>
-        </div>
-        <Link to={"/attend"}>
-          <div className="bg-[#625afa] p-5 flex items-center gap-10 rounded shadow-md">
-            <TbTruckDelivery size={"5rem"} color="white" />
-            <div className="">
-              <div className="font-semibold text-xl text-white">
-                Giao hàng hôm nay
-              </div>
-              <div className="text-white">
-                Cập nhật thông tin giao đá ngày hôm nay
-              </div>
-            </div>
-          </div>
-        </Link>
-      </div>
-      <div className="h-16"></div>
+        </section>
+      </main>
       <BottomNav />
     </div>
   );
