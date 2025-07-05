@@ -80,8 +80,7 @@ function ProfileFormEditing() {
             <FormField
               control={form.control}
               name="customerId"
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              render={({ field }) => (
+              render={() => (
                 <FormItem>
                   <FormLabel className="flex items-center gap-1 text-xs sm:text-sm font-semibold text-pink-500 mb-1">
                     <FaUser className="w-4 h-4" />
