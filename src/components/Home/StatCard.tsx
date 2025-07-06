@@ -1,24 +1,38 @@
 import { JSX } from "react";
-
-// Thẻ thống kê nhỏ
+import { motion } from "framer-motion";
+// StatCard component
 export function StatCard({
   icon,
   title,
   value,
   gradient,
+  extra,
+  subtitle,
 }: {
   icon: JSX.Element;
   title: string;
-  value: string | number;
+  value: string;
   gradient: string;
+  extra?: JSX.Element;
+  subtitle?: string;
 }) {
   return (
-    <div
-      className={`bg-gradient-to-br ${gradient} text-white rounded-xl shadow flex flex-col items-center justify-center py-2`}
+    <motion.div
+      className={`bg-gradient-to-br ${gradient} text-white rounded-xl shadow flex flex-col items-start justify-center p-3 cursor-pointer`}
+      whileHover={{ scale: 1.05 }}
+      transition={{ duration: 0.3 }}
     >
-      {icon}
-      <span className="text-[11px] sm:text-xs mt-0.5">{title}</span>
-      <span className="text-sm sm:text-base font-semibold">{value}</span>
-    </div>
+      <div className="flex items-center gap-2 mb-1">
+        {icon}
+        <span className="text-xs drop-shadow-sm">{title}</span>
+      </div>
+      <span className="text-base font-bold drop-shadow-sm">{value}</span>
+      {extra && <div className="mt-1 text-xs drop-shadow-sm">{extra}</div>}
+      {subtitle && (
+        <div className="text-xs opacity-90 drop-shadow-sm mt-0.5">
+          {subtitle}
+        </div>
+      )}
+    </motion.div>
   );
 }

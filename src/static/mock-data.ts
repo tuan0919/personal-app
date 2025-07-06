@@ -1,10 +1,4 @@
-// Dữ liệu giả lập
-const summary = {
-  daCay: 320, // cây
-  daBi: 180, // bịch
-  doanhThu: 3_200_000, // VND
-};
-
+const summary = { daCay: 320, daBi: 180, doanhThu: 3_200_000 };
 const allOrders = [
   {
     id: 1,
@@ -33,7 +27,6 @@ const allOrders = [
     shipper: "Phạm Văn C",
     date: "2025-07-06",
   },
-  // Thêm nhiều đơn để test phân trang
   {
     id: 4,
     customer: "Cafe Sáng",
@@ -61,7 +54,6 @@ const allOrders = [
     shipper: "Trần Văn F",
     date: "2025-07-06",
   },
-  // Đơn của ngày khác để test lọc
   {
     id: 7,
     customer: "Test Ngày Khác",
@@ -72,15 +64,20 @@ const allOrders = [
     date: "2025-07-05",
   },
 ];
-
-// Dữ liệu doanh thu theo giờ
-const revenueChart = [
-  { giờ: "08h", doanhThu: 300_000 },
-  { giờ: "10h", doanhThu: 450_000 },
-  { giờ: "12h", doanhThu: 650_000 },
-  { giờ: "14h", doanhThu: 550_000 },
-  { giờ: "16h", doanhThu: 350_000 },
-  { giờ: "18h", doanhThu: 900_000 },
+const weeklyRevenueChart = [
+  { thu: "T2", doanhThu: 2_800_000 },
+  { thu: "T3", doanhThu: 3_200_000 },
+  { thu: "T4", doanhThu: 2_900_000 },
+  { thu: "T5", doanhThu: 3_500_000 },
+  { thu: "T6", doanhThu: 4_200_000 },
+  { thu: "T7", doanhThu: 3_800_000 },
+  { thu: "CN", doanhThu: 2_400_000 },
 ];
+const weeklyStats = {
+  totalRevenue: 22_800_000,
+  growthRate: 12.5,
+  totalDaCay: 1_850,
+  totalDaBi: 920,
+};
 
-export { summary, allOrders, revenueChart };
+export { summary, allOrders, weeklyRevenueChart, weeklyStats };
