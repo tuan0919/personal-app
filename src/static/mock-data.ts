@@ -7,7 +7,7 @@ const allOrders = [
     daBi: 10,
     revenue: 420_000,
     shipper: "Nguyễn Văn A",
-    date: "2025-07-06",
+    date: "2025-07-08",
   },
   {
     id: 2,
@@ -16,7 +16,7 @@ const allOrders = [
     daBi: 25,
     revenue: 650_000,
     shipper: "Trần Thị B",
-    date: "2025-07-06",
+    date: "2025-07-08",
   },
   {
     id: 3,
@@ -25,7 +25,7 @@ const allOrders = [
     daBi: 40,
     revenue: 700_000,
     shipper: "Phạm Văn C",
-    date: "2025-07-06",
+    date: "2025-07-08",
   },
   {
     id: 4,
@@ -34,7 +34,7 @@ const allOrders = [
     daBi: 5,
     revenue: 200_000,
     shipper: "Nguyễn Văn D",
-    date: "2025-07-06",
+    date: "2025-07-08",
   },
   {
     id: 5,
@@ -43,7 +43,7 @@ const allOrders = [
     daBi: 8,
     revenue: 350_000,
     shipper: "Lê Thị E",
-    date: "2025-07-06",
+    date: "2025-07-08",
   },
   {
     id: 6,
@@ -52,7 +52,7 @@ const allOrders = [
     daBi: 15,
     revenue: 210_000,
     shipper: "Trần Văn F",
-    date: "2025-07-06",
+    date: "2025-07-08",
   },
   {
     id: 7,
