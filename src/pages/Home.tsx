@@ -13,7 +13,7 @@ export default function Home() {
   const { refs, controls } = useHomeAnimations();
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-100 via-orange-50 to-yellow-50">
+    <div className="min-h-screen flex flex-col bg-[url('https://maxartkiller.com/website/gomobileux2/HTML/assets/img/bgshapes.png')]">
       <TopNav />
       <motion.main
         className="flex-1 overflow-y-auto px-3 pt-4 pb-24 sm:px-4"
