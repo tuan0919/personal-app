@@ -93,7 +93,6 @@ export default function Home() {
 
   useEffect(() => {
     (async function () {
-      console.log("Starting animations for orders section");
       ordersCtrl.set("hidden");
       await ordersCtrl.start("visible");
     })();
