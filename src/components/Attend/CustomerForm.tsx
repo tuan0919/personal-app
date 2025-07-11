@@ -1,4 +1,4 @@
-// /components/Attend/CustomerForm.tsx
+// components/Attend/CustomerForm.tsx
 import { z } from "zod";
 import {
   Form,
@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
-import { FaUser, FaCube, FaBox } from "react-icons/fa6";
+import { FaUser, FaCube, FaBox, FaTag, FaReceipt } from "react-icons/fa6";
 import { containerVariants, itemVariants } from "./animations";
 import { CustomerCombobox } from "./CustomerCombobox";
 import { cn } from "@/lib/utils";
@@ -32,6 +32,15 @@ export function CustomerForm() {
   });
 
   const selectedType = form.watch("productType");
+  const amount = form.watch("amount");
+
+  // Định nghĩa đơn giá
+  const priceMapping: Record<number, number> = {
+    1: 10000, // Đá cây
+    2: 15000, // Đá viên
+  };
+  const unitPrice = selectedType > 0 ? priceMapping[selectedType] : 0;
+  const totalPrice = unitPrice * amount;
 
   function onSubmit(values: unknown) {
     console.log(values);
@@ -45,7 +54,7 @@ export function CustomerForm() {
       variants={containerVariants}
     >
       <motion.div
-        className="bg-white rounded-2xl shadow p-3 sm:p-6"
+        className="bg-white/70 rounded-2xl shadow p-3 sm:p-6"
         variants={itemVariants}
       >
         <h2 className="text-lg font-semibold text-pink-600 mb-4">
@@ -107,7 +116,8 @@ export function CustomerForm() {
                               value={String(t)}
                               className="w-4 h-4"
                             />
-                            {t === 1 ? "Đá cây" : "Đá viên"}
+                            {t === 1 ? "Đá cây" : "Đá viên"} (
+                            {priceMapping[t].toLocaleString("vi-VN")}đ/đv)
                           </label>
                         ))}
                       </RadioGroup>
@@ -141,6 +151,30 @@ export function CustomerForm() {
                   </FormItem>
                 )}
               />
+            </motion.div>
+
+            {/* Price & Total */}
+            <motion.div variants={itemVariants}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 px-4 py-3 bg-pink-50 rounded-md">
+                <div className="flex items-center gap-2">
+                  <FaTag className="text-pink-500 w-5 h-5" />
+                  <span className="text-sm text-gray-700">Đơn giá:</span>
+                  <span className="text-sm font-semibold text-pink-600">
+                    {unitPrice > 0
+                      ? unitPrice.toLocaleString("vi-VN") + "đ"
+                      : "-"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <FaReceipt className="text-pink-500 w-5 h-5" />
+                  <span className="text-sm text-gray-700">Tổng tiền:</span>
+                  <span className="text-sm font-semibold text-pink-600">
+                    {unitPrice > 0
+                      ? totalPrice.toLocaleString("vi-VN") + "đ"
+                      : "-"}
+                  </span>
+                </div>
+              </div>
             </motion.div>
 
             {/* Submit Button */}

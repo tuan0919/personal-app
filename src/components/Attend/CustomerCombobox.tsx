@@ -13,7 +13,6 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { FaCheckCircle } from "react-icons/fa";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
@@ -34,19 +33,16 @@ export function CustomerCombobox({ value, onChange }: CustomerComboboxProps) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          type="button"
-          variant="outline"
-          role="combobox"
+        <div
           aria-expanded={open}
           className={cn(
-            "w-full justify-between px-2 py-1 text-xs sm:text-sm rounded-md",
+            "w-full justify-between px-2 py-2 text-xs sm:text-sm rounded-md border flex",
             !selectedCustomer && "text-gray-400"
           )}
         >
           {selectedCustomer ? selectedCustomer.customerName : "Chọn khách hàng"}
           <MdOutlineKeyboardArrowDown className="ml-1 h-4 w-4 opacity-50" />
-        </Button>
+        </div>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">
         <motion.div

@@ -11,7 +11,7 @@ export function Attend() {
 
   return (
     <motion.div
-      className="min-h-screen bg-gradient-to-br from-pink-100 via-orange-100 to-orange-100 relative"
+      className="min-h-screen bg-[url('https://maxartkiller.com/website/gomobileux2/HTML/assets/img/bgshapes.png')] relative"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -19,7 +19,7 @@ export function Attend() {
       <AttendNavbar />
       <CustomerForm />
       <DeliveredCustomers delivered={deliveredToday} />
-      <div className="h-30" />
+      <div className="h-20" />
       <BottomNav />
     </motion.div>
   );
