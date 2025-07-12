@@ -8,6 +8,7 @@ import { WeeklyChartSection } from "@/components/Home/WeeklyChartSection";
 import { WeeklyStatsSection } from "@/components/Home/WeeklyStatsSection";
 import { AddOrderButton } from "@/components/Home/AddOrderButton";
 import { useHomeAnimations } from "@/hooks/useHomeAnimations";
+import { GetOrderPaymentButton } from "@/components/Home/GetOrderPaymentButton";
 
 export default function Home() {
   const { refs, controls } = useHomeAnimations();
@@ -21,6 +22,7 @@ export default function Home() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
+        <GetOrderPaymentButton />
         <AddOrderButton />
         <DailyStatsSection
           ref={refs.dailyStatsRef}

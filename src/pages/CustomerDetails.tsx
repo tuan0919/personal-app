@@ -27,7 +27,7 @@ export function CustomerDetails() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-green-50">
+    <div className="min-h-screen bg-[url('https://maxartkiller.com/website/gomobileux2/HTML/assets/img/bgshapes.png')]">
       <motion.main
         className="flex-1 overflow-y-auto"
         initial={{ opacity: 0 }}

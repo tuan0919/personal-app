@@ -55,8 +55,11 @@ export function CustomerCombobox({ value, onChange }: CustomerComboboxProps) {
             <CommandEmpty>Không tìm thấy</CommandEmpty>
             <CommandGroup>
               <CommandList className="max-h-60 overflow-auto">
-                {allCustomers.map((c) => (
-                  <motion.div key={c.customerId} variants={cardVariants}>
+                {allCustomers.map((c, index) => (
+                  <motion.div
+                    key={`${c.customerId}-${index}`}
+                    variants={cardVariants}
+                  >
                     <CommandItem
                       value={c.customerName}
                       onSelect={() => {

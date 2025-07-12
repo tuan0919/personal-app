@@ -13,12 +13,12 @@ export function AddOrderButton() {
     >
       <Link
         to="/attend"
-        className="block w-full bg-gradient-to-r from-pink-500 via-pink-400 to-emerald-400 text-white font-bold rounded-2xl shadow-lg px-4 py-3 text-center text-base flex items-center justify-center gap-2 hover:opacity-90 transition-all duration-300 hover:scale-105"
+        className="block w-full bg-gradient-to-r from-green-500 to-blue-400 text-white font-bold rounded-2xl shadow-lg px-4 py-3 text-center text-base flex items-center justify-center gap-2 hover:opacity-90 transition-all duration-300 hover:scale-105"
       >
         <motion.div whileHover={{ rotate: 360 }} transition={{ duration: 0.3 }}>
           <FaPlusCircle className="text-xl drop-shadow-sm" />
         </motion.div>
-        <span className="drop-shadow-sm">Thêm thông tin giao đá</span>
+        <span className="drop-shadow-sm">Thêm đơn giao đá</span>
       </Link>
     </motion.section>
   );
