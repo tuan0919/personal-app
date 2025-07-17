@@ -4,7 +4,7 @@ import { motion, LegacyAnimationControls } from "framer-motion";
 import { CalendarChooser } from "./CalendarChooser";
 import { OrderItem } from "./OrderItem";
 import { OrdersPagination } from "./OrdersPagination";
-import { slideInVariants } from "@/components/Home/animations";
+import { slideInVariants } from "@/components/Home/admin/animations";
 import { useOrdersLogic } from "@/hooks/useOrders";
 
 interface OrdersSectionProps {

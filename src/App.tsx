@@ -1,12 +1,13 @@
 import "./App.css";
 import { Route, Routes } from "react-router-dom";
-import Home from "./pages/Home";
+import { Home } from "./pages/Home";
 import About from "./pages/About";
 import { SignIn } from "./pages/SignIn";
-import { Attend } from "./pages/Attend";
+import { CreateNewOrder } from "./pages/CreateNewOrder";
 import { AnimatePresence } from "framer-motion";
 import { CustomerDetails } from "./pages/CustomerDetails";
 import { Payment } from "./pages/Payment";
+import { EditOrder } from "./pages/EditOrder";
 
 function App() {
   return (
@@ -16,7 +17,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/about" element={<About />} />
-          <Route path="/attend" element={<Attend />} />
+          <Route path="/order/new" element={<CreateNewOrder />} />
+          <Route path="/order/:id/edit" element={<EditOrder />} />
           <Route path="/customer/:id" element={<CustomerDetails />} />
           <Route path="/payment" element={<Payment />} />
           <Route path="*" element={<div>404 Not Found</div>} />

@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { motion } from "framer-motion";
 import { FaDollarSign, FaCube, FaIceCream } from "react-icons/fa";
 import { fadeInUp } from "./animations";

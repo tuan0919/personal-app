@@ -12,7 +12,7 @@ export function AddOrderButton() {
       transition={{ duration: 0.5 }}
     >
       <Link
-        to="/attend"
+        to="/order/new"
         className="block w-full bg-gradient-to-r from-green-500 to-blue-400 text-white font-bold rounded-2xl shadow-lg px-4 py-3 text-center text-base flex items-center justify-center gap-2 hover:opacity-90 transition-all duration-300 hover:scale-105"
       >
         <motion.div whileHover={{ rotate: 360 }} transition={{ duration: 0.3 }}>

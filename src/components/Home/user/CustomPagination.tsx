@@ -8,7 +8,7 @@ import {
   PaginationNext,
   PaginationLink,
 } from "@/components/ui/pagination";
-import { pageTransition } from "./animations";
+import { pageTransition } from "../../CreateNewOrder/animations";
 
 interface CustomPaginationProps {
   currentPage: number;

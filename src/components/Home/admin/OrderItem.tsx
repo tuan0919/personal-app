@@ -10,8 +10,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { itemVariants } from "@/components/Home/animations";
+} from "@/components/ui/dropdown-menu";
+import { itemVariants } from "@/components/Home/admin/animations";
 
 export function OrderItem({
   order,

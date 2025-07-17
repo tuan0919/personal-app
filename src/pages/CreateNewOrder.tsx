@@ -1,14 +1,10 @@
 // Attend.tsx
 import BottomNav from "@/components/BottomNav";
-import AttendNavbar from "@/components/Attend/AttendNavbar";
+import AttendNavbar from "@/components/CreateNewOrder/AttendNavbar";
 import { motion } from "framer-motion";
-import { CustomerForm } from "@/components/Attend/CustomerForm";
-import { DeliveredCustomers } from "@/components/Attend/DeliveredCustomers";
-import { allCustomers } from "@/static/mockCustomers";
+import { CustomerForm } from "@/components/CreateNewOrder/CustomerForm";
 
-export function Attend() {
-  const deliveredToday = allCustomers.filter((c) => c.delivered);
-
+export function CreateNewOrder() {
   return (
     <motion.div
       className="min-h-screen bg-[url('https://maxartkiller.com/website/gomobileux2/HTML/assets/img/bgshapes.png')] relative"
@@ -18,7 +14,6 @@ export function Attend() {
     >
       <AttendNavbar />
       <CustomerForm />
-      <DeliveredCustomers delivered={deliveredToday} />
       <div className="h-20" />
       <BottomNav />
     </motion.div>

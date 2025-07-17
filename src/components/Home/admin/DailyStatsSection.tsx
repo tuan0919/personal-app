@@ -4,7 +4,10 @@ import { motion, LegacyAnimationControls } from "framer-motion";
 import { FaIceCream, FaCube, FaMoneyBillWave } from "react-icons/fa6";
 import { StatCard } from "./StatCard";
 import { summary } from "@/static/mock-data";
-import { containerVariants, cardVariants } from "@/components/Home/animations";
+import {
+  containerVariants,
+  cardVariants,
+} from "@/components/Home/admin/animations";
 
 interface DailyStatsSectionProps {
   controls: LegacyAnimationControls;
