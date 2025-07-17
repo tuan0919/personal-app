@@ -7,17 +7,22 @@ import {
   FiCheck,
   FiX,
   FiPackage,
+  FiPercent,
 } from "react-icons/fi";
 import { MdOutlinePayment } from "react-icons/md";
+import { FaMoneyBillTransfer } from "react-icons/fa6";
 import { cardVariants } from "./animations";
 import { formatCurrency, formatDate } from "@/utils/formatter";
 import { Order } from "@/static/mockPayment";
+import { Input } from "@/components/ui/input";
 
 interface OrderCardProps {
   order: Order;
   onSelect: () => void;
   selectedPaidOrders: number[];
   selectedUnpaidOrders: number[];
+  actualPayment?: number;
+  onActualPaymentChange?: (value: number | undefined) => void;
 }
 
 export function OrderCard({
@@ -25,7 +30,16 @@ export function OrderCard({
   selectedPaidOrders,
   selectedUnpaidOrders,
   onSelect,
+  actualPayment,
+  onActualPaymentChange,
 }: OrderCardProps) {
+  // Tính % chênh lệch
+  const actual = actualPayment ?? order.totalAmount;
+  const diffPercent = ((actual - order.totalAmount) / order.totalAmount) * 100;
+  const diffPercentDisplay = isNaN(diffPercent)
+    ? 0
+    : Math.round(diffPercent * 100) / 100;
+
   return (
     <motion.div
       variants={cardVariants}
@@ -109,6 +123,49 @@ export function OrderCard({
           <div className="text-xl sm:text-2xl font-bold text-pink-600">
             {formatCurrency(order.totalAmount)}
           </div>
+        </div>
+      </div>
+      {/* Thực tế thu và % chênh lệch */}
+      <div className="mt-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <FaMoneyBillTransfer className="text-green-500" />
+          <Input
+            type="number"
+            min={0}
+            className="w-32 text-sm border-pink-300 focus-visible:border-pink-500 focus-visible:ring-pink-200 px-2 py-1 rounded-md"
+            value={
+              order.isPaid
+                ? order.totalAmount
+                : actualPayment === undefined
+                ? ""
+                : actualPayment
+            }
+            placeholder="Thực tế thu"
+            disabled={order.isPaid}
+            onClick={(e) => e.stopPropagation()}
+            onChange={(e) => {
+              if (order.isPaid) return;
+              const val = e.target.value;
+              const num = val === "" ? undefined : Number(val);
+              if (onActualPaymentChange) onActualPaymentChange(num);
+            }}
+          />
+          <span className="text-xs text-gray-500">đ</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <FiPercent className="text-blue-500" />
+          <span className="text-xs text-gray-600">Chênh lệch</span>
+          <span
+            className={`font-semibold text-sm ${
+              diffPercentDisplay === 0
+                ? "text-gray-500"
+                : diffPercentDisplay > 0
+                ? "text-green-600"
+                : "text-red-600"
+            }`}
+          >
+            {diffPercentDisplay}%
+          </span>
         </div>
       </div>
       {order.notes && (

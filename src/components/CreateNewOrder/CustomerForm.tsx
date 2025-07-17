@@ -18,6 +18,8 @@ import { FaUser, FaCube, FaBox, FaTag, FaReceipt } from "react-icons/fa6";
 import { containerVariants, itemVariants } from "./animations";
 import { CustomerCombobox } from "./CustomerCombobox";
 import { cn } from "@/lib/utils";
+import { ConfirmDialog } from "./ConfirmDialog";
+import { useState } from "react";
 
 const formSchema = z.object({
   customerId: z.number().nonnegative({ message: "Cần chọn khách hàng." }),
@@ -25,11 +27,16 @@ const formSchema = z.object({
   amount: z.number().min(1, { message: "Số lượng ≥ 1." }),
 });
 
+type FormValues = z.infer<typeof formSchema>;
+
 export function CustomerForm() {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: { customerId: -1, productType: -1, amount: 0 },
   });
+
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [pendingValues, setPendingValues] = useState<FormValues | null>(null);
 
   const selectedType = form.watch("productType");
   const amount = form.watch("amount");
@@ -43,7 +50,22 @@ export function CustomerForm() {
   const totalPrice = unitPrice * amount;
 
   function onSubmit(values: unknown) {
-    console.log(values);
+    setPendingValues(values as FormValues);
+    setOpenConfirm(true);
+  }
+
+  function handleConfirm() {
+    // Thực hiện submit thực sự ở đây
+    console.log(pendingValues);
+    setOpenConfirm(false);
+    setPendingValues(null);
+    // Nếu muốn reset form sau khi xác nhận:
+    // form.reset();
+  }
+
+  function handleClose() {
+    setOpenConfirm(false);
+    setPendingValues(null);
   }
 
   return (
@@ -144,7 +166,16 @@ export function CustomerForm() {
                         type="number"
                         placeholder="Nhập số lượng"
                         className="w-full px-2 py-1 text-xs sm:text-sm rounded-md border"
-                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value === 0 ? "" : field.value}
+                        onChange={(e) => {
+                          // Loại bỏ số 0 ở đầu nếu có
+                          const val = e.target.value.replace(/^0+/, "");
+                          // Nếu input rỗng thì set về 0, ngược lại parseInt
+                          field.onChange(val === "" ? 0 : Number(val));
+                        }}
+                        min={1}
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                       />
                     </FormControl>
                     <FormMessage />
@@ -189,6 +220,12 @@ export function CustomerForm() {
           </motion.form>
         </Form>
       </motion.div>
+      <ConfirmDialog
+        open={openConfirm}
+        message="Bạn có chắc chắn muốn tạo đơn hàng mới này?"
+        onClose={handleClose}
+        onConfirm={handleConfirm}
+      />
     </motion.div>
   );
 }

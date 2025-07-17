@@ -20,6 +20,9 @@ export const Payment: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [actualPayments, setActualPayments] = useState<{
+    [orderId: number]: number;
+  }>({});
   const ordersPerPage = 4;
 
   // Tính toán thống kê
@@ -48,6 +51,52 @@ export const Payment: React.FC = () => {
     };
   }, [selectedUnpaidOrders, selectedPaidOrders]);
 
+  // Chuẩn bị dữ liệu chi tiết cho ConfirmDialog
+  const orderDetails = selectedUnpaidOrders
+    .map((orderId) => {
+      const order = mockOrders.find((o) => o.id === orderId);
+      if (!order) return null;
+      const actual = actualPayments[orderId] ?? order.totalAmount;
+      const provisional = order.totalAmount;
+      const diffPercent =
+        Math.round(((actual - provisional) / provisional) * 10000) / 100;
+      return {
+        id: order.id,
+        customerName: order.customerName,
+        actual,
+        provisional,
+        diffPercent,
+      };
+    })
+    .filter(Boolean) as {
+    id: number;
+    customerName: string;
+    actual: number;
+    provisional: number;
+    diffPercent: number;
+  }[];
+
+  // Chuẩn bị dữ liệu chi tiết cho CancelDialog
+  const cancelOrderDetails = selectedPaidOrders
+    .map((orderId) => {
+      const order = mockOrders.find((o) => o.id === orderId);
+      if (!order) return null;
+      const actual = order.totalAmount;
+      const diffPercent = 0;
+      return {
+        id: order.id,
+        customerName: order.customerName,
+        actual,
+        diffPercent,
+      };
+    })
+    .filter(Boolean) as {
+    id: number;
+    customerName: string;
+    actual: number;
+    diffPercent: number;
+  }[];
+
   // Phân trang
   const totalPages = Math.ceil(mockOrders.length / ordersPerPage);
   const currentOrders = mockOrders.slice(
@@ -65,12 +114,25 @@ export const Payment: React.FC = () => {
       );
     } else {
       // Handle unpaid orders
-      setSelectedUnpaidOrders((prev) =>
-        prev.includes(orderId)
+      setSelectedUnpaidOrders((prev) => {
+        const newArr = prev.includes(orderId)
           ? prev.filter((id) => id !== orderId)
-          : [...prev, orderId]
-      );
+          : [...prev, orderId];
+        // Nếu bỏ chọn thì xóa actualPayments
+        if (prev.includes(orderId)) {
+          setActualPayments((ap) => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { [orderId]: removed, ...rest } = ap;
+            return rest;
+          });
+        }
+        return newArr;
+      });
     }
+  };
+
+  const handleActualPaymentChange = (orderId: number, value: number) => {
+    setActualPayments((prev) => ({ ...prev, [orderId]: value }));
   };
 
   const handlePageChange = (newPage: number) => {
@@ -151,6 +213,15 @@ export const Payment: React.FC = () => {
                   selectedPaidOrders={selectedPaidOrders}
                   selectedUnpaidOrders={selectedUnpaidOrders}
                   onSelect={() => handleOrderSelect(order.id, order.isPaid)}
+                  actualPayment={actualPayments[order.id]}
+                  onActualPaymentChange={(value) => {
+                    if (typeof value === "number") {
+                      handleActualPaymentChange(order.id, value);
+                    } else {
+                      // Nếu value là undefined, truyền một số mặc định hoặc xử lý phù hợp
+                      handleActualPaymentChange(order.id, 0);
+                    }
+                  }}
                 />
               ))}
             </AnimatePresence>
@@ -177,6 +248,7 @@ export const Payment: React.FC = () => {
           total={statistics.selectedUnpaidAmount}
           onClose={() => setShowConfirmDialog(false)}
           onConfirm={confirmPayment}
+          orderDetails={orderDetails}
         />
 
         <CancelDialog
@@ -185,6 +257,7 @@ export const Payment: React.FC = () => {
           total={statistics.selectedPaidAmount}
           onClose={() => setShowCancelDialog(false)}
           onConfirm={confirmCancelPayment}
+          orderDetails={cancelOrderDetails}
         />
       </div>
       <div className="h-20"></div>
