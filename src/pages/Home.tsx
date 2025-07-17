@@ -3,6 +3,7 @@ import BottomNav from "@/components/BottomNav";
 import TopNav from "@/components/TopNav";
 import { motion } from "framer-motion";
 import { AddOrderButton } from "@/components/Home/user/AddOrderButton";
+import { ActivityHistoryButton } from "@/components/Home/user/ActivityHistoryButton";
 import { useHomeAnimations } from "@/hooks/useHomeAnimations";
 import { GetOrderPaymentButton } from "@/components/Home/user/GetOrderPaymentButton";
 import { DailyStatsSection } from "@/components/Home/admin/DailyStatsSection";
@@ -27,6 +28,7 @@ export function Home() {
         {!isAdmin && (
           <>
             <GetOrderPaymentButton />
+            <ActivityHistoryButton />
             <AddOrderButton />
             <DeliveredCustomers
               onDeleteCustomer={() => {}}

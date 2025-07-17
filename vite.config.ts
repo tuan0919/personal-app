@@ -18,16 +18,27 @@ export default defineConfig({
       },
 
       manifest: {
-        name: "pwa-project",
-        short_name: "pwa-project",
-        description: "pwa-project",
+        name: "Personal App",
+        short_name: "Personal App",
+        description: "Personal Application",
         theme_color: "#ffffff",
+        background_color: "#ffffff",
+        display: "standalone",
+        start_url: "/",
+        icons: [
+          {
+            src: "/icon.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+        ],
       },
 
       workbox: {
         globPatterns: ["**/*.{js,css,html,svg,png,ico}"],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
+        skipWaiting: true,
       },
 
       devOptions: {
@@ -44,8 +55,25 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    outDir: "dist",
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom"],
+          router: ["react-router-dom"],
+          ui: ["framer-motion", "lucide-react"],
+        },
+      },
+    },
+  },
   server: {
-    host: true, // hoặc '0.0.0.0'
-    port: 5173, // bạn có thể thay đổi port nếu cần
+    host: true,
+    port: 5173,
+  },
+  preview: {
+    port: 4173,
+    host: true,
   },
 });

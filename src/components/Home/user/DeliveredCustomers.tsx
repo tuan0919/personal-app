@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 
 interface DeliveredCustomersProps {
   delivered: Customer[];
-  onUpdateCustomer: (
+  onUpdateCustomer?: (
     customerId: string,
     updatedData: Partial<Customer>
   ) => void;
@@ -24,7 +24,7 @@ interface DeliveredCustomersProps {
 
 export function DeliveredCustomers({
   delivered,
-  onUpdateCustomer,
+  onUpdateCustomer: _onUpdateCustomer,
   onDeleteCustomer,
 }: DeliveredCustomersProps) {
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
@@ -90,7 +90,8 @@ export function DeliveredCustomers({
     );
   };
 
-  const handleDelete = (customer: Customer) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleDelete = (_customer: Customer) => {
     setShowDeleteConfirm(true);
     setShowActionPopup(false);
   };

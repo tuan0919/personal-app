@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { FaUserCircle, FaPhoneAlt, FaMapMarkerAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { fadeInUp } from "./animations";

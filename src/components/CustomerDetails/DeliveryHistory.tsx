@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { motion } from "framer-motion";
 import { FaHistory, FaCalendarAlt, FaTruck } from "react-icons/fa";
 import {
