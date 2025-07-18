@@ -4,6 +4,10 @@ import { PWASuggestionDialog } from "@/components/Home/PWASuggestionDialog";
 import { usePWASuggestion } from "@/hooks/usePWASuggestion";
 import TopNav from "@/components/TopNav";
 import { motion } from "framer-motion";
+import { FilterButton } from "@/components/Home/user/FilterButton";
+import { FilterValues } from "@/components/Home/user/FilterSheet";
+import { FilterSheet } from "@/components/Home/user/FilterSheet";
+import { useState } from "react";
 import { AddOrderButton } from "@/components/Home/user/AddOrderButton";
 import { ActivityHistoryButton } from "@/components/Home/user/ActivityHistoryButton";
 import { useHomeAnimations } from "@/hooks/useHomeAnimations";
@@ -16,12 +20,18 @@ import { allCustomers } from "@/static/mockCustomers";
 import { DeliveredCustomers } from "@/components/Home/user/DeliveredCustomers";
 const deliveredToday = allCustomers.filter((c) => c.delivered);
 export function Home() {
+  const [filterOpen, setFilterOpen] = useState(false);
+  const handleApplyFilter = (values: FilterValues) => {
+    // TODO: integrate filtering logic with customer/order lists
+    console.log("Applied filters", values);
+  };
   const { shouldSuggest, handleClose, handleInstall } = usePWASuggestion();
   const { refs, controls } = useHomeAnimations();
   const isAdmin = false;
   return (
     <div className="min-h-screen flex flex-col bg-[url('https://maxartkiller.com/website/gomobileux2/HTML/assets/img/bgshapes.png')]">
       <TopNav />
+      <FilterSheet open={filterOpen} onClose={() => setFilterOpen(false)} onApply={handleApplyFilter} />
       <PWASuggestionDialog
         open={shouldSuggest}
         onClose={handleClose}
@@ -66,6 +76,8 @@ export function Home() {
           </>
         )}
       </motion.main>
+      {/* Floating Filter Button */}
+      <FilterButton onClick={() => setFilterOpen(true)} />
       <BottomNav />
     </div>
   );
