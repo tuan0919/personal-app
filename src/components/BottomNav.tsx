@@ -47,7 +47,7 @@ export default function BottomNav() {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
+    <nav className="fixed bottom-0 left-0 right-0 z-10 pointer-events-none">
       {/* wrapper để canh giữa và hỗ trợ safe-area */}
       <div className="flex justify-center items-end">
         <div className="relative w-full max-w-md pointer-events-auto">
