@@ -1,84 +1,46 @@
 // Home.tsx
-import BottomNav from "@/components/BottomNav";
 import { PWASuggestionDialog } from "@/components/Home/PWASuggestionDialog";
 import { usePWASuggestion } from "@/hooks/usePWASuggestion";
-import TopNav from "@/components/TopNav";
-import { motion } from "framer-motion";
-import { FilterButton } from "@/components/Home/user/FilterButton";
-import { FilterValues } from "@/components/Home/user/FilterSheet";
 import { FilterSheet } from "@/components/Home/user/FilterSheet";
-import { useState } from "react";
-import { AddOrderButton } from "@/components/Home/user/AddOrderButton";
-import { ActivityHistoryButton } from "@/components/Home/user/ActivityHistoryButton";
 import { useHomeAnimations } from "@/hooks/useHomeAnimations";
-import { GetOrderPaymentButton } from "@/components/Home/user/GetOrderPaymentButton";
-import { DailyStatsSection } from "@/components/Home/admin/DailyStatsSection";
-import { OrdersSection } from "@/components/Home/admin/OrdersSection";
-import { WeeklyChartSection } from "@/components/Home/admin/WeeklyChartSection";
-import { WeeklyStatsSection } from "@/components/Home/admin/WeeklyStatsSection";
-import { allCustomers } from "@/static/mockCustomers";
-import { DeliveredCustomers } from "@/components/Home/user/DeliveredCustomers";
-const deliveredToday = allCustomers.filter((c) => c.delivered);
+import { useHomeState } from "@/hooks/useHomeState";
+import { HomeLayout } from "@/components/Home/HomeLayout";
+import { UserView } from "@/components/Home/UserView";
+import { AdminView } from "@/components/Home/AdminView";
 export function Home() {
-  const [filterOpen, setFilterOpen] = useState(false);
-  const handleApplyFilter = (values: FilterValues) => {
-    // TODO: integrate filtering logic with customer/order lists
-    console.log("Applied filters", values);
-  };
+  // Custom hooks for state management
+  const homeState = useHomeState();
   const { shouldSuggest, handleClose, handleInstall } = usePWASuggestion();
   const { refs, controls } = useHomeAnimations();
-  const isAdmin = false;
+
   return (
-    <div className="min-h-screen flex flex-col bg-[url('https://maxartkiller.com/website/gomobileux2/HTML/assets/img/bgshapes.png')]">
-      <TopNav />
-      <FilterSheet open={filterOpen} onClose={() => setFilterOpen(false)} onApply={handleApplyFilter} />
+    <HomeLayout onFilterClick={() => homeState.setFilterOpen(true)}>
+      {/* Filter Sheet */}
+      <FilterSheet 
+        open={homeState.filterOpen} 
+        onClose={() => homeState.setFilterOpen(false)} 
+        onApply={homeState.handleApplyFilter} 
+      />
+      
+      {/* PWA Suggestion Dialog */}
       <PWASuggestionDialog
         open={shouldSuggest}
         onClose={handleClose}
         onInstall={handleInstall}
       />
-      <motion.main
-        className="flex-1 overflow-y-auto px-3 pt-4 pb-24 sm:px-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        {!isAdmin && (
-          <>
-            <GetOrderPaymentButton />
-            <ActivityHistoryButton />
-            <AddOrderButton />
-            <DeliveredCustomers
-              onDeleteCustomer={() => {}}
-              onUpdateCustomer={() => {}}
-              delivered={deliveredToday}
-            />
-          </>
-        )}
-        {isAdmin && (
-          <>
-            <DailyStatsSection
-              ref={refs.dailyStatsRef}
-              controls={controls.dailyStatsCtrl}
-            />
-            <OrdersSection
-              ref={refs.ordersRef}
-              controls={controls.ordersCtrl}
-            />
-            <WeeklyChartSection
-              ref={refs.chartRef}
-              controls={controls.chartCtrl}
-            />
-            <WeeklyStatsSection
-              ref={refs.weeklyStatsRef}
-              controls={controls.weeklyStatsCtrl}
-            />
-          </>
-        )}
-      </motion.main>
-      {/* Floating Filter Button */}
-      <FilterButton onClick={() => setFilterOpen(true)} />
-      <BottomNav />
-    </div>
+      
+      {/* Main Content */}
+      {!homeState.isAdmin ? (
+        <UserView
+          deliveredCustomers={homeState.deliveredCustomers}
+          loading={homeState.loading}
+          error={homeState.error}
+          onDeleteCustomer={homeState.handleDeleteCustomer}
+          onUpdateCustomer={homeState.handleUpdateCustomer}
+        />
+      ) : (
+        <AdminView refs={refs} controls={controls} />
+      )}
+    </HomeLayout>
   );
 }

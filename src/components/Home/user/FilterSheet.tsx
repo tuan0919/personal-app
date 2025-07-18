@@ -3,8 +3,10 @@ import { FiX } from "react-icons/fi";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
+import { FilterValues } from "@/api/types";
 
-export interface FilterValues {
+// Extended filter values for UI
+interface UIFilterValues extends FilterValues {
   minPrice: number;
   maxPrice: number;
   iceCube: boolean; // đá viên
@@ -16,7 +18,7 @@ interface FilterSheetProps {
   open: boolean;
   onClose: () => void;
   onApply: (values: FilterValues) => void;
-  initial?: FilterValues;
+  initial?: UIFilterValues;
 }
 
 export const FilterSheet: React.FC<FilterSheetProps> = ({
@@ -25,7 +27,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
   onApply,
   initial,
 }) => {
-  const [values, setValues] = useState<FilterValues>(
+  const [values, setValues] = useState<UIFilterValues>(
     initial || {
       minPrice: 0,
       maxPrice: 1000,
@@ -35,15 +37,23 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
     }
   );
 
-  const handleChange = <K extends keyof FilterValues>(
+  const handleChange = <K extends keyof UIFilterValues>(
     key: K,
-    val: FilterValues[K]
+    val: UIFilterValues[K]
   ) => {
     setValues((prev) => ({ ...prev, [key]: val }));
   };
 
   const handleApply = () => {
-    onApply(values);
+    // Convert UI filter values to API filter values
+    const apiFilters: FilterValues = {
+      paymentStatus: values.paidStatus === "all" ? undefined : values.paidStatus,
+      productType: values.iceCube && values.iceBlock ? undefined : 
+                   values.iceCube ? 2 : values.iceBlock ? 1 : undefined,
+      delivered: undefined, // Can be extended later
+    };
+    
+    onApply(apiFilters);
     onClose();
   };
 

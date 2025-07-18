@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTruckFast } from "react-icons/fa6";
-import { Customer } from "@/static/mockCustomers";
+import { Customer } from "@/api/types";
 import { SelectableCustomerCard } from "./SelectableCustomerCard";
 import { FloatingActionPopup } from "./FloatingActionPopup";
 import { CustomPagination } from "./CustomPagination";
@@ -16,15 +16,14 @@ import { useNavigate } from "react-router-dom";
 interface DeliveredCustomersProps {
   delivered: Customer[];
   onUpdateCustomer?: (
-    customerId: string,
+    customerId: number,
     updatedData: Partial<Customer>
-  ) => void;
-  onDeleteCustomer: (customerId: string) => void;
+  ) => Promise<void>;
+  onDeleteCustomer: (customerId: number) => Promise<void>;
 }
 
 export function DeliveredCustomers({
   delivered,
-  onUpdateCustomer: _onUpdateCustomer,
   onDeleteCustomer,
 }: DeliveredCustomersProps) {
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
@@ -96,11 +95,16 @@ export function DeliveredCustomers({
     setShowActionPopup(false);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (selectedCustomer) {
-      onDeleteCustomer(selectedCustomer.customerId + "");
-      setSelectedCustomer(null);
-      setShowDeleteConfirm(false);
+      try {
+        await onDeleteCustomer(selectedCustomer.customerId);
+        setSelectedCustomer(null);
+        setShowDeleteConfirm(false);
+      } catch (error) {
+        console.error('Failed to delete customer:', error);
+        // You could add error handling UI here
+      }
     }
   };
 
