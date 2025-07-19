@@ -5,6 +5,7 @@ import { Order, fetchOrdersByDate } from "@/static/mockPayment";
 export interface UsePaymentStateReturn {
   // Trạng thái
   loading: boolean;
+  filtering: boolean; // Đang lọc/sắp xếp không phải load lần đầu
   error: string | null;
 
   // Dữ liệu đơn hàng
@@ -39,7 +40,9 @@ export interface UsePaymentStateReturn {
 
 export function usePaymentState(): UsePaymentStateReturn {
   // Trạng thái loading và error
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true); // Loading lần đầu
+  const [filtering, setFiltering] = useState(false); // Loading khi filter
+  const [firstLoad, setFirstLoad] = useState(true); // Đánh dấu lần load đầu tiên
   const [error, setError] = useState<string | null>(null);
 
   // Dữ liệu đơn hàng
@@ -66,7 +69,11 @@ export function usePaymentState(): UsePaymentStateReturn {
   // Hàm load dữ liệu
   const loadData = useCallback(async () => {
     try {
-      setLoading(true);
+      if (firstLoad) {
+        setInitialLoading(true);
+      } else {
+        setFiltering(true);
+      }
       setError(null);
 
       // Lấy đơn hàng theo ngày đã chọn
@@ -85,9 +92,13 @@ export function usePaymentState(): UsePaymentStateReturn {
         err instanceof Error ? err.message : "Không thể tải dữ liệu đơn hàng"
       );
     } finally {
-      setLoading(false);
+      setInitialLoading(false);
+      setFiltering(false);
+      if (firstLoad) {
+        setFirstLoad(false);
+      }
     }
-  }, [formattedDate]);
+  }, [formattedDate, firstLoad]);
 
   // Load dữ liệu khi thay đổi ngày
   useEffect(() => {
@@ -133,12 +144,14 @@ export function usePaymentState(): UsePaymentStateReturn {
 
   // Reload dữ liệu
   const refetchData = useCallback(async () => {
+    setFirstLoad(true); // Reset để hiện loading full màn hình
     await loadData();
   }, [loadData]);
 
   return {
     // Trạng thái
-    loading,
+    loading: initialLoading,
+    filtering,
     error,
 
     // Dữ liệu đơn hàng

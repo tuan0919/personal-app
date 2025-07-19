@@ -18,18 +18,16 @@ import { Input } from "@/components/ui/input";
 
 interface OrderCardProps {
   order: Order;
-  onSelect: () => void;
-  selectedPaidOrders: number[];
-  selectedUnpaidOrders: number[];
+  isSelected: boolean; // Đơn hàng đã được chọn
+  onOrderSelect: () => void; // Xử lý khi chọn
   actualPayment?: number;
   onActualPaymentChange?: (value: number | undefined) => void;
 }
 
 export function OrderCard({
   order,
-  selectedPaidOrders,
-  selectedUnpaidOrders,
-  onSelect,
+  isSelected,
+  onOrderSelect,
   actualPayment,
   onActualPaymentChange,
 }: OrderCardProps) {
@@ -44,18 +42,18 @@ export function OrderCard({
     <motion.div
       variants={cardVariants}
       layout
-      className={`backdrop-blur-sm rounded-2xl p-6 shadow-md border-2 transition-all duration-300 cursor-pointer
+      className={`backdrop-blur-sm rounded-2xl bg-white/30 p-6 shadow-md border-2 transition-all duration-300 cursor-pointer
         ${
           order.isPaid
-            ? selectedPaidOrders.includes(order.id)
+            ? isSelected
               ? "border-red-400 bg-red-50/50 shadow-lg scale-[1.02]"
               : "border-green-200 bg-green-50/50 hover:border-red-300"
-            : selectedUnpaidOrders.includes(order.id)
+            : isSelected
             ? "border-pink-400 bg-pink-50/50 shadow-lg scale-[1.02]"
             : "border-gray-200 hover:border-pink-300 hover:shadow-md"
         }
       `}
-      onClick={onSelect}
+      onClick={onOrderSelect}
       whileHover={{ y: -2 }}
       whileTap={{ scale: 0.98 }}
     >
@@ -64,10 +62,10 @@ export function OrderCard({
           <motion.div
             className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
               order.isPaid
-                ? selectedPaidOrders.includes(order.id)
+                ? isSelected
                   ? "bg-red-500 border-red-500"
                   : "bg-green-500 border-green-500"
-                : selectedUnpaidOrders.includes(order.id)
+                : isSelected
                 ? "bg-pink-500 border-pink-500"
                 : "border-gray-300"
             }`}
@@ -75,15 +73,13 @@ export function OrderCard({
             whileTap={{ scale: 0.9 }}
           >
             {order.isPaid ? (
-              selectedPaidOrders.includes(order.id) ? (
+              isSelected ? (
                 <FiX className="text-white text-xs" />
               ) : (
                 <FiCheck className="text-white text-xs" />
               )
             ) : (
-              selectedUnpaidOrders.includes(order.id) && (
-                <FiCheck className="text-white text-xs" />
-              )
+              isSelected && <FiCheck className="text-white text-xs" />
             )}
           </motion.div>
           <div className="flex items-center space-x-2">

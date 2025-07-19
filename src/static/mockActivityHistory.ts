@@ -105,4 +105,55 @@ export const activities: ActivityHistory[] = [
     title: "Bạn đã hủy xác nhận thu tiền đơn hàng của Nguyễn Văn An",
     time: "13 tháng trước",
   },
+  // Thêm 10 hoạt động mới
+  {
+    type: "add",
+    title: "Bạn đã thêm đơn hàng mới cho khách hàng Đỗ Văn Hùng",
+    time: "14 tháng trước",
+  },
+  {
+    type: "edit",
+    title: "Bạn đã sửa đơn hàng của khách hàng Lý Thị Mai",
+    time: "15 tháng trước",
+  },
+  {
+    type: "confirm",
+    title: "Bạn đã xác nhận thu tiền đơn hàng của Trịnh Văn Nam",
+    time: "16 tháng trước",
+  },
+  {
+    type: "cancel",
+    title: "Bạn đã hủy xác nhận thu tiền đơn hàng của Đặng Thị Oanh",
+    time: "17 tháng trước",
+  },
+  {
+    type: "add",
+    title: "Bạn đã thêm đơn hàng mới cho khách hàng Bùi Văn Phúc",
+    time: "18 tháng trước",
+  },
+  {
+    type: "edit",
+    title: "Bạn đã sửa đơn hàng của khách hàng Hồ Thị Quỳnh",
+    time: "19 tháng trước",
+  },
+  {
+    type: "confirm",
+    title: "Bạn đã xác nhận thu tiền đơn hàng của Võ Văn Sinh",
+    time: "20 tháng trước",
+  },
+  {
+    type: "cancel",
+    title: "Bạn đã hủy xác nhận thu tiền đơn hàng của Ngô Thị Tuyết",
+    time: "21 tháng trước",
+  },
+  {
+    type: "add",
+    title: "Bạn đã thêm đơn hàng mới cho khách hàng Huỳnh Văn Uyên",
+    time: "22 tháng trước",
+  },
+  {
+    type: "edit",
+    title: "Bạn đã sửa đơn hàng của khách hàng Trương Thị Vân",
+    time: "23 tháng trước",
+  },
 ];

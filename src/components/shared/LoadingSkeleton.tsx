@@ -214,7 +214,7 @@ export function LoadingSkeleton({
 
         {/* Page Name */}
         <motion.div
-          className="text-white/90 font-medium text-sm mb-2"
+          className="text-white/90 font-bold text-3xl mb-3"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
@@ -223,14 +223,14 @@ export function LoadingSkeleton({
         </motion.div>
 
         {/* Loading Text */}
-        <motion.h1
-          className="text-2xl font-bold mb-3 min-h-[2rem] flex items-center justify-center"
+        <motion.h2
+          className="text-lg font-medium mb-3 min-h-[2rem] flex items-center justify-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.6 }}
         >
           {getLoadingText(loadingStage, progress)}
-        </motion.h1>
+        </motion.h2>
 
         <motion.p
           className="text-white/80 text-base mb-6 min-h-[1.5rem] flex items-center justify-center max-w-md mx-auto"

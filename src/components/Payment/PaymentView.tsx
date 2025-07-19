@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiPackage, FiCalendar } from "react-icons/fi";
-import { containerVariants } from "@/components/shared/animations";
+import { FaSpinner } from "react-icons/fa";
 import { PaymentStatistics } from "@/components/Payment/PaymentStatistics";
 import { OrderCard } from "@/components/Payment/OrderCard";
 import { Pagination } from "@/components/shared/Pagination";
@@ -13,6 +13,7 @@ import { Order } from "@/static/mockPayment";
 
 interface PaymentViewProps {
   loading: boolean;
+  filtering: boolean; // Trạng thái đang lọc dữ liệu
   error: string | null;
   orders: Order[];
   currentPage: number;
@@ -28,6 +29,7 @@ interface PaymentViewProps {
 
 export function PaymentView({
   loading,
+  filtering,
   error,
   orders,
   currentPage,
@@ -180,7 +182,7 @@ export function PaymentView({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white rounded-3xl p-6 shadow-lg border border-pink-100 mb-6"
+            className="bg-white/70 rounded-3xl p-6 shadow-lg border border-pink-100 mb-6"
           >
             <div className="flex flex-wrap items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-gray-800 flex items-center">
@@ -188,6 +190,12 @@ export function PaymentView({
                 Danh sách đơn hàng
               </h2>
               <div className="flex items-center gap-2 mt-2 sm:mt-0">
+                {filtering && (
+                  <div className="flex items-center mr-2 text-pink-500">
+                    <FaSpinner className="animate-spin mr-1 h-4 w-4" />
+                    <span className="text-xs">Đang lọc...</span>
+                  </div>
+                )}
                 <FiCalendar className="text-pink-500 mr-1 h-4 w-4" />
                 <CalendarChooser
                   date={selectedDate}
@@ -198,61 +206,57 @@ export function PaymentView({
 
             {currentOrders.length > 0 ? (
               <>
-                {/* Orders List with improved animation */}
-                <motion.div
-                  key={currentPage}
-                  variants={containerVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  className="space-y-4 mb-6"
-                >
-                  <AnimatePresence>
-                    {currentOrders.map((order) => (
-                      <OrderCard
-                        key={order.id}
-                        order={order}
-                        selectedPaidOrders={selectedPaidOrders}
-                        selectedUnpaidOrders={selectedUnpaidOrders}
-                        onSelect={() =>
-                          handleOrderSelect(order.id, order.isPaid)
-                        }
-                        actualPayment={actualPayments[order.id]}
-                        onActualPaymentChange={(value) => {
-                          if (typeof value === "number") {
-                            handleActualPaymentChange(order.id, value);
-                          } else {
-                            // Nếu value là undefined, truyền một số mặc định hoặc xử lý phù hợp
-                            handleActualPaymentChange(order.id, 0);
-                          }
-                        }}
-                      />
-                    ))}
-                  </AnimatePresence>
-                </motion.div>
+                <div className={`space-y-4 ${filtering ? "opacity-50" : ""}`}>
+                  {currentOrders.map((order) => (
+                    <OrderCard
+                      key={order.id}
+                      order={order}
+                      isSelected={
+                        order.isPaid
+                          ? selectedPaidOrders.includes(order.id)
+                          : selectedUnpaidOrders.includes(order.id)
+                      }
+                      onOrderSelect={() =>
+                        handleOrderSelect(order.id, order.isPaid)
+                      }
+                      actualPayment={actualPayments[order.id]}
+                      onActualPaymentChange={(value) => {
+                        // Nếu value là undefined, truyền 0 thay thế
+                        handleActualPaymentChange(order.id, value ?? 0);
+                      }}
+                    />
+                  ))}
+                </div>
 
-                {/* Pagination - Inside the section */}
-                <Pagination
-                  currentPage={currentPage}
-                  onChange={(p) => handlePageChange(p)}
-                  totalPages={totalPages}
-                  variant="modern"
-                />
+                {/* Pagination */}
+                <div className="mt-6">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onChange={handlePageChange}
+                    variant="modern"
+                  />
+                </div>
               </>
             ) : (
-              <div className="text-center p-8 text-gray-500">
-                Không có đơn hàng nào trong ngày được chọn
+              <div className="text-center py-8">
+                <p className="text-gray-500">
+                  Không có đơn hàng nào cho ngày đã chọn
+                </p>
               </div>
             )}
           </motion.div>
 
           {/* Action Buttons */}
           <ActionButtons
-            onHandleCollectPayment={handleCollectPayment}
-            onhandleCancelPayment={handleCancelPayment}
-            selectedPaidOrders={selectedPaidOrders}
             selectedUnpaidOrders={selectedUnpaidOrders}
+            selectedPaidOrders={selectedPaidOrders}
+            onCollectPayment={handleCollectPayment}
+            onCancelPayment={handleCancelPayment}
+            disabled={filtering}
           />
+
+          {/* Confirm Dialogs */}
           <ConfirmDialog
             open={showConfirmDialog}
             count={selectedUnpaidOrders.length}

@@ -1,16 +1,20 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { FiCheckCircle, FiX } from "react-icons/fi";
+
 interface ActionButtonsProps {
   selectedUnpaidOrders: number[];
   selectedPaidOrders: number[];
-  onHandleCollectPayment: () => void;
-  onhandleCancelPayment: () => void;
+  onCollectPayment: () => void;
+  onCancelPayment: () => void;
+  disabled?: boolean;
 }
+
 export function ActionButtons({
   selectedUnpaidOrders,
   selectedPaidOrders,
-  onHandleCollectPayment,
-  onhandleCancelPayment,
+  onCollectPayment,
+  onCancelPayment,
+  disabled = false,
 }: ActionButtonsProps) {
   return (
     <div className="space-y-4">
@@ -24,10 +28,13 @@ export function ActionButtons({
             className="max-w-md mx-auto"
           >
             <motion.button
-              onClick={onHandleCollectPayment}
-              className="w-full bg-gradient-to-r from-pink-500 to-purple-500 text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center space-x-2 backdrop-blur-sm"
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
+              onClick={onCollectPayment}
+              className={`w-full bg-gradient-to-r from-pink-500 to-purple-500 text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-lg transition-all duration-300 flex items-center justify-center space-x-2 backdrop-blur-sm ${
+                disabled ? "opacity-50 cursor-not-allowed" : "hover:shadow-xl"
+              }`}
+              whileHover={disabled ? {} : { scale: 1.02, y: -2 }}
+              whileTap={disabled ? {} : { scale: 0.98 }}
+              disabled={disabled}
             >
               <FiCheckCircle className="text-xl" />
               <span className="text-center">
@@ -47,10 +54,13 @@ export function ActionButtons({
             className="max-w-md mx-auto"
           >
             <motion.button
-              onClick={onhandleCancelPayment}
-              className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center space-x-2 backdrop-blur-sm"
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
+              onClick={onCancelPayment}
+              className={`w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-lg transition-all duration-300 flex items-center justify-center space-x-2 backdrop-blur-sm ${
+                disabled ? "opacity-50 cursor-not-allowed" : "hover:shadow-xl"
+              }`}
+              whileHover={disabled ? {} : { scale: 1.02, y: -2 }}
+              whileTap={disabled ? {} : { scale: 0.98 }}
+              disabled={disabled}
             >
               <FiX className="text-xl" />
               <span className="text-center">

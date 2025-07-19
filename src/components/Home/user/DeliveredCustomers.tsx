@@ -153,9 +153,9 @@ export function DeliveredCustomers({
           </button>
           <button
             onClick={() => navigate("/order/new")}
-            className="flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-r from-green-500 to-blue-400 shadow-sm hover:shadow-md border border-white/20 transition-shadow"
+            className="flex items-center justify-center w-9 h-9 rounded-lg bg-white shadow-sm hover:shadow-md border border-white/20 transition-shadow"
           >
-            <FiPlus className="text-white" />
+            <FiPlus className="text-blue-500" />
           </button>
         </div>
       </div>

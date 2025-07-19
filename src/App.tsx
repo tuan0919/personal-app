@@ -1,8 +1,9 @@
 import "./App.css";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import { Home } from "./pages/Home";
 import About from "./pages/About";
 import { SignIn } from "./pages/SignIn";
+import { SignUp } from "./pages/SignUp";
 import { CreateNewOrder } from "./pages/CreateNewOrder";
 import { AnimatePresence } from "framer-motion";
 import { CustomerDetails } from "./pages/CustomerDetails";
@@ -15,8 +16,10 @@ function App() {
     <>
       <AnimatePresence mode="wait">
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Navigate to="/sign-in" replace />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
           <Route path="/about" element={<About />} />
           <Route path="/order/new" element={<CreateNewOrder />} />
           <Route path="/order/:id/edit" element={<EditOrder />} />

@@ -29,6 +29,7 @@ export const Payment: React.FC = () => {
           <PaymentView
             key="content"
             loading={paymentState.loading}
+            filtering={paymentState.filtering}
             error={paymentState.error}
             orders={paymentState.orders}
             currentPage={paymentState.currentPage}
