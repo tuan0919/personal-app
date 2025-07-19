@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FiX, FiFilter } from "react-icons/fi";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
@@ -60,6 +60,18 @@ const backdropVariants = {
   },
 };
 
+// Hàm định dạng số
+const formatNumber = (value: number): string => {
+  return value.toLocaleString("vi-VN");
+};
+
+// Hàm chuyển đổi từ chuỗi đã định dạng thành số
+const parseFormattedNumber = (formattedValue: string): number => {
+  // Loại bỏ tất cả các ký tự không phải số
+  const numericValue = formattedValue.replace(/[^\d]/g, "");
+  return numericValue ? parseInt(numericValue, 10) : 0;
+};
+
 export const FilterSheet: React.FC<FilterSheetProps> = ({
   open,
   onClose,
@@ -69,18 +81,46 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
   const [values, setValues] = useState<UIFilterValues>(
     initial || {
       minPrice: 0,
-      maxPrice: 1000,
+      maxPrice: 1000000,
       iceCube: true,
       iceBlock: true,
       paidStatus: "all",
     }
   );
 
+  // State cho giá trị đã định dạng
+  const [formattedMinPrice, setFormattedMinPrice] = useState(
+    formatNumber(values.minPrice)
+  );
+  const [formattedMaxPrice, setFormattedMaxPrice] = useState(
+    formatNumber(values.maxPrice)
+  );
+
+  // Cập nhật giá trị định dạng khi values thay đổi
+  useEffect(() => {
+    setFormattedMinPrice(formatNumber(values.minPrice));
+    setFormattedMaxPrice(formatNumber(values.maxPrice));
+  }, [values.minPrice, values.maxPrice]);
+
   const handleChange = <K extends keyof UIFilterValues>(
     key: K,
     val: UIFilterValues[K]
   ) => {
     setValues((prev) => ({ ...prev, [key]: val }));
+  };
+
+  const handleMinPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formattedValue = e.target.value;
+    setFormattedMinPrice(formattedValue);
+    const numericValue = parseFormattedNumber(formattedValue);
+    handleChange("minPrice", numericValue as UIFilterValues["minPrice"]);
+  };
+
+  const handleMaxPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formattedValue = e.target.value;
+    setFormattedMaxPrice(formattedValue);
+    const numericValue = parseFormattedNumber(formattedValue);
+    handleChange("maxPrice", numericValue as UIFilterValues["maxPrice"]);
   };
 
   const handleApply = () => {
@@ -97,6 +137,11 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
           ? 1
           : undefined,
       delivered: undefined, // Can be extended later
+      // Thêm lọc theo khoảng giá
+      priceRange: {
+        min: values.minPrice,
+        max: values.maxPrice,
+      },
     };
 
     onApply(apiFilters);
@@ -107,6 +152,15 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
     if (e.target === e.currentTarget) {
       onClose();
     }
+  };
+
+  // Định dạng lại khi blur
+  const handleMinPriceBlur = () => {
+    setFormattedMinPrice(formatNumber(values.minPrice));
+  };
+
+  const handleMaxPriceBlur = () => {
+    setFormattedMaxPrice(formatNumber(values.maxPrice));
   };
 
   return (
@@ -178,23 +232,19 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
                 </label>
                 <div className="flex items-center gap-3">
                   <Input
-                    type="number"
-                    value={values.minPrice}
-                    onChange={(e) =>
-                      handleChange("minPrice", Number(e.target.value))
-                    }
-                    min={0}
+                    type="text"
+                    value={formattedMinPrice}
+                    onChange={handleMinPriceChange}
+                    onBlur={handleMinPriceBlur}
                     placeholder="Từ"
                     className="flex-1 h-12 bg-white/20 backdrop-blur-sm border-white/30 text-white placeholder-white/50 rounded-xl text-center"
                   />
                   <span className="text-white/70">-</span>
                   <Input
-                    type="number"
-                    value={values.maxPrice}
-                    onChange={(e) =>
-                      handleChange("maxPrice", Number(e.target.value))
-                    }
-                    min={0}
+                    type="text"
+                    value={formattedMaxPrice}
+                    onChange={handleMaxPriceChange}
+                    onBlur={handleMaxPriceBlur}
                     placeholder="Đến"
                     className="flex-1 h-12 bg-white/20 backdrop-blur-sm border-white/30 text-white placeholder-white/50 rounded-xl text-center"
                   />
@@ -290,13 +340,13 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
             <div className="px-6 pb-6 pt-4 border-t border-white/20">
               <div className="flex gap-3">
                 <button
-                  className="flex-1 py-4 rounded-xl font-semibold bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors border border-white/30"
+                  className="flex-1 py-4 rounded-xl font-semibold bg-gray-500/30 backdrop-blur-sm text-white hover:bg-gray-500/40 transition-colors border border-white/20"
                   onClick={onClose}
                 >
                   Đóng
                 </button>
                 <button
-                  className="flex-1 py-4 bg-white/30 backdrop-blur-sm text-white rounded-xl font-semibold shadow-lg hover:bg-white/40 transition-all border border-white/30"
+                  className="flex-1 py-4 bg-gradient-to-r from-blue-500/80 to-blue-600/80 backdrop-blur-sm text-white rounded-xl font-semibold shadow-lg hover:from-blue-500/90 hover:to-blue-600/90 transition-all border border-blue-400/30"
                   onClick={handleApply}
                 >
                   Áp dụng

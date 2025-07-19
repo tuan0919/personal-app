@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { motion } from "framer-motion";
 import { FaDollarSign, FaCube, FaIceCream } from "react-icons/fa";
-import { fadeInUp } from "./animations";
+import { fadeInUp } from "@/components/shared/animations";
 import { useCustomerDetailsAnimation } from "@/hooks/useCustomerDetailsAnimation";
 
 interface Price {

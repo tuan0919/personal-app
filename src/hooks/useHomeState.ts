@@ -1,11 +1,17 @@
 import { useState, useEffect, useCallback } from "react";
 import { CustomerService, Customer, FilterValues } from "@/api";
+import { format } from "date-fns";
 
 export interface UseHomeStateReturn {
   // Filter state
   filterOpen: boolean;
   setFilterOpen: (open: boolean) => void;
   handleApplyFilter: (values: FilterValues) => void;
+
+  // Date filter
+  selectedDate: Date;
+  setSelectedDate: (date: Date) => void;
+  handleDateChange: (date: Date) => void;
 
   // Customer data
   deliveredCustomers: Customer[];
@@ -28,12 +34,12 @@ export interface UseHomeStateReturn {
   refetchData: () => Promise<void>;
 }
 
-// Helper function to add artificial delay
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 export function useHomeState(): UseHomeStateReturn {
   // Filter state
   const [filterOpen, setFilterOpen] = useState(false);
+
+  // Date filter
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   // Customer data state
   const [deliveredCustomers, setDeliveredCustomers] = useState<Customer[]>([]);
@@ -45,32 +51,44 @@ export function useHomeState(): UseHomeStateReturn {
   const [isAdmin, setIsAdmin] = useState(false);
 
   // Load data function
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  const loadData = useCallback(
+    async (date?: Date) => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      // Add artificial delay to see loading animation
-      await delay(4000); // 4 seconds delay
+        const targetDate = date || selectedDate;
+        const formattedDate = format(targetDate, "yyyy-MM-dd");
 
-      const [delivered, all] = await Promise.all([
-        CustomerService.getDeliveredCustomers(),
-        CustomerService.getAllCustomers(),
-      ]);
+        const [delivered, all] = await Promise.all([
+          CustomerService.getDeliveredCustomers(formattedDate),
+          CustomerService.getAllCustomers(),
+        ]);
 
-      setDeliveredCustomers(delivered);
-      setAllCustomers(all);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load data");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+        setDeliveredCustomers(delivered);
+        setAllCustomers(all);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load data");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [selectedDate]
+  );
 
   // Load initial data
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  // Date change handler
+  const handleDateChange = useCallback(
+    async (date: Date) => {
+      setSelectedDate(date);
+      await loadData(date);
+    },
+    [loadData]
+  );
 
   // Refetch data function
   const refetchData = useCallback(async () => {
@@ -78,28 +96,33 @@ export function useHomeState(): UseHomeStateReturn {
   }, [loadData]);
 
   // Filter handler
-  const handleApplyFilter = useCallback(async (values: FilterValues) => {
-    try {
-      setLoading(true);
-      setError(null);
+  const handleApplyFilter = useCallback(
+    async (values: FilterValues) => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      // Add artificial delay for filter loading
-      await delay(2000); // 2 seconds delay
+        const filtered = await CustomerService.getFilteredCustomers({
+          ...values,
+          date: format(selectedDate, "yyyy-MM-dd"),
+        });
+        setAllCustomers(filtered);
 
-      const filtered = await CustomerService.getFilteredCustomers(values);
-      setAllCustomers(filtered);
+        // Also update delivered customers if they're affected by the filter
+        const deliveredFiltered = filtered.filter((c) => c.delivered);
+        setDeliveredCustomers(deliveredFiltered);
 
-      // Also update delivered customers if they're affected by the filter
-      const deliveredFiltered = filtered.filter((c) => c.delivered);
-      setDeliveredCustomers(deliveredFiltered);
-
-      console.log("Applied filters", values);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to apply filters");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+        console.log("Applied filters", values);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to apply filters"
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [selectedDate]
+  );
 
   // Customer delete handler
   const handleDeleteCustomer = useCallback(async (customerId: number) => {
@@ -153,6 +176,11 @@ export function useHomeState(): UseHomeStateReturn {
     filterOpen,
     setFilterOpen,
     handleApplyFilter,
+
+    // Date filter
+    selectedDate,
+    setSelectedDate,
+    handleDateChange,
 
     // Customer data
     deliveredCustomers,

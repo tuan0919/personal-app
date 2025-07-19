@@ -1,4 +1,3 @@
-// components/Attend/CustomerForm.tsx
 import { z } from "zod";
 import {
   Form,
@@ -15,17 +14,15 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { FaUser, FaCube, FaBox, FaTag, FaReceipt } from "react-icons/fa6";
-import { containerVariants, itemVariants } from "./animations";
-import { CustomerCombobox } from "./CustomerCombobox";
 import { cn } from "@/lib/utils";
-import { ConfirmDialog } from "./ConfirmDialog";
-import { useState } from "react";
+import { useEffect } from "react";
+import { containerVariants, itemVariants } from "./animations";
 
 /**
- * @deprecated This component is deprecated.
- * Use CreateNewOrderView instead which follows the new architecture pattern.
+ * A unified customer form that can be used for both new orders and editing existing ones
  */
 
+// Define schema for form validation
 const formSchema = z.object({
   customerId: z.number().nonnegative({ message: "Cần chọn khách hàng." }),
   productType: z.number().nonnegative({ message: "Cần chọn loại đá." }),
@@ -34,43 +31,80 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export function CustomerForm() {
-  const form = useForm({
+// Define product prices
+const priceMapping: Record<number, number> = {
+  1: 35000, // Đá cây
+  2: 18000, // Đá viên
+};
+
+export interface CustomerFormProps {
+  customer?: {
+    id?: number;
+    customerId?: number;
+    name?: string;
+    customerName?: string;
+    productType?: number;
+    amount?: number;
+  };
+  onSubmit?: (values: FormValues) => void;
+  onCancel?: () => void;
+  isNewOrder?: boolean;
+  // If using CustomerCombobox, it needs to be passed as a component
+  CustomerCombobox?: React.ComponentType<{
+    value: number;
+    onChange: (value: number) => void;
+  }>;
+}
+
+export function CustomerForm({
+  customer,
+  onSubmit,
+  onCancel,
+  isNewOrder = false,
+  CustomerCombobox,
+}: CustomerFormProps) {
+  // Initialize default values based on edit mode or create mode
+  const customerId = customer?.customerId || customer?.id || -1;
+  const customerName = customer?.customerName || customer?.name || "";
+  const defaultProductType = customer?.productType || -1;
+  const defaultAmount = customer?.amount || 0;
+
+  // Form setup with validation
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { customerId: -1, productType: -1, amount: 0 },
+    defaultValues: {
+      customerId,
+      productType: defaultProductType,
+      amount: defaultAmount,
+    },
   });
 
-  const [openConfirm, setOpenConfirm] = useState(false);
-  const [pendingValues, setPendingValues] = useState<FormValues | null>(null);
+  // Handle changes to customer prop (for editing mode)
+  useEffect(() => {
+    if (customer) {
+      form.reset({
+        customerId: customerId,
+        productType: defaultProductType,
+        amount: defaultAmount,
+      });
+    }
+  }, [customer, customerId, defaultProductType, defaultAmount, form]);
 
+  // Watch form values for live calculation
   const selectedType = form.watch("productType");
   const amount = form.watch("amount");
 
-  // Định nghĩa đơn giá
-  const priceMapping: Record<number, number> = {
-    1: 10000, // Đá cây
-    2: 15000, // Đá viên
-  };
+  // Calculate pricing
   const unitPrice = selectedType > 0 ? priceMapping[selectedType] : 0;
   const totalPrice = unitPrice * amount;
 
-  function onSubmit(values: unknown) {
-    setPendingValues(values as FormValues);
-    setOpenConfirm(true);
-  }
-
-  function handleConfirm() {
-    // Thực hiện submit thực sự ở đây
-    console.log(pendingValues);
-    setOpenConfirm(false);
-    setPendingValues(null);
-    // Nếu muốn reset form sau khi xác nhận:
-    // form.reset();
-  }
-
-  function handleClose() {
-    setOpenConfirm(false);
-    setPendingValues(null);
+  // Handle form submission
+  function handleSubmit(values: FormValues) {
+    if (onSubmit) {
+      onSubmit(values);
+    } else {
+      console.log("Form values:", values);
+    }
   }
 
   return (
@@ -85,15 +119,15 @@ export function CustomerForm() {
         variants={itemVariants}
       >
         <h2 className="text-lg font-semibold text-pink-600 mb-4">
-          Thêm khách hàng mới
+          {isNewOrder ? "Thêm đơn giao đá" : "Chỉnh sửa thông tin"}
         </h2>
         <Form {...form}>
           <motion.form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(handleSubmit)}
             className="space-y-4"
             variants={containerVariants}
           >
-            {/* Customer Combobox */}
+            {/* Customer selection - either Combobox or read-only display */}
             <motion.div variants={itemVariants}>
               <FormField
                 control={form.control}
@@ -103,10 +137,14 @@ export function CustomerForm() {
                     <FormLabel className="text-xs sm:text-sm font-semibold text-pink-500 mb-1 flex items-center gap-1">
                       <FaUser className="w-4 h-4" /> Khách hàng
                     </FormLabel>
-                    <CustomerCombobox
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
+                    {isNewOrder && CustomerCombobox ? (
+                      <CustomerCombobox
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    ) : (
+                      <Input disabled value={customerName} readOnly />
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
@@ -213,24 +251,29 @@ export function CustomerForm() {
               </div>
             </motion.div>
 
-            {/* Submit Button */}
-            <motion.div variants={itemVariants}>
+            {/* Buttons */}
+            <motion.div variants={itemVariants} className="flex gap-3">
               <Button
                 type="submit"
-                className="w-full py-2 rounded-xl bg-gradient-to-r from-pink-500 via-pink-400 to-pink-600 text-white font-bold text-xs sm:text-base shadow"
+                className="flex-1 py-2 rounded-xl bg-gradient-to-r from-pink-500 via-pink-400 to-pink-600 text-white font-bold text-xs sm:text-base shadow"
               >
                 Xác nhận
               </Button>
+
+              {onCancel && (
+                <Button
+                  type="button"
+                  onClick={onCancel}
+                  variant="outline"
+                  className="flex-1 py-2 rounded-xl border-pink-200 text-pink-600 font-bold text-xs sm:text-base shadow"
+                >
+                  Hủy
+                </Button>
+              )}
             </motion.div>
           </motion.form>
         </Form>
       </motion.div>
-      <ConfirmDialog
-        open={openConfirm}
-        message="Bạn có chắc chắn muốn tạo đơn hàng mới này?"
-        onClose={handleClose}
-        onConfirm={handleConfirm}
-      />
     </motion.div>
   );
 }

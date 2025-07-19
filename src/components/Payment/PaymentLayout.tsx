@@ -1,14 +1,14 @@
 import { ReactNode } from "react";
-import TopNav from "@/components/TopNav";
+import PaymentNavbar from "@/components/Payment/PaymentNavbar";
 
-interface HomeLayoutProps {
+interface PaymentLayoutProps {
   children: ReactNode;
 }
 
-export function HomeLayout({ children }: HomeLayoutProps) {
+export function PaymentLayout({ children }: PaymentLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col bg-[url('https://maxartkiller.com/website/gomobileux2/HTML/assets/img/bgshapes.png')]">
-      <TopNav />
+      <PaymentNavbar />
       <main className="flex-1 overflow-y-auto px-3 pt-3 pb-24 sm:px-4">
         {children}
       </main>

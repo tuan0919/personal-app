@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa6";
 import { StatCard } from "./StatCard";
 import { weeklyStats } from "@/static/mock-data";
-import { containerVariants } from "@/components/Home/admin/animations";
+import { containerVariants } from "@/components/shared/animations";
 
 interface WeeklyStatsSectionProps {
   controls: LegacyAnimationControls;

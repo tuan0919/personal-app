@@ -17,7 +17,7 @@ import { motion } from "framer-motion";
 import { FaCheckCircle } from "react-icons/fa";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { allCustomers } from "@/static/mockCustomers";
-import { sectionVariants, cardVariants } from "./animations";
+import { sectionVariants, cardVariants } from "@/components/shared/animations";
 import { cn } from "@/lib/utils";
 
 interface CustomerComboboxProps {

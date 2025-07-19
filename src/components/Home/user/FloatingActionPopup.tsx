@@ -3,11 +3,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaEdit, FaTrash, FaTimes } from "react-icons/fa";
 import { Customer } from "@/static/mockCustomers";
 import {
-  backdropVariants,
   popupVariants,
-  headerVariants,
   buttonVariants,
-} from "./animations";
+  backdropVariants,
+  headerVariants,
+} from "@/components/shared/animations";
 
 interface FloatingActionPopupProps {
   isVisible: boolean;

@@ -1,11 +1,11 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { CustomerInfo } from "@/components/CustomerDetails/CustomerInfo";
 import { CustomerMap } from "@/components/CustomerDetails/CustomerMap";
-import { CustomCalendar } from "@/components/CustomerDetails/CustomCalendar";
 import { PriceSection } from "@/components/CustomerDetails/PriceSection";
+import { CustomCalendar } from "@/components/CustomerDetails/CustomCalendar";
 import { WeeklyRevenueChart } from "@/components/CustomerDetails/WeeklyRevenueChart";
 import { DeliveryHistory } from "@/components/CustomerDetails/DeliveryHistory";
-import BottomNav from "@/components/BottomNav";
 
 // Import mock data
 import {
@@ -14,7 +14,6 @@ import {
   weeklyRevenueData,
   deliveredDates,
 } from "@/static/mockCustomerDetails";
-import { motion } from "framer-motion";
 
 export function CustomerDetails() {
   const [historyPage, setHistoryPage] = useState(1);
@@ -54,7 +53,6 @@ export function CustomerDetails() {
           />
         </div>
       </motion.main>
-      <BottomNav />
     </div>
   );
 }

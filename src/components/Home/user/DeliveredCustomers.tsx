@@ -2,16 +2,20 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTruckFast } from "react-icons/fa6";
+import { FiFilter, FiLoader, FiPlus } from "react-icons/fi";
 import { Customer } from "@/api/types";
 import { SelectableCustomerCard } from "./SelectableCustomerCard";
 import { FloatingActionPopup } from "./FloatingActionPopup";
-import { CustomPagination } from "./CustomPagination";
+import { Pagination } from "@/components/shared/Pagination";
 import {
+  fadeVariants,
   sectionVariants,
   containerVariants,
   pageTransition,
-} from "./animations";
+  spinVariants,
+} from "@/components/shared/animations";
 import { useNavigate } from "react-router-dom";
+import { CalendarChooser } from "@/components/shared/CalendarChooser";
 
 interface DeliveredCustomersProps {
   delivered: Customer[];
@@ -20,17 +24,31 @@ interface DeliveredCustomersProps {
     updatedData: Partial<Customer>
   ) => Promise<void>;
   onDeleteCustomer: (customerId: number) => Promise<void>;
+  onFilterClick?: () => void;
+  selectedDate?: Date;
+  onDateChange?: (date: Date) => void;
+  loading?: boolean;
 }
 
 export function DeliveredCustomers({
   delivered,
   onDeleteCustomer,
+  onFilterClick,
+  selectedDate = new Date(),
+  onDateChange,
+  loading = false,
 }: DeliveredCustomersProps) {
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
     null
   );
   const [showActionPopup, setShowActionPopup] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isLoading, setIsLoading] = useState(loading);
+
+  // Cập nhật trạng thái loading khi prop loading thay đổi
+  useEffect(() => {
+    setIsLoading(loading);
+  }, [loading]);
 
   // đảm bảo chỉ xài những đơn đã giao
   const deliveredList = delivered.filter((c) => c.delivered);
@@ -102,18 +120,45 @@ export function DeliveredCustomers({
         setSelectedCustomer(null);
         setShowDeleteConfirm(false);
       } catch (error) {
-        console.error('Failed to delete customer:', error);
+        console.error("Failed to delete customer:", error);
         // You could add error handling UI here
       }
     }
   };
 
+  const handleDateChange = (date: Date) => {
+    if (onDateChange) {
+      setIsLoading(true); // Set loading state khi chọn ngày mới
+      onDateChange(date);
+    }
+    console.log("Selected date:", date);
+  };
+
   return (
     <>
-      {/* GIỮ NGUYÊN TITLE GỐC */}
-      <h3 className="font-semibold text-base my-3">
-        Khách đã giao hôm nay ({deliveredList.length}):
-      </h3>
+      {/* Sửa tiêu đề và thêm buttons */}
+      <div className="flex flex-wrap items-center justify-between my-3 px-2">
+        <h3 className="font-semibold text-base mb-3">
+          Danh sách đơn hàng ({deliveredList.length})
+        </h3>
+        <div className="flex items-center gap-2">
+          <div className="z-20">
+            <CalendarChooser date={selectedDate} onChange={handleDateChange} />
+          </div>
+          <button
+            onClick={onFilterClick}
+            className="flex items-center justify-center w-9 h-9 rounded-lg bg-white shadow-sm hover:shadow-md border border-gray-100 transition-shadow"
+          >
+            <FiFilter className="text-blue-500" />
+          </button>
+          <button
+            onClick={() => navigate("/order/new")}
+            className="flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-r from-green-500 to-blue-400 shadow-sm hover:shadow-md border border-white/20 transition-shadow"
+          >
+            <FiPlus className="text-white" />
+          </button>
+        </div>
+      </div>
 
       {/* GIỮ NGUYÊN SECTION GỐC */}
       <motion.section
@@ -124,11 +169,35 @@ export function DeliveredCustomers({
       >
         {/* GIỮ NGUYÊN CONTENT WRAPPER GỐC */}
         <motion.div
-          className="bg-white/70 p-3 rounded-b-2xl shadow-inner min-h-[120px]"
+          className="bg-white/70 p-3 rounded-b-2xl shadow-inner min-h-[120px] relative"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
+          {/* Loading Overlay */}
+          <AnimatePresence>
+            {isLoading && (
+              <motion.div
+                className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-b-2xl z-10 flex flex-col items-center justify-center"
+                variants={fadeVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+              >
+                <motion.div
+                  className="text-blue-500"
+                  variants={spinVariants}
+                  animate="animate"
+                >
+                  <FiLoader className="w-8 h-8" />
+                </motion.div>
+                <p className="text-gray-600 mt-2 text-sm">
+                  Đang tải dữ liệu...
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* GIỮ NGUYÊN ANIMATION CHUYỂN TRANG GỐC */}
           <AnimatePresence initial={false} mode="wait">
             <motion.div
@@ -161,10 +230,10 @@ export function DeliveredCustomers({
           {/* GIỮ NGUYÊN PAGINATION GỐC */}
           {totalPages > 1 && (
             <div className="mt-4">
-              <CustomPagination
+              <Pagination
                 currentPage={page}
                 totalPages={totalPages}
-                onPageChange={setPage}
+                onChange={setPage}
               />
             </div>
           )}

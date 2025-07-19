@@ -12,7 +12,7 @@ import {
 } from "react-icons/fa";
 import { activities as mockActivities } from "@/static/mockActivityHistory";
 import type { ActivityHistory } from "@/static/mockActivityHistory";
-import { Pagination } from "@/components/Payment/Pagination";
+import { Pagination } from "@/components/shared/Pagination";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import {
@@ -251,6 +251,7 @@ export default function ActivityHistory() {
               currentPage={page}
               totalPages={totalPages}
               onChange={setPage}
+              variant="simple"
             />
           </div>
         </motion.section>

@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { FaUserCircle, FaPhoneAlt, FaMapMarkerAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { fadeInUp } from "./animations";
+import { fadeInUp } from "@/components/shared/animations";
 import { useCustomerDetailsAnimation } from "@/hooks/useCustomerDetailsAnimation";
 
 interface Customer {

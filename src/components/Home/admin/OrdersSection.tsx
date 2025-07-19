@@ -1,10 +1,10 @@
 // /components/Home/OrdersSection.tsx
 import { forwardRef, useEffect } from "react";
 import { motion, LegacyAnimationControls } from "framer-motion";
-import { CalendarChooser } from "./CalendarChooser";
+import { CalendarChooser } from "@/components/shared/CalendarChooser";
 import { OrderItem } from "./OrderItem";
-import { OrdersPagination } from "./OrdersPagination";
-import { slideInVariants } from "@/components/Home/admin/animations";
+import { Pagination } from "@/components/shared/Pagination";
+import { slideInVariants } from "@/components/shared/animations";
 import { useOrdersLogic } from "@/hooks/useOrders";
 
 interface OrdersSectionProps {
@@ -76,11 +76,13 @@ export const OrdersSection = forwardRef<HTMLDivElement, OrdersSectionProps>(
           )}
         </div>
 
+        {/* Pagination */}
         {totalPages > 1 && (
-          <OrdersPagination
+          <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={setCurrentPage}
+            onChange={setCurrentPage}
+            className="mt-4"
           />
         )}
       </motion.section>

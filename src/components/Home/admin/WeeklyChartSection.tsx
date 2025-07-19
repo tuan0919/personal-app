@@ -3,7 +3,7 @@ import { forwardRef } from "react";
 import { motion, LegacyAnimationControls } from "framer-motion";
 import { WeeklyRevenueAreaChart } from "./WeeklyRevenueAreaChart";
 import { weeklyRevenueChart } from "@/static/mock-data";
-import { slideInVariants } from "@/components/Home/admin/animations";
+import { slideInVariants } from "@/components/shared/animations";
 
 interface WeeklyChartSectionProps {
   controls: LegacyAnimationControls;

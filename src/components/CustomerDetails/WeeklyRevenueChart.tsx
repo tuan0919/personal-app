@@ -11,7 +11,7 @@ import {
   Legend,
 } from "recharts";
 import { FaMoneyBillWave } from "react-icons/fa";
-import { fadeInUp } from "./animations";
+import { fadeInUp } from "@/components/shared/animations";
 import { useCustomerDetailsAnimation } from "@/hooks/useCustomerDetailsAnimation";
 
 interface WeeklyRevenue {

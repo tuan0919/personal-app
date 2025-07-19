@@ -8,7 +8,7 @@ import {
 } from "react-icons/fa6";
 import { FaMapMarkerAlt, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { Customer } from "@/static/mockCustomers";
-import { cardVariants } from "./animations";
+import { cardVariants } from "@/components/shared/animations";
 
 const PRICE_MAP: Record<number, number> = {
   1: 10000, // Đá cây

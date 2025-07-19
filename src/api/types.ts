@@ -16,4 +16,9 @@ export interface FilterValues {
   paymentStatus?: PaymentStatus;
   productType?: number;
   delivered?: boolean;
+  date?: string;
+  priceRange?: {
+    min: number;
+    max: number;
+  };
 }

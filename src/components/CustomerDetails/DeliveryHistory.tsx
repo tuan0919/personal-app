@@ -10,7 +10,7 @@ import {
   PaginationLink,
 } from "@/components/ui/pagination";
 import { cn } from "@/lib/utils";
-import { fadeInUp, staggerChildren } from "./animations";
+import { fadeInUp, staggerChildren } from "@/components/shared/animations";
 import { useCustomerDetailsAnimation } from "@/hooks/useCustomerDetailsAnimation";
 
 interface Delivery {

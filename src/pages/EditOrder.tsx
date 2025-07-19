@@ -1,8 +1,7 @@
 // Attend.tsx
-import BottomNav from "@/components/BottomNav";
 import { EditOrderNavBar } from "@/components/EditOrder/EditOrderNavBar";
 import { motion } from "framer-motion";
-import { CustomerForm } from "@/components/EditOrder/CustomerForm";
+import { CustomerForm } from "@/components/shared/CustomerForm";
 import { useLocation } from "react-router-dom";
 
 export function EditOrder() {
@@ -19,7 +18,6 @@ export function EditOrder() {
       <EditOrderNavBar />
       <CustomerForm customer={customer} />
       <div className="h-20" />
-      <BottomNav />
     </motion.div>
   );
 }

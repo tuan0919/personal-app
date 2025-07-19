@@ -13,7 +13,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { FaUser, FaCube, FaBox, FaTag, FaReceipt } from "react-icons/fa6";
-import { containerVariants, itemVariants } from "./animations";
+import {
+  containerVariants,
+  itemVariants,
+} from "@/components/shared/animations";
 import { CustomerCombobox } from "./CustomerCombobox";
 import { cn } from "@/lib/utils";
 import { ConfirmDialog } from "./ConfirmDialog";

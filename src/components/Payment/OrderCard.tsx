@@ -11,7 +11,7 @@ import {
 } from "react-icons/fi";
 import { MdOutlinePayment } from "react-icons/md";
 import { FaMoneyBillTransfer } from "react-icons/fa6";
-import { cardVariants } from "./animations";
+import { cardVariants } from "@/components/shared/animations";
 import { formatCurrency, formatDate } from "@/utils/formatter";
 import { Order } from "@/static/mockPayment";
 import { Input } from "@/components/ui/input";

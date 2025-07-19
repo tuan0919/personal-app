@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { motion } from "framer-motion";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { fadeInLeft } from "./animations";
+import { fadeInLeft } from "@/components/shared/animations";
 import { useCustomerDetailsAnimation } from "@/hooks/useCustomerDetailsAnimation";
 
 interface Location {

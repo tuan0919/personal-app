@@ -14,7 +14,7 @@ export function Home() {
   const { refs, controls } = useHomeAnimations();
 
   return (
-    <HomeLayout onFilterClick={() => homeState.setFilterOpen(true)}>
+    <HomeLayout>
       {/* Filter Sheet */}
       <FilterSheet
         open={homeState.filterOpen}
@@ -38,6 +38,9 @@ export function Home() {
           onDeleteCustomer={homeState.handleDeleteCustomer}
           onUpdateCustomer={homeState.handleUpdateCustomer}
           onRetry={homeState.refetchData}
+          onFilterClick={() => homeState.setFilterOpen(true)}
+          selectedDate={homeState.selectedDate}
+          onDateChange={homeState.handleDateChange}
         />
       ) : (
         <AdminView refs={refs} controls={controls} />

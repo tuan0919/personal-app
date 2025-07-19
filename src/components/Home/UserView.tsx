@@ -1,10 +1,9 @@
 import { Customer } from "@/api";
 import { GetOrderPaymentButton } from "@/components/Home/user/GetOrderPaymentButton";
 import { ActivityHistoryButton } from "@/components/Home/user/ActivityHistoryButton";
-import { AddOrderButton } from "@/components/Home/user/AddOrderButton";
 import { DeliveredCustomers } from "@/components/Home/user/DeliveredCustomers";
-import { LoadingSkeleton } from "./LoadingSkeleton";
-import { ErrorState } from "./ErrorState";
+import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton";
+import { ErrorState } from "@/components/shared/ErrorState";
 import { ContentWrapper } from "./ContentWrapper";
 import { AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
@@ -19,6 +18,9 @@ interface UserViewProps {
     updates: Partial<Customer>
   ) => Promise<void>;
   onRetry?: () => void;
+  onFilterClick?: () => void;
+  selectedDate?: Date;
+  onDateChange?: (date: Date) => void;
 }
 
 export function UserView({
@@ -28,6 +30,9 @@ export function UserView({
   onDeleteCustomer,
   onUpdateCustomer,
   onRetry,
+  onFilterClick,
+  selectedDate,
+  onDateChange,
 }: UserViewProps) {
   const [showLoading, setShowLoading] = useState(loading);
   const [hasCompletedLoading, setHasCompletedLoading] = useState(false);
@@ -37,7 +42,7 @@ export function UserView({
     setHasCompletedLoading(true);
   };
 
-  // Only show loading if we haven't completed loading yet
+  // Track loading start time and show loading
   useEffect(() => {
     if (loading && !hasCompletedLoading) {
       setShowLoading(true);
@@ -50,7 +55,8 @@ export function UserView({
         <LoadingSkeleton
           key="loading"
           onComplete={handleLoadingComplete}
-          duration={3000} // 3 seconds for better visibility
+          loading={loading}
+          pageName="Trang chủ"
         />
       ) : error ? (
         <ErrorState key="error" error={error} onRetry={onRetry} />
@@ -58,11 +64,14 @@ export function UserView({
         <ContentWrapper key="content">
           <GetOrderPaymentButton />
           <ActivityHistoryButton />
-          <AddOrderButton />
           <DeliveredCustomers
             onDeleteCustomer={onDeleteCustomer}
             onUpdateCustomer={onUpdateCustomer}
             delivered={deliveredCustomers}
+            onFilterClick={onFilterClick}
+            selectedDate={selectedDate}
+            onDateChange={onDateChange}
+            loading={loading}
           />
         </ContentWrapper>
       )}

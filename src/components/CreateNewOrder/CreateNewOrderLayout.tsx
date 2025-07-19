@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
-import BottomNav from "@/components/BottomNav";
 import { FaArrowLeft, FaIceCream } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 
@@ -37,8 +36,6 @@ export function CreateNewOrderLayout({ children }: CreateNewOrderLayoutProps) {
       >
         {children}
       </motion.main>
-
-      <BottomNav />
     </div>
   );
 }

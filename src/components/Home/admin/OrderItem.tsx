@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { itemVariants } from "@/components/Home/admin/animations";
+import { itemVariants } from "@/components/shared/animations";
 
 export function OrderItem({
   order,

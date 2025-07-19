@@ -6,8 +6,8 @@ import { StatCard } from "./StatCard";
 import { summary } from "@/static/mock-data";
 import {
   containerVariants,
-  cardVariants,
-} from "@/components/Home/admin/animations";
+  slideInVariants,
+} from "@/components/shared/animations";
 
 interface DailyStatsSectionProps {
   controls: LegacyAnimationControls;
@@ -47,7 +47,7 @@ export const DailyStatsSection = forwardRef<
       className="grid grid-cols-3 gap-2 sm:gap-3 my-4"
     >
       {statsData.map((stat, i) => (
-        <motion.div key={i} variants={cardVariants}>
+        <motion.div key={i} variants={slideInVariants}>
           <StatCard {...stat} />
         </motion.div>
       ))}
