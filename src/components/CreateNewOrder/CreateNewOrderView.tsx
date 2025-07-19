@@ -1,5 +1,3 @@
-// components/Attend/CustomerForm.tsx
-import { z } from "zod";
 import {
   Form,
   FormControl,
@@ -19,67 +17,44 @@ import { containerVariants, itemVariants } from "./animations";
 import { CustomerCombobox } from "./CustomerCombobox";
 import { cn } from "@/lib/utils";
 import { ConfirmDialog } from "./ConfirmDialog";
-import { useState } from "react";
+import {
+  formSchema,
+  useCreateNewOrderState,
+} from "@/hooks/useCreateNewOrderState";
+import {
+  AnimationControlsType,
+  AnimationRefs,
+} from "@/hooks/useCreateNewOrderAnimations";
 
-/**
- * @deprecated This component is deprecated.
- * Use CreateNewOrderView instead which follows the new architecture pattern.
- */
+interface CreateNewOrderViewProps {
+  refs: AnimationRefs;
+  controls: AnimationControlsType;
+}
 
-const formSchema = z.object({
-  customerId: z.number().nonnegative({ message: "Cần chọn khách hàng." }),
-  productType: z.number().nonnegative({ message: "Cần chọn loại đá." }),
-  amount: z.number().min(1, { message: "Số lượng ≥ 1." }),
-});
+export function CreateNewOrderView({
+  refs,
+  controls,
+}: CreateNewOrderViewProps) {
+  const {
+    openConfirm,
+    priceMapping,
+    handleSubmit,
+    handleConfirm,
+    handleClose,
+  } = useCreateNewOrderState();
 
-type FormValues = z.infer<typeof formSchema>;
-
-export function CustomerForm() {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: { customerId: -1, productType: -1, amount: 0 },
   });
 
-  const [openConfirm, setOpenConfirm] = useState(false);
-  const [pendingValues, setPendingValues] = useState<FormValues | null>(null);
-
   const selectedType = form.watch("productType");
   const amount = form.watch("amount");
-
-  // Định nghĩa đơn giá
-  const priceMapping: Record<number, number> = {
-    1: 10000, // Đá cây
-    2: 15000, // Đá viên
-  };
   const unitPrice = selectedType > 0 ? priceMapping[selectedType] : 0;
   const totalPrice = unitPrice * amount;
 
-  function onSubmit(values: unknown) {
-    setPendingValues(values as FormValues);
-    setOpenConfirm(true);
-  }
-
-  function handleConfirm() {
-    // Thực hiện submit thực sự ở đây
-    console.log(pendingValues);
-    setOpenConfirm(false);
-    setPendingValues(null);
-    // Nếu muốn reset form sau khi xác nhận:
-    // form.reset();
-  }
-
-  function handleClose() {
-    setOpenConfirm(false);
-    setPendingValues(null);
-  }
-
   return (
-    <motion.div
-      className="flex-1 px-2 py-4 sm:px-4"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-    >
+    <>
       <motion.div
         className="bg-white/70 rounded-2xl shadow p-3 sm:p-6"
         variants={itemVariants}
@@ -89,7 +64,9 @@ export function CustomerForm() {
         </h2>
         <Form {...form}>
           <motion.form
-            onSubmit={form.handleSubmit(onSubmit)}
+            ref={refs.form}
+            animate={controls.form}
+            onSubmit={form.handleSubmit(handleSubmit)}
             className="space-y-4"
             variants={containerVariants}
           >
@@ -231,6 +208,6 @@ export function CustomerForm() {
         onClose={handleClose}
         onConfirm={handleConfirm}
       />
-    </motion.div>
+    </>
   );
 }

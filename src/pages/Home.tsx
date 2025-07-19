@@ -16,19 +16,19 @@ export function Home() {
   return (
     <HomeLayout onFilterClick={() => homeState.setFilterOpen(true)}>
       {/* Filter Sheet */}
-      <FilterSheet 
-        open={homeState.filterOpen} 
-        onClose={() => homeState.setFilterOpen(false)} 
-        onApply={homeState.handleApplyFilter} 
+      <FilterSheet
+        open={homeState.filterOpen}
+        onClose={() => homeState.setFilterOpen(false)}
+        onApply={homeState.handleApplyFilter}
       />
-      
+
       {/* PWA Suggestion Dialog */}
       <PWASuggestionDialog
         open={shouldSuggest}
         onClose={handleClose}
         onInstall={handleInstall}
       />
-      
+
       {/* Main Content */}
       {!homeState.isAdmin ? (
         <UserView
@@ -37,6 +37,7 @@ export function Home() {
           error={homeState.error}
           onDeleteCustomer={homeState.handleDeleteCustomer}
           onUpdateCustomer={homeState.handleUpdateCustomer}
+          onRetry={homeState.refetchData}
         />
       ) : (
         <AdminView refs={refs} controls={controls} />

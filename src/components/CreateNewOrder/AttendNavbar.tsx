@@ -2,6 +2,10 @@ import { FaIceCream } from "react-icons/fa6";
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * @deprecated This component is deprecated.
+ * Use CreateNewOrderLayout instead which includes the navigation functionality.
+ */
 export default function AttendNavbar() {
   const navigate = useNavigate();
 

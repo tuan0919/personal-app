@@ -16,6 +16,7 @@ export function usePWASuggestion() {
   const [shouldSuggest, setShouldSuggest] = useState<boolean>(false);
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
+  const [isPageLoaded, setIsPageLoaded] = useState<boolean>(false);
 
   // Check if app is already installed as PWA
   function isInStandaloneMode(): boolean {
@@ -26,24 +27,53 @@ export function usePWASuggestion() {
     );
   }
 
+  // Listen for page load completion
   useEffect(() => {
-    if (!isMobile() || isInStandaloneMode()) {
+    const handlePageLoad = () => {
+      // Add a small delay to ensure all content is rendered
+      setTimeout(() => {
+        setIsPageLoaded(true);
+      }, 1000); // 1 second delay after page load
+    };
+
+    if (document.readyState === "complete") {
+      handlePageLoad();
+    } else {
+      window.addEventListener("load", handlePageLoad);
+      return () => window.removeEventListener("load", handlePageLoad);
+    }
+  }, []);
+
+  // PWA installation prompt handler
+  useEffect(() => {
+    if (!isMobile() || isInStandaloneMode() || !isPageLoaded) {
       setShouldSuggest(false);
       return;
     }
-    const beforeInstallPromptHandler = (e: BeforeInstallPromptEvent) => {
+
+    const beforeInstallPromptHandler = (e: Event) => {
       e.preventDefault();
-      setDeferredPrompt(e);
-      setShouldSuggest(true);
+      const beforeInstallPromptEvent = e as BeforeInstallPromptEvent;
+      setDeferredPrompt(beforeInstallPromptEvent);
+
+      // Only show suggestion if page is fully loaded
+      if (isPageLoaded) {
+        setShouldSuggest(true);
+      }
     };
-    window.addEventListener("beforeinstallprompt", beforeInstallPromptHandler);
+
+    window.addEventListener(
+      "beforeinstallprompt",
+      beforeInstallPromptHandler as EventListener
+    );
+
     return () => {
       window.removeEventListener(
         "beforeinstallprompt",
-        beforeInstallPromptHandler
+        beforeInstallPromptHandler as EventListener
       );
     };
-  }, []);
+  }, [isPageLoaded]);
 
   const handleInstall = useCallback(() => {
     if (deferredPrompt) {

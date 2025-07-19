@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FiX } from "react-icons/fi";
+import { FiX, FiFilter } from "react-icons/fi";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
@@ -20,6 +20,45 @@ interface FilterSheetProps {
   onApply: (values: FilterValues) => void;
   initial?: UIFilterValues;
 }
+
+const sheetVariants = {
+  hidden: {
+    y: "100%",
+    opacity: 0,
+  },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "spring" as const,
+      stiffness: 300,
+      damping: 30,
+      duration: 0.4,
+    },
+  },
+  exit: {
+    y: "100%",
+    opacity: 0,
+    transition: {
+      type: "spring" as const,
+      stiffness: 300,
+      damping: 30,
+      duration: 0.3,
+    },
+  },
+};
+
+const backdropVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { duration: 0.3 },
+  },
+  exit: {
+    opacity: 0,
+    transition: { duration: 0.2 },
+  },
+};
 
 export const FilterSheet: React.FC<FilterSheetProps> = ({
   open,
@@ -47,129 +86,222 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
   const handleApply = () => {
     // Convert UI filter values to API filter values
     const apiFilters: FilterValues = {
-      paymentStatus: values.paidStatus === "all" ? undefined : values.paidStatus,
-      productType: values.iceCube && values.iceBlock ? undefined : 
-                   values.iceCube ? 2 : values.iceBlock ? 1 : undefined,
+      paymentStatus:
+        values.paidStatus === "all" ? undefined : values.paidStatus,
+      productType:
+        values.iceCube && values.iceBlock
+          ? undefined
+          : values.iceCube
+          ? 2
+          : values.iceBlock
+          ? 1
+          : undefined,
       delivered: undefined, // Can be extended later
     };
-    
+
     onApply(apiFilters);
     onClose();
+  };
+
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
   };
 
   return (
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-60 flex items-end justify-center bg-black/30 backdrop-blur-sm"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-end justify-center"
+          variants={backdropVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          onClick={handleBackdropClick}
         >
+          {/* Backdrop */}
           <motion.div
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ type: "spring", stiffness: 250, damping: 25 }}
-            className="w-full max-w-md bg-white/60 bg-[radial-gradient(ellipse_at_top_left,rgba(255,182,193,0.4),rgba(255,255,255,0.6))] backdrop-blur-2xl border border-white/20 rounded-t-3xl p-6 pb-10 shadow-2xl"
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          />
+
+          {/* Filter Sheet */}
+          <motion.div
+            variants={sheetVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="relative w-full max-w-md rounded-t-3xl shadow-2xl overflow-hidden"
+            style={{
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            }}
           >
-            <div className="h-1.5 w-12 bg-gray-300 rounded-full mx-auto mb-6" />
-            {/* Close button */}
-            <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
-              <FiX className="w-5 h-5" />
-            </button>
-            <h3 className="text-lg font-bold mb-4 text-gray-800">
-              Bộ lọc nâng cao
-            </h3>
-            {/* Price Range */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Khoảng giá (₫)
-              </label>
-              <div className="flex items-center gap-3">
-                <Input
-                  type="number"
-                  value={values.minPrice}
-                  onChange={(e) => handleChange("minPrice", Number(e.target.value))}
-                  min={0}
-                  className="flex-1 h-10 bg-white/90"
-                />
-                <span>-</span>
-                <Input
-                  type="number"
-                  value={values.maxPrice}
-                  onChange={(e) => handleChange("maxPrice", Number(e.target.value))}
-                  min={0}
-                  className="flex-1 h-10 bg-white/90"
-                />
+            {/* Handle Bar */}
+            <div className="flex justify-center pt-4 pb-2">
+              <div className="h-1 w-12 bg-white/30 rounded-full" />
+            </div>
+
+            {/* Header */}
+            <div className="px-6 pb-4 border-b border-white/20">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30">
+                    <FiFilter className="text-white text-lg" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-white">
+                      Bộ lọc nâng cao
+                    </h3>
+                    <p className="text-sm text-white/70">
+                      Tùy chỉnh kết quả tìm kiếm
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={onClose}
+                  className="w-8 h-8 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors border border-white/30"
+                >
+                  <FiX className="w-4 h-4 text-white" />
+                </button>
               </div>
             </div>
-            {/* Ice Type Toggle */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Loại đá
-              </label>
-              <div className="flex items-center gap-4">
-                <label className="flex items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={values.iceCube}
-                    onChange={(e) => handleChange("iceCube", e.target.checked)}
-                  />
-                  Đá viên
+
+            {/* Content */}
+            <div className="px-6 py-4 space-y-6">
+              {/* Price Range */}
+              <div>
+                <label className="block text-sm font-semibold text-white mb-3">
+                  Khoảng giá (₫)
                 </label>
-                <label className="flex items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={values.iceBlock}
-                    onChange={(e) => handleChange("iceBlock", e.target.checked)}
+                <div className="flex items-center gap-3">
+                  <Input
+                    type="number"
+                    value={values.minPrice}
+                    onChange={(e) =>
+                      handleChange("minPrice", Number(e.target.value))
+                    }
+                    min={0}
+                    placeholder="Từ"
+                    className="flex-1 h-12 bg-white/20 backdrop-blur-sm border-white/30 text-white placeholder-white/50 rounded-xl text-center"
                   />
-                  Đá cây
-                </label>
+                  <span className="text-white/70">-</span>
+                  <Input
+                    type="number"
+                    value={values.maxPrice}
+                    onChange={(e) =>
+                      handleChange("maxPrice", Number(e.target.value))
+                    }
+                    min={0}
+                    placeholder="Đến"
+                    className="flex-1 h-12 bg-white/20 backdrop-blur-sm border-white/30 text-white placeholder-white/50 rounded-xl text-center"
+                  />
+                </div>
               </div>
-            </div>
-            {/* Payment Status */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tình trạng thanh toán
-              </label>
-              <div className="flex gap-3">
-                {(
-                  [
-                    { label: "Tất cả", value: "all" },
-                    { label: "Chưa TT", value: "unpaid" },
-                    { label: "Đã TT", value: "paid" },
-                  ] as const
-                ).map((opt) => (
-                  <button
-                    key={opt.value}
+
+              {/* Ice Type Toggle */}
+              <div>
+                <label className="block text-sm font-semibold text-white mb-3">
+                  Loại đá
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <label
                     className={clsx(
-                      "flex-1 py-2 px-3 rounded-lg text-sm border transition shadow",
-                      values.paidStatus === opt.value
-                        ? "bg-gradient-to-r from-blue-500 via-sky-500 to-cyan-500 text-white border-transparent shadow-md"
-                        : "bg-white/80 text-gray-700 border-white/40 shadow"
+                      "flex items-center gap-3 p-3 rounded-xl border-2 transition-all cursor-pointer backdrop-blur-sm",
+                      values.iceCube
+                        ? "bg-white/30 border-white/50 text-white shadow-lg"
+                        : "bg-white/10 border-white/20 text-white/80 hover:bg-white/20 hover:border-white/30"
                     )}
-                    onClick={() => handleChange("paidStatus", opt.value)}
                   >
-                    {opt.label}
-                  </button>
-                ))}
+                    <input
+                      type="checkbox"
+                      checked={values.iceCube}
+                      onChange={(e) =>
+                        handleChange("iceCube", e.target.checked)
+                      }
+                      className="sr-only"
+                    />
+                    <div className="w-5 h-5 border-2 rounded flex items-center justify-center">
+                      {values.iceCube && (
+                        <div className="w-2 h-2 bg-current rounded-sm" />
+                      )}
+                    </div>
+                    <span className="font-medium">Đá viên</span>
+                  </label>
+                  <label
+                    className={clsx(
+                      "flex items-center gap-3 p-3 rounded-xl border-2 transition-all cursor-pointer backdrop-blur-sm",
+                      values.iceBlock
+                        ? "bg-white/30 border-white/50 text-white shadow-lg"
+                        : "bg-white/10 border-white/20 text-white/80 hover:bg-white/20 hover:border-white/30"
+                    )}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={values.iceBlock}
+                      onChange={(e) =>
+                        handleChange("iceBlock", e.target.checked)
+                      }
+                      className="sr-only"
+                    />
+                    <div className="w-5 h-5 border-2 rounded flex items-center justify-center">
+                      {values.iceBlock && (
+                        <div className="w-2 h-2 bg-current rounded-sm" />
+                      )}
+                    </div>
+                    <span className="font-medium">Đá cây</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Payment Status */}
+              <div>
+                <label className="block text-sm font-semibold text-white mb-3">
+                  Tình trạng thanh toán
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {(
+                    [
+                      { label: "Tất cả", value: "all" },
+                      { label: "Chưa TT", value: "unpaid" },
+                      { label: "Đã TT", value: "paid" },
+                    ] as const
+                  ).map((opt) => (
+                    <button
+                      key={opt.value}
+                      className={clsx(
+                        "py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all backdrop-blur-sm",
+                        values.paidStatus === opt.value
+                          ? "bg-white/30 text-white border-white/50 shadow-lg"
+                          : "bg-white/10 text-white/80 border-white/20 hover:bg-white/20 hover:border-white/30"
+                      )}
+                      onClick={() => handleChange("paidStatus", opt.value)}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
+
             {/* Actions */}
-            <div className="flex gap-3">
-              <button
-                className="flex-1 py-3 rounded-xl font-medium bg-white/70 backdrop-blur-sm text-gray-700 border border-white/40 shadow-md hover:bg-white/90"
-                onClick={onClose}
-              >
-                Đóng
-              </button>
-              <button
-                className="flex-1 py-3 bg-gradient-to-r from-blue-500 via-sky-500 to-cyan-500 text-white rounded-xl font-medium shadow-lg hover:shadow-xl"
-                onClick={handleApply}
-              >
-                Áp dụng
-              </button>
+            <div className="px-6 pb-6 pt-4 border-t border-white/20">
+              <div className="flex gap-3">
+                <button
+                  className="flex-1 py-4 rounded-xl font-semibold bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors border border-white/30"
+                  onClick={onClose}
+                >
+                  Đóng
+                </button>
+                <button
+                  className="flex-1 py-4 bg-white/30 backdrop-blur-sm text-white rounded-xl font-semibold shadow-lg hover:bg-white/40 transition-all border border-white/30"
+                  onClick={handleApply}
+                >
+                  Áp dụng
+                </button>
+              </div>
             </div>
           </motion.div>
         </motion.div>
