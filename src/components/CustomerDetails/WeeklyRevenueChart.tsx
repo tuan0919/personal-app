@@ -9,6 +9,7 @@ import {
   Tooltip,
   CartesianGrid,
   Legend,
+  TooltipProps,
 } from "recharts";
 import { FaMoneyBillWave } from "react-icons/fa";
 import { fadeInUp } from "@/components/shared/animations";
@@ -25,12 +26,28 @@ interface WeeklyRevenueChartProps {
   data: WeeklyRevenue[];
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface CustomTooltipProps extends TooltipProps<number, string> {
+  active?: boolean;
+  payload?: Array<{
+    value: number;
+    name: string;
+    color: string;
+  }>;
+  label?: string;
+}
+
+interface PayloadItem {
+  value: number;
+  name: string;
+  color: string;
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white/95 backdrop-blur-sm border border-pink-200 rounded-2xl p-4 shadow-lg">
         <p className="font-semibold text-gray-800 mb-2">{label}</p>
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry: PayloadItem, index: number) => (
           <p key={index} className="text-sm" style={{ color: entry.color }}>
             {entry.name}: {entry.value.toLocaleString("vi-VN")} ₫
           </p>
@@ -38,7 +55,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
         <p className="text-sm font-semibold text-gray-700 mt-2 pt-2 border-t border-gray-200">
           Tổng:{" "}
           {payload
-            .reduce((sum: number, entry: any) => sum + entry.value, 0)
+            .reduce((sum: number, entry: PayloadItem) => sum + entry.value, 0)
             .toLocaleString("vi-VN")}{" "}
           ₫
         </p>
