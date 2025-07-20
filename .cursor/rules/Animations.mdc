@@ -1,0 +1,407 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+
+# Animations và Framer Motion
+
+## 1. Animation Principles
+
+### Performance
+
+- **GPU Acceleration**: Sử dụng `transform` và `opacity` thay vì layout properties
+- **Reduced Motion**: Tôn trọng user preferences
+- **No Spinning**: Không sử dụng spinning animations cho loading
+
+### Accessibility
+
+```tsx
+// Kiểm tra user preference
+const prefersReducedMotion = window.matchMedia(
+  "(prefers-reduced-motion: reduce)"
+).matches;
+
+// Disable animations nếu user prefers reduced motion
+const shouldAnimate = !prefersReducedMotion;
+```
+
+## 2. Framer Motion Setup
+
+### Import Pattern
+
+```tsx
+import { motion, AnimatePresence, useAnimationControls } from "framer-motion";
+```
+
+### Basic Animation Variants
+
+```tsx
+// src/components/shared/animations.ts
+export const fadeInUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -20 },
+  transition: { duration: 0.3, ease: "easeOut" },
+};
+
+export const fadeIn = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+  transition: { duration: 0.2 },
+};
+
+export const scaleIn = {
+  initial: { opacity: 0, scale: 0.95 },
+  animate: { opacity: 1, scale: 1 },
+  exit: { opacity: 0, scale: 0.95 },
+  transition: { duration: 0.2, ease: "easeOut" },
+};
+
+export const slideInFromRight = {
+  initial: { opacity: 0, x: 20 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: -20 },
+  transition: { duration: 0.3, ease: "easeOut" },
+};
+```
+
+## 3. Page Transitions
+
+### Page Animation Hook
+
+```tsx
+// src/hooks/usePageAnimations.ts
+import { useAnimationControls } from "framer-motion";
+
+export const usePageAnimations = () => {
+  const pageControls = useAnimationControls();
+  const contentControls = useAnimationControls();
+
+  const pageVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -20 },
+  };
+
+  const contentVariants = {
+    initial: { opacity: 0, scale: 0.95 },
+    animate: { opacity: 1, scale: 1 },
+    exit: { opacity: 0, scale: 0.95 },
+  };
+
+  const controls = {
+    pageEnter: () => pageControls.start("animate"),
+    pageExit: () => pageControls.start("exit"),
+    contentEnter: () => contentControls.start("animate"),
+    contentExit: () => contentControls.start("exit"),
+  };
+
+  return { controls, pageVariants, contentVariants };
+};
+```
+
+### Page Layout với Animation
+
+```tsx
+// PageNameLayout.tsx
+import { motion } from "framer-motion";
+import { usePageAnimations } from "@/hooks/usePageAnimations";
+
+const PageNameLayout = ({ children }: { children: React.ReactNode }) => {
+  const { pageVariants } = usePageAnimations();
+
+  return (
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="min-h-screen bg-background"
+    >
+      <TopNav />
+      <main className="container mx-auto p-4">{children}</main>
+      <BottomNav />
+    </motion.div>
+  );
+};
+```
+
+## 4. Component Animations
+
+### List Animations
+
+```tsx
+// Staggered list animation
+const listVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
+
+<motion.ul variants={listVariants} initial="hidden" animate="visible">
+  {items.map((item, index) => (
+    <motion.li key={item.id} variants={itemVariants}>
+      {item.content}
+    </motion.li>
+  ))}
+</motion.ul>;
+```
+
+### Card Animations
+
+```tsx
+// Hover animations cho cards
+<motion.div
+  whileHover={{
+    scale: 1.02,
+    boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+  }}
+  whileTap={{ scale: 0.98 }}
+  transition={{ duration: 0.2 }}
+  className="card"
+>
+  {/* Card content */}
+</motion.div>
+```
+
+### Button Animations
+
+```tsx
+// Button với loading state (không spinning)
+<motion.button
+  whileHover={{ scale: 1.05 }}
+  whileTap={{ scale: 0.95 }}
+  disabled={isLoading}
+  className="button"
+>
+  {isLoading ? (
+    <motion.div
+      animate={{ opacity: [0.5, 1, 0.5] }}
+      transition={{ duration: 1.5, repeat: Infinity }}
+    >
+      Loading...
+    </motion.div>
+  ) : (
+    "Click me"
+  )}
+</motion.button>
+```
+
+## 5. Loading Animations
+
+### Skeleton Loading
+
+```tsx
+// Không sử dụng spinning, thay vào đó sử dụng pulse
+<motion.div
+  animate={{ opacity: [0.5, 1, 0.5] }}
+  transition={{ duration: 1.5, repeat: Infinity }}
+  className="h-4 bg-muted rounded"
+/>
+```
+
+### Progress Bar
+
+```tsx
+<motion.div
+  initial={{ width: 0 }}
+  animate={{ width: `${progress}%` }}
+  transition={{ duration: 0.5, ease: "easeOut" }}
+  className="h-2 bg-primary rounded"
+/>
+```
+
+## 6. Modal và Dialog Animations
+
+### Backdrop Animation
+
+```tsx
+<motion.div
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  exit={{ opacity: 0 }}
+  className="fixed inset-0 bg-black/50"
+  onClick={onClose}
+/>
+```
+
+### Modal Content Animation
+
+```tsx
+<motion.div
+  initial={{ opacity: 0, scale: 0.95, y: 20 }}
+  animate={{ opacity: 1, scale: 1, y: 0 }}
+  exit={{ opacity: 0, scale: 0.95, y: 20 }}
+  transition={{ duration: 0.2, ease: "easeOut" }}
+  className="modal-content"
+>
+  {/* Modal content */}
+</motion.div>
+```
+
+## 7. Gesture Animations
+
+### Drag Animations
+
+```tsx
+<motion.div
+  drag="x"
+  dragConstraints={{ left: -100, right: 100 }}
+  dragElastic={0.1}
+  onDragEnd={(event, info) => {
+    if (info.offset.x > 50) {
+      // Handle swipe right
+    } else if (info.offset.x < -50) {
+      // Handle swipe left
+    }
+  }}
+  className="draggable-item"
+>
+  {/* Draggable content */}
+</motion.div>
+```
+
+### Pan Gestures
+
+```tsx
+<motion.div
+  onPanEnd={(event, info) => {
+    if (info.offset.y > 100) {
+      // Handle pull to refresh
+    }
+  }}
+  className="scrollable-content"
+>
+  {/* Content */}
+</motion.div>
+```
+
+## 8. Animation Orchestration
+
+### Sequential Animations
+
+```tsx
+const sequenceVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      delayChildren: 0.3,
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const childVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
+
+<motion.div variants={sequenceVariants} initial="hidden" animate="visible">
+  <motion.div variants={childVariants}>First</motion.div>
+  <motion.div variants={childVariants}>Second</motion.div>
+  <motion.div variants={childVariants}>Third</motion.div>
+</motion.div>;
+```
+
+### Conditional Animations
+
+```tsx
+<motion.div
+  animate={isVisible ? "visible" : "hidden"}
+  variants={{
+    visible: { opacity: 1, height: "auto" },
+    hidden: { opacity: 0, height: 0 },
+  }}
+  transition={{ duration: 0.3 }}
+>
+  {/* Conditional content */}
+</motion.div>
+```
+
+## 9. Performance Optimization
+
+### Layout Animations
+
+```tsx
+// Sử dụng layout prop cho smooth layout transitions
+<motion.div layout className="grid-item">
+  {/* Content that changes layout */}
+</motion.div>
+```
+
+### Lazy Animations
+
+```tsx
+// Chỉ animate khi component trong viewport
+import { useInView } from "framer-motion";
+
+const Component = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref);
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+      transition={{ duration: 0.5 }}
+    >
+      {/* Content */}
+    </motion.div>
+  );
+};
+```
+
+## 10. Animation Utilities
+
+### Custom Hooks
+
+```tsx
+// src/hooks/useAnimationState.ts
+export const useAnimationState = (initialState = false) => {
+  const [isAnimating, setIsAnimating] = useState(initialState);
+  const controls = useAnimationControls();
+
+  const startAnimation = useCallback(() => {
+    setIsAnimating(true);
+    controls.start("animate");
+  }, [controls]);
+
+  const stopAnimation = useCallback(() => {
+    setIsAnimating(false);
+    controls.stop();
+  }, [controls]);
+
+  return { isAnimating, controls, startAnimation, stopAnimation };
+};
+```
+
+### Animation Constants
+
+```tsx
+// src/constants/animations.ts
+export const ANIMATION_DURATIONS = {
+  fast: 0.1,
+  normal: 0.2,
+  slow: 0.3,
+  slower: 0.5,
+} as const;
+
+export const ANIMATION_EASINGS = {
+  easeOut: [0.0, 0.0, 0.2, 1],
+  easeIn: [0.4, 0.0, 1, 1],
+  easeInOut: [0.4, 0.0, 0.2, 1],
+} as const;
+```

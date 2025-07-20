@@ -1,0 +1,116 @@
+---
+description: "Quy tắc kiểm tra và test trải nghiệm người dùng sau khi implement code"
+alwaysApply: true
+---
+
+# Quy tắc về Kiểm tra Trải nghiệm Người dùng
+
+## 1. Workflow sau khi hoàn thành code
+
+Sau khi implement xong bất kỳ feature hoặc fix bug nào, **BẮT BUỘC** phải thực hiện các bước kiểm tra:
+
+### Bước 1: Code Review & Compile Check
+
+- Kiểm tra syntax và TypeScript errors
+- Đảm bảo code tuân thủ coding standards
+- Verify import/export paths
+
+### Bước 2: Browser Testing (QUAN TRỌNG)
+
+- **Sử dụng MCP Browser tool** để mở trang web
+- Kiểm tra trải nghiệm người dùng thực tế
+- Test các functionality vừa implement
+
+## 2. Checklist Kiểm tra UX
+
+### UI/Visual Check
+
+- [ ] Layout hiển thị đúng trên desktop
+- [ ] Layout responsive trên mobile
+- [ ] Colors và typography đúng thiết kế
+- [ ] Icons và images load properly
+- [ ] Animation/transitions mượt mà
+
+### Functionality Check
+
+- [ ] Tất cả buttons/links hoạt động
+- [ ] Forms submit và validate đúng
+- [ ] Navigation between pages works
+- [ ] Interactive elements responsive
+- [ ] Error states hiển thị appropriate
+
+### Performance Check
+
+- [ ] Page load time acceptable
+- [ ] No console errors
+- [ ] No memory leaks obvious
+- [ ] Smooth scrolling và interactions
+
+## 3. Cách sử dụng MCP Browser
+
+Sau khi implement code, thực hiện:
+
+1. Compile và start dev server
+2. Sử dụng MCP Browser tool để navigate đến localhost
+3. Test từng functionality vừa được implement
+4. Kiểm tra responsive design (resize browser)
+5. Check console cho errors/warnings
+
+## 4. Scenarios Test chính
+
+### New Feature Testing
+
+- Test happy path (user flow bình thường)
+- Test edge cases (empty states, error states)
+- Test với different data sets
+- Cross-browser compatibility check
+
+### Bug Fix Testing
+
+- Verify bug đã được fix
+- Ensure no regression (không ảnh hưởng features khác)
+- Test related functionality vẫn works
+
+### UI Changes Testing
+
+- Visual regression check
+- Accessibility check (keyboard navigation)
+- Mobile responsiveness
+- Print styles (nếu applicable)
+
+## 5. Reporting
+
+Sau khi test, provide feedback về:
+
+- ✅ **PASS**: Feature hoạt động như mong đợi
+- ⚠️ **ISSUES FOUND**: List cụ thể các vấn đề discovered
+- 🔧 **FIXES NEEDED**: Recommendations cho improvements
+
+## 6. Common Issues để watch out for
+
+- Layout breaking trên mobile
+- Buttons không clickable
+- Forms không submit
+- Navigation không work
+- Images/icons missing
+- Console errors
+- Slow loading times
+- Animation glitches
+
+## 7. Tools Integration
+
+- **MCP Browser**: Primary tool cho web testing
+- **DevTools**: Chrome/Edge DevTools cho debugging
+- **Responsive Design Mode**: Test different screen sizes
+- **Console**: Monitor errors và performance
+
+## Quan trọng
+
+**KHÔNG BAO GIỜ** consider một task hoàn thành cho đến khi đã:
+
+1. ✅ Code compiled successfully
+2. ✅ Tested trên browser với MCP Browser tool
+3. ✅ Verified user experience OK
+4. ✅ No critical issues found
+
+Luôn nhớ: "Code hoạt động" ≠ "Trải nghiệm người dùng tốt"

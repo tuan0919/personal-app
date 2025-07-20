@@ -1,93 +1,100 @@
-import { useEffect, useState, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
+import localforage from "localforage";
 
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => void;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+};
+
+// Mở rộng interface Navigator để bao gồm thuộc tính standalone cho Safari
+interface NavigatorWithStandalone extends Navigator {
+  standalone?: boolean;
 }
 
-// Detect if device is mobile
-function isMobile() {
-  return /android|iphone|ipad|ipod|opera mini|iemobile|mobile/i.test(
-    typeof navigator === "undefined" ? "" : navigator.userAgent
-  );
-}
+const LAST_PROMPT_KEY = "lastPWAPromptTime";
+const PROMPT_INTERVAL_DAYS = 7; // Prompt again after 7 days if dismissed
 
-export function usePWASuggestion() {
-  const [shouldSuggest, setShouldSuggest] = useState<boolean>(false);
+export const usePWASuggestion = () => {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
-  const [isPageLoaded, setIsPageLoaded] = useState<boolean>(false);
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [isAppInstalled, setIsAppInstalled] = useState(false);
 
-  // Check if app is already installed as PWA
-  function isInStandaloneMode(): boolean {
-    return (
-      (window.matchMedia &&
-        window.matchMedia("(display-mode: standalone)").matches) ||
-      (window.navigator as { standalone?: boolean }).standalone === true
-    );
-  }
+  const checkAndShowPrompt = useCallback(async () => {
+    if (isAppInstalled) return;
 
-  // Listen for page load completion
-  useEffect(() => {
-    const handlePageLoad = () => {
-      // Add a small delay to ensure all content is rendered
-      setTimeout(() => {
-        setIsPageLoaded(true);
-      }, 1000); // 1 second delay after page load
-    };
+    const lastPromptTime = await localforage.getItem<number>(LAST_PROMPT_KEY);
+    const now = Date.now();
 
-    if (document.readyState === "complete") {
-      handlePageLoad();
-    } else {
-      window.addEventListener("load", handlePageLoad);
-      return () => window.removeEventListener("load", handlePageLoad);
+    if (
+      !lastPromptTime ||
+      (now - lastPromptTime) / (1000 * 60 * 60 * 24) >= PROMPT_INTERVAL_DAYS
+    ) {
+      setShowPrompt(true);
     }
-  }, []);
+  }, [isAppInstalled]);
 
-  // PWA installation prompt handler
   useEffect(() => {
-    if (!isMobile() || isInStandaloneMode() || !isPageLoaded) {
-      setShouldSuggest(false);
+    // Check if the app is already installed
+    if (
+      window.matchMedia("(display-mode: standalone)").matches ||
+      document.referrer.startsWith("android-app://") ||
+      (navigator as NavigatorWithStandalone).standalone
+    ) {
+      setIsAppInstalled(true);
       return;
     }
 
-    const beforeInstallPromptHandler = (e: Event) => {
+    const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
-      const beforeInstallPromptEvent = e as BeforeInstallPromptEvent;
-      setDeferredPrompt(beforeInstallPromptEvent);
-
-      // Only show suggestion if page is fully loaded
-      if (isPageLoaded) {
-        setShouldSuggest(true);
-      }
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+      checkAndShowPrompt();
     };
 
-    window.addEventListener(
-      "beforeinstallprompt",
-      beforeInstallPromptHandler as EventListener
-    );
+    const handleAppInstalled = () => {
+      setIsAppInstalled(true);
+      setShowPrompt(false);
+      setDeferredPrompt(null);
+      localforage.removeItem(LAST_PROMPT_KEY); // Clear prompt time on install
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
 
     return () => {
       window.removeEventListener(
         "beforeinstallprompt",
-        beforeInstallPromptHandler as EventListener
+        handleBeforeInstallPrompt
       );
+      window.removeEventListener("appinstalled", handleAppInstalled);
     };
-  }, [isPageLoaded]);
+  }, [checkAndShowPrompt]);
 
-  const handleInstall = useCallback(() => {
+  const handleInstallClick = useCallback(async () => {
     if (deferredPrompt) {
       deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(() => {
-        setShouldSuggest(false);
-        setDeferredPrompt(null);
-      });
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === "accepted") {
+        console.log("User accepted the PWA install prompt");
+      } else {
+        console.log("User dismissed the PWA install prompt");
+        await localforage.setItem(LAST_PROMPT_KEY, Date.now()); // Record dismissal time
+      }
+      setDeferredPrompt(null);
+      setShowPrompt(false);
     }
   }, [deferredPrompt]);
 
-  const handleClose = useCallback(() => {
-    setShouldSuggest(false);
-  }, []);
+  const handleClosePrompt = useCallback(async () => {
+    setShowPrompt(false);
+    if (deferredPrompt) {
+      await localforage.setItem(LAST_PROMPT_KEY, Date.now()); // Record dismissal time
+    }
+  }, [deferredPrompt]);
 
-  return { shouldSuggest, handleClose, handleInstall };
-}
+  return {
+    showPWAPrompt: showPrompt && !isAppInstalled && deferredPrompt,
+    handleInstallPWA: handleInstallClick,
+    handleClosePWAPrompt: handleClosePrompt,
+  };
+};

@@ -7,11 +7,15 @@ import { useHomeState } from "@/hooks/useHomeState";
 import { HomeLayout } from "@/components/Home/HomeLayout";
 import { UserView } from "@/components/Home/UserView";
 import { AdminView } from "@/components/Home/AdminView";
+import { useAuth } from "@/context/AuthContext";
+
 export function Home() {
   // Custom hooks for state management
   const homeState = useHomeState();
-  const { shouldSuggest, handleClose, handleInstall } = usePWASuggestion();
+  const { showPWAPrompt, handleInstallPWA, handleClosePWAPrompt } =
+    usePWASuggestion();
   const { refs, controls } = useHomeAnimations();
+  const { isAdmin } = useAuth();
 
   return (
     <HomeLayout>
@@ -24,13 +28,13 @@ export function Home() {
 
       {/* PWA Suggestion Dialog */}
       <PWASuggestionDialog
-        open={shouldSuggest}
-        onClose={handleClose}
-        onInstall={handleInstall}
+        open={!!showPWAPrompt}
+        onClose={handleClosePWAPrompt}
+        onInstall={handleInstallPWA}
       />
 
       {/* Main Content */}
-      {!homeState.isAdmin ? (
+      {!isAdmin ? (
         <UserView
           deliveredCustomers={homeState.deliveredCustomers}
           loading={homeState.loading}

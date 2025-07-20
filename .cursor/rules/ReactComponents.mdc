@@ -1,0 +1,143 @@
+---
+alwaysApply: true
+---
+
+# Quy tắc React Components
+
+## 1. Cấu trúc Component
+
+### Layout Pattern
+
+Tất cả các trang phải tuân theo pattern:
+
+```tsx
+// Layout component
+const PageLayout = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <div className="min-h-screen bg-background">
+      <TopNav />
+      <main className="container mx-auto p-4">{children}</main>
+      <BottomNav />
+    </div>
+  );
+};
+
+// View component
+const PageView = () => {
+  return <div className="space-y-4">{/* Content */}</div>;
+};
+
+// Page component
+const Page = () => {
+  return (
+    <PageLayout>
+      <PageView />
+    </PageLayout>
+  );
+};
+```
+
+### Component Naming
+
+- **Layout**: `[PageName]Layout.tsx` (ví dụ: [HomeLayout.tsx](mdc:src/components/Home/HomeLayout.tsx))
+- **View**: `[PageName]View.tsx` (ví dụ: [UserView.tsx](mdc:src/components/Home/user/UserView.tsx))
+- **Shared**: Đặt trong thư mục `shared/`
+
+## 2. TypeScript Rules
+
+### Props Interface
+
+```tsx
+interface ComponentProps {
+  title: string;
+  onAction?: () => void;
+  children?: React.ReactNode;
+}
+
+const Component = ({ title, onAction, children }: ComponentProps) => {
+  // Component logic
+};
+```
+
+### State Management
+
+- Sử dụng `useState` cho local state
+- Sử dụng custom hooks cho complex state logic
+- Ví dụ: [useHomeState.ts](mdc:src/hooks/useHomeState.ts)
+
+## 3. Styling
+
+### CSS Classes
+
+- Sử dụng Tailwind CSS classes
+- Ưu tiên utility classes thay vì custom CSS
+- Responsive design với breakpoints: `sm:`, `md:`, `lg:`, `xl:`
+
+### Animation
+
+- Sử dụng Framer Motion cho animations
+- Không sử dụng spinning animations cho loading
+- Ví dụ: [animations.ts](mdc:src/components/shared/animations.ts)
+
+## 4. Component Organization
+
+### File Structure
+
+```
+components/
+├── PageName/
+│   ├── PageNameLayout.tsx
+│   ├── PageNameView.tsx
+│   ├── SubComponent.tsx
+│   └── animations.ts (nếu cần)
+```
+
+### Import/Export
+
+```tsx
+// index.ts trong thư mục component
+export { default as PageNameLayout } from "./PageNameLayout";
+export { default as PageNameView } from "./PageNameView";
+```
+
+## 5. Error Handling
+
+### Error Boundaries
+
+```tsx
+const ErrorState = ({ message }: { message: string }) => {
+  return (
+    <div className="flex items-center justify-center p-8">
+      <p className="text-muted-foreground">{message}</p>
+    </div>
+  );
+};
+```
+
+## 6. Loading States
+
+### Skeleton Loading
+
+```tsx
+import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton";
+
+const LoadingState = () => {
+  return <LoadingSkeleton />;
+};
+```
+
+## 7. Accessibility
+
+### ARIA Labels
+
+```tsx
+<button aria-label="Close dialog" onClick={onClose}>
+  <X className="h-4 w-4" />
+</button>
+```
+
+### Keyboard Navigation
+
+- Hỗ trợ Tab navigation
+- Escape key để đóng dialogs/modals
+- Enter/Space để activate buttons

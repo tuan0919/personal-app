@@ -48,7 +48,7 @@ export function useHomeState(): UseHomeStateReturn {
   const [error, setError] = useState<string | null>(null);
 
   // User type state
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(true);
 
   // Load data function
   const loadData = useCallback(

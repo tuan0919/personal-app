@@ -26,6 +26,7 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.23.0",
+    "localforage": "^1.10.0",
     "lucide-react": "^0.522.0",
     "motion": "^12.18.1",
     "react": "^19.0.0",

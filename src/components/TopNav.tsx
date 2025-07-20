@@ -19,9 +19,19 @@ import {
 } from "@/components/ui/drawer";
 import { Button } from "./ui/button";
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function TopNav() {
   const [open, setOpen] = useState(false);
+  const { user, logout, isAdmin } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/signin");
+    setOpen(false);
+  };
 
   return (
     <header className="sticky top-0 z-30 w-full bg-white/40 backdrop-blur-lg border-b border-white/30 shadow-md rounded-b-2xl px-4 py-3 flex items-center justify-between">
@@ -50,9 +60,11 @@ export default function TopNav() {
               <FaUserCircle className="text-3xl shadow bg-white/40 rounded-full" />
               <div>
                 <div className="font-bold text-base leading-tight">
-                  Selvy Smith
+                  {user?.name || "Guest"}
                 </div>
-                <div className="text-xs opacity-80">Australia, UK</div>
+                <div className="text-xs opacity-80">
+                  {isAdmin ? "Admin" : "User"}
+                </div>
               </div>
             </div>
 
@@ -61,7 +73,7 @@ export default function TopNav() {
               <ul className="flex flex-col gap-1">
                 <li>
                   <a
-                    href="#"
+                    href="/home"
                     className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/10 transition"
                   >
                     <FaHome className="text-lg" />
@@ -117,13 +129,13 @@ export default function TopNav() {
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="#"
-                    className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/10 transition"
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/10 transition text-left"
                   >
                     <FaSignOutAlt className="text-lg" />
-                    <span className="flex-1">Logout</span>
-                  </a>
+                    <span className="flex-1">Đăng xuất</span>
+                  </button>
                 </li>
               </ul>
             </nav>
@@ -153,8 +165,15 @@ export default function TopNav() {
         </div>
       </div>
 
-      {/* Avatar/Profile icon */}
-      <FaUserCircle size={30} className="text-pink-400" />
+      {/* Avatar/Profile icon with role indicator */}
+      <div className="relative">
+        <FaUserCircle size={30} className="text-pink-400" />
+        {isAdmin && (
+          <span className="absolute -top-1 -right-1 bg-green-500 text-white text-[8px] rounded-full px-1 py-0.5 font-bold">
+            Admin
+          </span>
+        )}
+      </div>
     </header>
   );
 }

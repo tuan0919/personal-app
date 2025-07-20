@@ -1,0 +1,81 @@
+---
+alwaysApply: true
+---
+
+# Quy tắc về Môi trường và Platform
+
+## 1. Hệ điều hành và Terminal
+
+- **Platform**: Windows (không phải Linux/macOS)
+- **Terminal**: Sử dụng PowerShell hoặc Command Prompt
+- **Path separator**: Sử dụng backslash `\` thay vì forward slash `/`
+
+## 2. Terminal Commands
+
+### Thay vì sử dụng lệnh Linux/macOS:
+
+- `ls` → `dir` (liệt kê thư mục)
+- `cp` → `copy` (sao chép file)
+- `mv` → `move` (di chuyển file)
+- `rm` → `del` hoặc `remove-item` (xóa file)
+- `mkdir` → `md` hoặc `mkdir` (tạo thư mục)
+- `touch` → `echo $null >>` (tạo file trống)
+- `cat` → `type` (hiển thị nội dung file)
+- `grep` → `findstr` (tìm kiếm chuỗi)
+
+## 3. Đường dẫn và Biến môi trường
+
+- **Đường dẫn tuyệt đối**: `C:\Users\username\Documents`
+- **Biến môi trường**: `%USERPROFILE%`, `%APPDATA%`, `%PATH%`
+- **Trong PowerShell**: `$env:USERPROFILE`, `$env:APPDATA`
+
+## 4. Cài đặt và Quản lý Packages
+
+- **Node.js/npm**: Sử dụng `npm install` thay vì `npm ci` nếu có vấn đề
+- **Package Manager**: Ưu tiên sử dụng `npm` thay vì `yarn` hoặc `pnpm`
+- **Cài đặt global**: `npm install -g [package]`
+
+## 5. Quản lý Quy trình
+
+- **Chạy script**: Sử dụng `npm run [script]`
+- **Kết thúc quy trình**: `taskkill /F /PID [process_id]`
+- **Xem quy trình**: `tasklist` hoặc `Get-Process` (PowerShell)
+
+# Quy tắc về Môi trường và Platform
+
+## 1. Hệ điều hành và Terminal
+
+- **Platform**: Windows (không phải Linux/macOS)
+- **Terminal**: Sử dụng PowerShell hoặc Command Prompt
+- **Path separator**: Sử dụng backslash `\` thay vì forward slash `/`
+
+## 2. Terminal Commands
+
+### Thay vì sử dụng lệnh Linux/macOS:
+
+- `ls` → `dir` (liệt kê thư mục)
+- `cp` → `copy` (sao chép file)
+- `mv` → `move` (di chuyển file)
+- `rm` → `del` hoặc `remove-item` (xóa file)
+- `mkdir` → `md` hoặc `mkdir` (tạo thư mục)
+- `touch` → `echo $null >>` (tạo file trống)
+- `cat` → `type` (hiển thị nội dung file)
+- `grep` → `findstr` (tìm kiếm chuỗi)
+
+## 3. Đường dẫn và Biến môi trường
+
+- **Đường dẫn tuyệt đối**: `C:\Users\username\Documents`
+- **Biến môi trường**: `%USERPROFILE%`, `%APPDATA%`, `%PATH%`
+- **Trong PowerShell**: `$env:USERPROFILE`, `$env:APPDATA`
+
+## 4. Cài đặt và Quản lý Packages
+
+- **Node.js/npm**: Sử dụng `npm install` thay vì `npm ci` nếu có vấn đề
+- **Package Manager**: Ưu tiên sử dụng `npm` thay vì `yarn` hoặc `pnpm`
+- **Cài đặt global**: `npm install -g [package]`
+
+## 5. Quản lý Quy trình
+
+- **Chạy script**: Sử dụng `npm run [script]`
+- **Kết thúc quy trình**: `taskkill /F /PID [process_id]`
+- **Xem quy trình**: `tasklist` hoặc `Get-Process` (PowerShell)

@@ -207,7 +207,7 @@ export function SignUp() {
         <p className="text-gray-600">
           Đã có tài khoản?{" "}
           <Link
-            to="/sign-in"
+            to="/signin"
             className="text-purple-600 font-medium hover:text-purple-800 hover:underline transition-colors"
           >
             Đăng nhập

@@ -1,0 +1,440 @@
+---
+alwaysApply: true
+---
+
+# State Management và Custom Hooks
+
+## 1. Custom Hooks Pattern
+
+### Cấu trúc Hook
+
+Mỗi trang chính có 2 hooks:
+
+- **State Hook**: Quản lý state (ví dụ: [useHomeState.ts](mdc:src/hooks/useHomeState.ts))
+- **Animation Hook**: Quản lý animations (ví dụ: [useHomeAnimations.tsx](mdc:src/hooks/useHomeAnimations.tsx))
+
+### State Hook Template
+
+```tsx
+// src/hooks/usePageState.ts
+import { useState, useEffect } from "react";
+
+interface PageState {
+  isLoading: boolean;
+  data: any[];
+  error: string | null;
+  filters: Record<string, any>;
+}
+
+interface UsePageStateReturn {
+  state: PageState;
+  actions: {
+    setLoading: (loading: boolean) => void;
+    setData: (data: any[]) => void;
+    setError: (error: string | null) => void;
+    updateFilters: (filters: Record<string, any>) => void;
+    resetState: () => void;
+  };
+}
+
+export const usePageState = (): UsePageStateReturn => {
+  const [state, setState] = useState<PageState>({
+    isLoading: false,
+    data: [],
+    error: null,
+    filters: {},
+  });
+
+  const actions = {
+    setLoading: (loading: boolean) =>
+      setState((prev) => ({ ...prev, isLoading: loading })),
+
+    setData: (data: any[]) =>
+      setState((prev) => ({ ...prev, data, error: null })),
+
+    setError: (error: string | null) =>
+      setState((prev) => ({ ...prev, error, isLoading: false })),
+
+    updateFilters: (filters: Record<string, any>) =>
+      setState((prev) => ({
+        ...prev,
+        filters: { ...prev.filters, ...filters },
+      })),
+
+    resetState: () =>
+      setState({
+        isLoading: false,
+        data: [],
+        error: null,
+        filters: {},
+      }),
+  };
+
+  return { state, actions };
+};
+```
+
+### Animation Hook Template
+
+```tsx
+// src/hooks/usePageAnimations.ts
+import { useAnimationControls } from "framer-motion";
+
+interface UsePageAnimationsReturn {
+  controls: {
+    pageEnter: () => void;
+    pageExit: () => void;
+    contentEnter: () => void;
+    contentExit: () => void;
+  };
+  variants: {
+    page: {
+      initial: object;
+      animate: object;
+      exit: object;
+    };
+    content: {
+      initial: object;
+      animate: object;
+      exit: object;
+    };
+  };
+}
+
+export const usePageAnimations = (): UsePageAnimationsReturn => {
+  const pageControls = useAnimationControls();
+  const contentControls = useAnimationControls();
+
+  const controls = {
+    pageEnter: () => pageControls.start("animate"),
+    pageExit: () => pageControls.start("exit"),
+    contentEnter: () => contentControls.start("animate"),
+    contentExit: () => contentControls.start("exit"),
+  };
+
+  const variants = {
+    page: {
+      initial: { opacity: 0, y: 20 },
+      animate: { opacity: 1, y: 0 },
+      exit: { opacity: 0, y: -20 },
+    },
+    content: {
+      initial: { opacity: 0, scale: 0.95 },
+      animate: { opacity: 1, scale: 1 },
+      exit: { opacity: 0, scale: 0.95 },
+    },
+  };
+
+  return { controls, variants };
+};
+```
+
+## 2. Context API
+
+### Global State Context
+
+```tsx
+// src/context/AppContext.tsx
+import { createContext, useContext, useReducer, ReactNode } from "react";
+
+interface AppState {
+  user: {
+    id: string | null;
+    role: "admin" | "user" | null;
+    name: string | null;
+  };
+  theme: "light" | "dark";
+  notifications: Array<{
+    id: string;
+    message: string;
+    type: "success" | "error" | "warning";
+  }>;
+}
+
+type AppAction =
+  | { type: "SET_USER"; payload: AppState["user"] }
+  | { type: "SET_THEME"; payload: "light" | "dark" }
+  | { type: "ADD_NOTIFICATION"; payload: AppState["notifications"][0] }
+  | { type: "REMOVE_NOTIFICATION"; payload: string };
+
+const AppContext = createContext<{
+  state: AppState;
+  dispatch: React.Dispatch<AppAction>;
+} | null>(null);
+
+const appReducer = (state: AppState, action: AppAction): AppState => {
+  switch (action.type) {
+    case "SET_USER":
+      return { ...state, user: action.payload };
+    case "SET_THEME":
+      return { ...state, theme: action.payload };
+    case "ADD_NOTIFICATION":
+      return {
+        ...state,
+        notifications: [...state.notifications, action.payload],
+      };
+    case "REMOVE_NOTIFICATION":
+      return {
+        ...state,
+        notifications: state.notifications.filter(
+          (n) => n.id !== action.payload
+        ),
+      };
+    default:
+      return state;
+  }
+};
+
+export const AppProvider = ({ children }: { children: ReactNode }) => {
+  const [state, dispatch] = useReducer(appReducer, {
+    user: { id: null, role: null, name: null },
+    theme: "light",
+    notifications: [],
+  });
+
+  return (
+    <AppContext.Provider value={{ state, dispatch }}>
+      {children}
+    </AppContext.Provider>
+  );
+};
+
+export const useApp = () => {
+  const context = useContext(AppContext);
+  if (!context) {
+    throw new Error("useApp must be used within AppProvider");
+  }
+  return context;
+};
+```
+
+## 3. API State Management
+
+### API Hook Pattern
+
+```tsx
+// src/hooks/useApi.ts
+import { useState, useCallback } from "react";
+
+interface ApiState<T> {
+  data: T | null;
+  loading: boolean;
+  error: string | null;
+}
+
+interface UseApiReturn<T> {
+  state: ApiState<T>;
+  execute: (...args: any[]) => Promise<void>;
+  reset: () => void;
+}
+
+export const useApi = <T,>(
+  apiFunction: (...args: any[]) => Promise<T>
+): UseApiReturn<T> => {
+  const [state, setState] = useState<ApiState<T>>({
+    data: null,
+    loading: false,
+    error: null,
+  });
+
+  const execute = useCallback(
+    async (...args: any[]) => {
+      setState((prev) => ({ ...prev, loading: true, error: null }));
+      try {
+        const data = await apiFunction(...args);
+        setState({ data, loading: false, error: null });
+      } catch (error) {
+        setState({
+          data: null,
+          loading: false,
+          error: error instanceof Error ? error.message : "An error occurred",
+        });
+      }
+    },
+    [apiFunction]
+  );
+
+  const reset = useCallback(() => {
+    setState({ data: null, loading: false, error: null });
+  }, []);
+
+  return { state, execute, reset };
+};
+```
+
+## 4. Form State Management
+
+### Form Hook với Validation
+
+```tsx
+// src/hooks/useFormState.ts
+import { useState, useCallback } from "react";
+import { z } from "zod";
+
+interface UseFormStateReturn<T> {
+  values: T;
+  errors: Partial<Record<keyof T, string>>;
+  touched: Partial<Record<keyof T, boolean>>;
+  isValid: boolean;
+  actions: {
+    setValue: <K extends keyof T>(field: K, value: T[K]) => void;
+    setError: <K extends keyof T>(field: K, error: string) => void;
+    setTouched: <K extends keyof T>(field: K, touched: boolean) => void;
+    validate: () => boolean;
+    reset: () => void;
+  };
+}
+
+export const useFormState = <T extends Record<string, any>>(
+  initialValues: T,
+  schema: z.ZodSchema<T>
+): UseFormStateReturn<T> => {
+  const [values, setValues] = useState<T>(initialValues);
+  const [errors, setErrors] = useState<Partial<Record<keyof T, string>>>({});
+  const [touched, setTouched] = useState<Partial<Record<keyof T, boolean>>>({});
+
+  const setValue = useCallback(
+    <K extends keyof T>(field: K, value: T[K]) => {
+      setValues((prev) => ({ ...prev, [field]: value }));
+      // Clear error when user starts typing
+      if (errors[field]) {
+        setErrors((prev) => ({ ...prev, [field]: undefined }));
+      }
+    },
+    [errors]
+  );
+
+  const setError = useCallback(<K extends keyof T>(field: K, error: string) => {
+    setErrors((prev) => ({ ...prev, [field]: error }));
+  }, []);
+
+  const setTouched = useCallback(
+    <K extends keyof T>(field: K, touched: boolean) => {
+      setTouched((prev) => ({ ...prev, [field]: touched }));
+    },
+    []
+  );
+
+  const validate = useCallback(() => {
+    try {
+      schema.parse(values);
+      setErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const newErrors: Partial<Record<keyof T, string>> = {};
+        error.errors.forEach((err) => {
+          const field = err.path[0] as keyof T;
+          newErrors[field] = err.message;
+        });
+        setErrors(newErrors);
+      }
+      return false;
+    }
+  }, [values, schema]);
+
+  const reset = useCallback(() => {
+    setValues(initialValues);
+    setErrors({});
+    setTouched({});
+  }, [initialValues]);
+
+  const isValid = Object.keys(errors).length === 0;
+
+  return {
+    values,
+    errors,
+    touched,
+    isValid,
+    actions: {
+      setValue,
+      setError,
+      setTouched,
+      validate,
+      reset,
+    },
+  };
+};
+```
+
+## 5. Local Storage State
+
+### Persistent State Hook
+
+```tsx
+// src/hooks/useLocalStorage.ts
+import { useState, useEffect } from "react";
+
+export const useLocalStorage = <T,>(
+  key: string,
+  initialValue: T
+): [T, (value: T) => void] => {
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.error(`Error reading localStorage key "${key}":`, error);
+      return initialValue;
+    }
+  });
+
+  const setValue = (value: T) => {
+    try {
+      setStoredValue(value);
+      window.localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      console.error(`Error setting localStorage key "${key}":`, error);
+    }
+  };
+
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === key && e.newValue !== null) {
+        try {
+          setStoredValue(JSON.parse(e.newValue));
+        } catch (error) {
+          console.error(`Error parsing localStorage key "${key}":`, error);
+        }
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, [key]);
+
+  return [storedValue, setValue];
+};
+```
+
+## 6. Best Practices
+
+### State Organization
+
+1. **Local State**: Sử dụng `useState` cho component-specific state
+2. **Shared State**: Sử dụng Context API cho state được chia sẻ
+3. **Server State**: Sử dụng custom hooks cho API calls
+4. **Form State**: Sử dụng `useFormState` hook cho form validation
+
+### Performance Optimization
+
+```tsx
+// Sử dụng useMemo cho expensive calculations
+const expensiveValue = useMemo(() => {
+  return computeExpensiveValue(data);
+}, [data]);
+
+// Sử dụng useCallback cho function props
+const handleClick = useCallback(() => {
+  // Handle click logic
+}, [dependencies]);
+```
+
+### Error Boundaries
+
+```tsx
+// Wrap components với error boundary
+<ErrorBoundary fallback={<ErrorState message="Something went wrong" />}>
+  <Component />
+</ErrorBoundary>
+```
