@@ -9,19 +9,6 @@ export const Payment: React.FC = () => {
   // Sử dụng custom hook để quản lý state
   const paymentState = usePaymentState();
 
-  // Define handlers that match our PaymentView component props
-  const handleCancelOrder = (id: number) => {
-    // Mark the order as unpaid
-    console.log("Cancelling payment for order:", id);
-    // In a real app, we would call an API here
-  };
-
-  const handleConfirmPayment = (id: number) => {
-    // Mark the order as paid
-    console.log("Confirming payment for order:", id);
-    // In a real app, we would call an API here
-  };
-
   return (
     <PaymentLayout>
       <AnimatePresence mode="wait">
@@ -41,12 +28,19 @@ export const Payment: React.FC = () => {
         ) : (
           <PaymentView
             key="content"
-            loading={false}
-            error={null}
+            loading={paymentState.loading}
+            filtering={paymentState.filtering}
+            error={paymentState.error}
             orders={paymentState.orders}
-            onRetry={paymentState.refetchData}
-            onCancelOrder={handleCancelOrder}
-            onConfirmPayment={handleConfirmPayment}
+            currentPage={paymentState.currentPage}
+            setCurrentPage={paymentState.setCurrentPage}
+            selectedUnpaidOrders={paymentState.selectedUnpaidOrders}
+            selectedPaidOrders={paymentState.selectedPaidOrders}
+            actualPayments={paymentState.actualPayments}
+            handleActualPaymentChange={paymentState.handleActualPaymentChange}
+            handleOrderSelect={paymentState.handleOrderSelect}
+            selectedDate={paymentState.selectedDate}
+            setSelectedDate={paymentState.setSelectedDate}
           />
         )}
       </AnimatePresence>

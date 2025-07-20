@@ -16,8 +16,6 @@ import { TbLockPassword } from "react-icons/tb";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthLayout } from "@/components/shared/AuthLayout";
 import { motion } from "framer-motion";
-import { useAuth } from "@/context/AuthContext";
-import { useState } from "react";
 
 const FormSchema = z.object({
   username: z.string().min(2, {
@@ -30,39 +28,24 @@ const FormSchema = z.object({
 
 export function SignIn() {
   const navigate = useNavigate();
-  const { login } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
-
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      username: "",
-      password: "",
+      username: "admin",
+      password: "123",
     },
   });
 
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
-    try {
-      setIsLoading(true);
-      const success = await login(data.username, data.password);
-
-      if (success) {
-        toast.success("Đăng nhập thành công", {
-          description: "Chào mừng quay trở lại!",
-        });
-        navigate("/home");
-      } else {
-        toast.error("Đăng nhập thất bại", {
-          description: "Tên đăng nhập hoặc mật khẩu không đúng",
-        });
-      }
-    } catch (err) {
-      toast.error("Đã xảy ra lỗi", {
-        description: "Vui lòng thử lại sau",
+  function onSubmit(data: z.infer<typeof FormSchema>) {
+    if (data.username === "admin" && data.password === "123") {
+      toast.success("Đăng nhập thành công", {
+        description: "Chào mừng quay trở lại!",
       });
-      console.error(err);
-    } finally {
-      setIsLoading(false);
+      navigate("/home");
+    } else {
+      toast.error("Đăng nhập thất bại", {
+        description: "Tên đăng nhập hoặc mật khẩu không đúng",
+      });
     }
   }
 
@@ -154,10 +137,9 @@ export function SignIn() {
             >
               <Button
                 type="submit"
-                disabled={isLoading}
                 className="w-full bg-green-500 hover:bg-green-600 text-white py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
+                Đăng nhập
               </Button>
             </motion.div>
           </form>
