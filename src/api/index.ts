@@ -1,3 +1,3 @@
 // API exports
-export { CustomerService } from './customerService';
-export type { Customer, PaymentStatus, FilterValues } from './types';
+export { CustomerService } from "./customerService";
+export type { Customer, PaymentStatus, FilterValues } from "./types";

@@ -1,0 +1,45 @@
+.PWABadge {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 1rem;
+}
+
+.PWABadge-toast {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  width: 100%;
+  max-width: 24rem;
+}
+
+.PWABadge-message {
+  padding: 1rem;
+}
+
+.PWABadge-buttons {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.5rem;
+}
+
+.PWABadge-toast-button {
+  background-color: #4f46e5;
+  border: none;
+  border-radius: 0.25rem;
+  color: white;
+  cursor: pointer;
+  font-size: 0.875rem;
+  margin-left: 0.5rem;
+  padding: 0.5rem 1rem;
+}

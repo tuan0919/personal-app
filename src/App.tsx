@@ -1,34 +1,39 @@
-import "./App.css";
-import { Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "sonner";
+
+// Import components
 import { Home } from "./pages/Home";
-import About from "./pages/About";
 import { SignIn } from "./pages/SignIn";
 import { SignUp } from "./pages/SignUp";
-import { CreateNewOrder } from "./pages/CreateNewOrder";
-import { AnimatePresence } from "framer-motion";
+import About from "./pages/About";
 import { CustomerDetails } from "./pages/CustomerDetails";
-import { Payment } from "./pages/Payment";
-import { EditOrder } from "./pages/EditOrder";
 import ActivityHistory from "./pages/ActivityHistory";
+import { CreateNewOrder } from "./pages/CreateNewOrder";
+import { EditOrder } from "./pages/EditOrder";
+import { Payment } from "./pages/Payment";
+
+// Import PWABadge from new location
+import PWABadge from "./components/pwa/PWABadge";
 
 function App() {
   return (
     <>
-      <AnimatePresence mode="wait">
+      <Toaster richColors position="top-center" />
+      <PWABadge />
+      <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Navigate to="/signin" replace />} />
-          <Route path="/home" element={<Home />} />
+          <Route path="/" element={<Home />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/about" element={<About />} />
-          <Route path="/order/new" element={<CreateNewOrder />} />
-          <Route path="/order/:id/edit" element={<EditOrder />} />
           <Route path="/customer/:id" element={<CustomerDetails />} />
-          <Route path="/payment" element={<Payment />} />
           <Route path="/activity-history" element={<ActivityHistory />} />
-          <Route path="*" element={<div>404 Not Found</div>} />
+          <Route path="/create-new-order" element={<CreateNewOrder />} />
+          <Route path="/edit-order/:id" element={<EditOrder />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
-      </AnimatePresence>
+      </BrowserRouter>
     </>
   );
 }
