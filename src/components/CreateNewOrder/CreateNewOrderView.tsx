@@ -17,9 +17,9 @@ import {
   containerVariants,
   itemVariants,
 } from "@/components/shared/animations";
-import { CustomerCombobox } from "./CustomerCombobox";
+import { CustomerCombobox } from "@/components/shared/combobox/CustomerCombobox";
 import { cn } from "@/lib/utils";
-import { ConfirmDialog } from "./ConfirmDialog";
+import { ConfirmDialog } from "@/components/shared/dialogs/ConfirmDialog";
 import {
   formSchema,
   useCreateNewOrderState,

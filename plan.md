@@ -87,9 +87,18 @@ src/
 
 ### 🧩 Component & UI
 
-- [ ] Đảm bảo component chia theo feature/page, không để component lớn trong `shared` nếu chỉ dùng cho 1 page.
-- [ ] Đảm bảo các UI component dùng chung nằm trong `shared/` hoặc `ui/`.
-- [ ] Đảm bảo không có duplicate component giữa các page.
+- [x] Đảm bảo component chia theo feature/page, không để component lớn trong `shared` nếu chỉ dùng cho 1 page.
+  - **Đã thực hiện**: Đã di chuyển `CustomerForm` từ `components/shared` sang `components/EditOrder` vì nó chỉ được sử dụng trong trang EditOrder.
+- [x] Đảm bảo các UI component dùng chung nằm trong `shared/` hoặc `ui/`.
+  - **Đã thực hiện**:
+    - Đã di chuyển `ToggleThemeButton.tsx` từ `components/` sang `components/shared/`.
+    - Đã tạo thư mục `components/shared/navigation` và di chuyển `TopNav.tsx` và `BottomNav.tsx` vào đó.
+    - Đã cập nhật các import trong `HomeLayout.tsx` để trỏ đến vị trí mới của các component.
+- [x] Đảm bảo không có duplicate component giữa các page.
+  - **Đã thực hiện**:
+    - Đã tạo thư mục `components/shared/dialogs` và di chuyển `ConfirmDialog` từ `EditOrder` và `CreateNewOrder` sang đó vì nó được sử dụng ở cả hai nơi.
+    - Đã tạo thư mục `components/shared/combobox` và di chuyển `CustomerCombobox` từ `EditOrder` và `CreateNewOrder` sang đó vì nó được sử dụng ở cả hai nơi.
+    - Đã cập nhật import trong `CreateNewOrderView.tsx` để trỏ đến vị trí mới của các component.
 
 ### 🔁 Hooks & logic
 

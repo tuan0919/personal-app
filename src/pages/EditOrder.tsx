@@ -1,7 +1,7 @@
 // Attend.tsx
 import { EditOrderNavBar } from "@/components/EditOrder/EditOrderNavBar";
 import { motion } from "framer-motion";
-import { CustomerForm } from "@/components/shared/CustomerForm";
+import { CustomerForm } from "@/components/EditOrder/CustomerForm";
 import { useLocation } from "react-router-dom";
 
 export function EditOrder() {
