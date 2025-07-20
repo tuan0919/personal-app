@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
-import TopNav from "@/components/shared/navigation/TopNav";
-import BottomNav from "@/components/shared/navigation/BottomNav";
+import { TopNav } from "@/components/shared/navigation/TopNav";
+import { BottomNav } from "@/components/shared/navigation/BottomNav";
 import { PWASuggestionDialog } from "@/components/Home/PWASuggestionDialog";
 import { usePWASuggestion } from "@/hooks/usePWASuggestion";
 

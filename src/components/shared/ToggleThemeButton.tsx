@@ -1,27 +1,20 @@
-import { useEffect, useState } from "react";
-import { FiSun, FiMoon } from "react-icons/fi";
+import { FiSun, FiMoon, FiMonitor } from "react-icons/fi";
+import { motion } from "framer-motion";
+import { useTheme } from "@/context/ThemeContext";
 
-function ToggleTheme() {
-  const [theme, setTheme] = useState(
-    () => localStorage.getItem("theme") || "light"
-  );
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-
-  const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
+export function ToggleThemeButton() {
+  const { theme, toggleTheme } = useTheme();
 
   return (
-    <button
+    <motion.button
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
       onClick={toggleTheme}
-      className="p-2 rounded-full bg-primary dark:bg-primary text-black dark:text-white transition-colors duration-200 flex items-center justify-center"
-      aria-label="Toggle theme"
+      className="w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-md border border-gray-200 text-gray-700"
     >
-      {theme === "light" ? <FiMoon size={22} /> : <FiSun size={22} />}
-    </button>
+      {theme === "light" && <FiSun className="w-5 h-5" />}
+      {theme === "dark" && <FiMoon className="w-5 h-5" />}
+      {theme === "system" && <FiMonitor className="w-5 h-5" />}
+    </motion.button>
   );
 }
-
-export default ToggleTheme;

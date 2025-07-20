@@ -1,141 +1,175 @@
-# Kế hoạch Refactor Dự án React/Next.js
+# Phân tích và kế hoạch refactor
 
-## 1. Phân tích tổng quan cấu trúc hiện tại
+## 1. Phân tích cấu trúc thư mục hiện tại
 
-### Ưu điểm
-
-- Đã có phân chia khá rõ ràng giữa các mảng: `components`, `hooks`, `api`, `context`, `services`, `utils`, `constants`, `types`, `assets`.
-- Có thư mục `pages` và `layouts` tách biệt, phù hợp với các project React/Next.js hiện đại.
-- Có tách biệt file style (`index.css`, `PWABadge.css`), assets, và các file cấu hình.
-
-### Những điểm có thể bất hợp lý/đáng chú ý
-
-- **Thư mục `routes`**: Nếu dùng Next.js, routes nên nằm trong `pages` hoặc `app` (Next 13+). Nếu là React Vite/SPA, nên làm rõ vai trò của `routes` (có thể là custom route config).
-- **Thư mục `services` và `api`**: Dễ bị trùng lặp vai trò. Thường chỉ cần 1 trong 2: `api` (gọi API) hoặc `services` (xử lý logic phức tạp, gọi API, xử lý dữ liệu). Nếu tách, cần quy ước rõ ràng.
-- **Thư mục `constants` và `types`**: Tốt, nhưng cần đảm bảo không bị lẫn lộn (ví dụ: constant liên quan đến API nên để gần API).
-- **Thư mục `static`**: Nếu chỉ chứa mock data, nên đổi tên thành `mocks` hoặc `__mocks__` cho rõ nghĩa.
-- **File lẻ trong `src`**: Có các file như `PWABadge.tsx`, `PWABadge.css`, `App.tsx`, `main.tsx`. Nếu các file này là global entry hoặc global component thì hợp lý, còn lại nên đưa vào đúng thư mục.
-- **Thư mục `layouts`**: Nếu chỉ có 1-2 layout, có thể để trong `components/shared` hoặc `components/layouts`. Nếu nhiều layout, nên giữ nguyên.
-- **Thư mục `lib` và `utils`**: Dễ bị trùng vai trò. `lib` thường chứa thư viện tự viết hoặc wrapper, còn `utils` là các hàm tiện ích nhỏ. Nên làm rõ ranh giới.
-- **Thư mục `assets`**: Đúng chuẩn, chứa hình ảnh, SVG, v.v.
-
-### Dấu hiệu code smell/duplicate/hardcode (dựa trên cấu trúc)
-
-- Có thể có duplicate giữa `services` và `api`, hoặc giữa `lib` và `utils`.
-- Nếu có nhiều file lẻ trong `src`, dễ bị hardcode hoặc khó maintain.
-- Nếu các file như `PWABadge.tsx` chỉ dùng cho 1 page, nên đưa vào đúng page/component.
-
----
-
-## 2. Gợi ý cấu trúc chuẩn & kế hoạch refactor tổng thể
-
-### Cấu trúc chuẩn đề xuất
+### Cấu trúc hiện tại:
 
 ```
 src/
-  assets/           # Ảnh, SVG, font, v.v.
-  components/
-    shared/         # Component dùng chung (Button, Modal, ...)
-    [Feature]/      # Component theo tính năng/page
-    layouts/        # Layout components (nếu nhiều layout)
-  hooks/            # Custom hooks
-  context/          # React context
-  api/              # Gọi API, axios/fetch, schema, types liên quan API
-  services/         # Business logic, xử lý phức tạp, gọi api, cache, v.v.
-  constants/        # Biến constant, enums, v.v.
-  types/            # TypeScript types/interfaces (global)
-  utils/            # Hàm tiện ích nhỏ, pure function
-  lib/              # Wrapper thư viện, custom logic lớn (nếu có)
-  pages/            # Page components (Next.js hoặc SPA)
-  routes/           # Route config (nếu không dùng Next.js)
-  mocks/            # Mock data (đổi từ static/ nếu chỉ chứa mock data)
-  styles/           # (Nếu có nhiều file css/scss)
-  App.tsx           # Entry point
-  main.tsx          # Entry point
-  index.css         # Global style
+├── api/                  # API calls
+├── components/           # Các components UI
+│   ├── ActivityHistory/  # Components cho trang Activity History
+│   ├── CreateNewOrder/   # Components cho trang Create New Order
+│   ├── CustomerDetails/  # Components cho trang Customer Details
+│   ├── EditOrder/        # Components cho trang Edit Order
+│   ├── Home/             # Components cho trang Home
+│   │   ├── admin/        # Components cho admin view
+│   │   └── user/         # Components cho user view
+│   ├── Payment/          # Components cho trang Payment
+│   ├── shared/           # Shared components
+│   └── ui/               # UI components từ shadcn/ui
+├── context/              # React Context
+├── hooks/                # Custom hooks
+├── lib/                  # Utility functions
+├── pages/                # Page components
+├── static/               # Mock data
+└── utils/                # Utility functions
 ```
 
-### Những phần nên tách/gộp/xóa/đổi tên
+### Vấn đề:
 
-- **Tách**: Nếu `services` và `api` đang lẫn lộn, nên tách rõ: `api` chỉ gọi API, `services` xử lý logic.
-- **Gộp**: Nếu `lib` và `utils` trùng vai trò, nên gộp lại thành `utils/`.
-- **Đổi tên**: `static` → `mocks` nếu chỉ chứa mock data.
-- **Xóa**: File lẻ không dùng hoặc duplicate.
-- **Đổi vị trí**: Component chỉ dùng cho 1 page nên để trong thư mục page đó.
+1. **Cấu trúc thư mục chưa nhất quán**:
 
----
+   - Một số file nằm trực tiếp trong `src/` như `PWABadge.tsx`
+   - Phân biệt không rõ ràng giữa `lib/` và `utils/`
+   - Mock data nằm trong `static/` thay vì `mocks/`
 
-## 3. Checklist refactor cụ thể
+2. **Components chưa được tổ chức tối ưu**:
 
-### 📁 Cấu trúc thư mục
+   - Một số components dùng chung như `ToggleThemeButton` nằm ở thư mục gốc
+   - `TopNav` và `BottomNav` nằm ở thư mục gốc thay vì `shared/`
+   - Một số components có thể được tái sử dụng nhưng đang nằm trong thư mục riêng
 
-- [x] Rà soát lại vai trò `services` vs `api`, tách/gộp hợp lý.
-  - **Kết quả**: Thư mục `services` hiện đang trống, trong khi `api` chứa cả API calls và mock data. Cần chuyển logic xử lý dữ liệu từ `api/customerService.ts` sang `services/`.
-  - **Đã thực hiện**: Đã tạo file `services/customerService.ts` để xử lý logic business, và cập nhật `api/customerService.ts` để chỉ chứa API calls.
-- [x] Đổi tên `static` thành `mocks` nếu chỉ chứa mock data.
-  - **Kết quả**: Thư mục `static` chỉ chứa các file mock data (mockCustomers.ts, mockActivityHistory.ts, mockPayment.ts, mockCustomerDetails.ts). Cần đổi tên thành `mocks`.
-  - **Đã thực hiện**: Đã tạo thư mục `mocks` và di chuyển tất cả mock data từ `static` sang `mocks`.
-- [x] Gộp `lib` và `utils` nếu trùng vai trò.
-  - **Kết quả**: `lib` chứa utility function `cn()` cho Tailwind CSS, còn `utils` chứa các hàm formatter. Hai thư mục có vai trò khác nhau, không cần gộp, nhưng cần làm rõ ranh giới giữa chúng.
-  - **Đã thực hiện**: Đã xác định ranh giới giữa hai thư mục, không cần gộp.
-- [x] Đảm bảo các file lẻ (`PWABadge.tsx`, ...) nằm đúng thư mục (shared/component/page).
-  - **Kết quả**: `PWABadge.tsx` là một component global cho PWA, nên chuyển vào `components/shared` hoặc tạo thư mục `components/pwa`.
-  - **Đã thực hiện**: Đã tạo thư mục `components/pwa` và di chuyển `PWABadge.tsx` và `PWABadge.css` vào đó.
-- [x] Đảm bảo các layout component nằm trong `components/layouts` hoặc `components/shared`.
-  - **Kết quả**: Thư mục `layouts` hiện đang trống, nhưng có `AuthLayout.tsx` trong `components/shared`. Cần chuyển layout components vào thư mục thống nhất.
-  - **Đã thực hiện**: Đã tạo thư mục `components/layouts` và di chuyển `AuthLayout.tsx` từ `components/shared` sang `components/layouts`.
+3. **Phân tách logic và UI chưa rõ ràng**:
 
-### 🧩 Component & UI
+   - Một số components chứa cả logic xử lý và UI
+   - API calls và business logic đôi khi lẫn lộn
 
-- [x] Đảm bảo component chia theo feature/page, không để component lớn trong `shared` nếu chỉ dùng cho 1 page.
-  - **Đã thực hiện**: Đã di chuyển `CustomerForm` từ `components/shared` sang `components/EditOrder` vì nó chỉ được sử dụng trong trang EditOrder.
-- [x] Đảm bảo các UI component dùng chung nằm trong `shared/` hoặc `ui/`.
-  - **Đã thực hiện**:
-    - Đã di chuyển `ToggleThemeButton.tsx` từ `components/` sang `components/shared/`.
-    - Đã tạo thư mục `components/shared/navigation` và di chuyển `TopNav.tsx` và `BottomNav.tsx` vào đó.
-    - Đã cập nhật các import trong `HomeLayout.tsx` để trỏ đến vị trí mới của các component.
-- [x] Đảm bảo không có duplicate component giữa các page.
-  - **Đã thực hiện**:
-    - Đã tạo thư mục `components/shared/dialogs` và di chuyển `ConfirmDialog` từ `EditOrder` và `CreateNewOrder` sang đó vì nó được sử dụng ở cả hai nơi.
-    - Đã tạo thư mục `components/shared/combobox` và di chuyển `CustomerCombobox` từ `EditOrder` và `CreateNewOrder` sang đó vì nó được sử dụng ở cả hai nơi.
-    - Đã cập nhật import trong `CreateNewOrderView.tsx` để trỏ đến vị trí mới của các component.
+4. **Trùng lặp code**:
+   - Một số components tương tự nhau giữa các trang như `CustomerCombobox` trong `EditOrder` và `CreateNewOrder`
+   - Một số utility functions có thể được tái sử dụng
 
-### 🔁 Hooks & logic
+## 2. Kế hoạch refactor
 
-- [ ] Custom hook phải nằm trong `hooks/`, không lẫn vào component.
-- [ ] Hook chỉ dùng cho 1 feature nên đặt tên rõ ràng (`useFeatureXState`, `useFeatureXLogic`).
-- [ ] Không để logic xử lý phức tạp trong component, nên tách ra hook/service.
+### 2.1 Cấu trúc thư mục mới:
 
-### 🌐 API & services
+```
+src/
+├── api/                  # API calls thuần túy
+├── components/           # Components UI
+│   ├── features/         # Feature-specific components
+│   │   ├── ActivityHistory/
+│   │   ├── CreateNewOrder/
+│   │   ├── CustomerDetails/
+│   │   ├── EditOrder/
+│   │   ├── Home/
+│   │   └── Payment/
+│   ├── layouts/          # Layout components
+│   ├── pwa/              # PWA-related components
+│   ├── shared/           # Shared components
+│   │   ├── buttons/
+│   │   ├── cards/
+│   │   ├── dialogs/
+│   │   ├── forms/
+│   │   ├── navigation/
+│   │   └── ...
+│   └── ui/               # UI components từ shadcn/ui
+├── context/              # React Context
+├── hooks/                # Custom hooks
+├── lib/                  # Utility functions
+├── mocks/                # Mock data
+├── pages/                # Page components
+├── services/             # Business logic
+├── types/                # TypeScript types
+└── utils/                # Utility functions
+```
 
-- [x] Hàm gọi API phải nằm trong `api/`, không lẫn vào component/hook.
-  - **Đã thực hiện**: Đã cập nhật `api/customerService.ts` để chỉ chứa các API calls.
-- [x] Logic xử lý dữ liệu, mapping, cache nên nằm trong `services/`.
-  - **Đã thực hiện**: Đã tạo `services/customerService.ts` để chứa logic xử lý dữ liệu.
-- [x] Đảm bảo không duplicate logic giữa `api` và `services`.
-  - **Đã thực hiện**: Đã phân tách rõ ràng vai trò giữa `api` (gọi API) và `services` (xử lý logic).
+### 2.2 Kế hoạch chi tiết:
 
-### 📦 State & Context
+#### Cấu trúc thư mục:
 
-- [ ] Context global nên nằm trong `context/`.
-- [ ] State local nên dùng hook, không dùng context nếu không cần thiết.
-- [ ] Đảm bảo context không bị lẫn với logic business.
+- [x] Tạo cấu trúc thư mục mới theo đề xuất
+- [x] Di chuyển `PWABadge.tsx` vào thư mục `components/pwa/`
+- [x] Di chuyển mock data từ `static/` sang `mocks/`
+- [x] Tách API calls và business logic thành `api/` và `services/`
 
-### 🧹 Dọn dẹp file/code thừa
+#### Components và UI:
 
-- [ ] Xóa file không dùng, file duplicate, file test cũ.
-- [ ] Xóa/comment code không còn sử dụng.
-- [ ] Dọn dẹp assets không dùng.
+- [x] Di chuyển `ToggleThemeButton` vào `components/shared/`
+- [x] Di chuyển `TopNav` và `BottomNav` vào `components/shared/navigation/`
+- [x] Di chuyển `AuthLayout` vào `components/layouts/`
+- [x] Tách các shared components từ các feature-specific components
+- [x] Xác định và gộp các components trùng lặp
 
-### 📖 Đặt tên lại (file, biến, hàm)
+#### Hooks và Logic:
 
-- [ ] Đặt lại tên file cho đúng vai trò (component PascalCase, hook camelCase, ...).
-- [ ] Đặt lại tên biến/hàm cho rõ nghĩa, không viết tắt khó hiểu.
-- [ ] Đảm bảo tên folder/file đồng nhất (ví dụ: `CustomerDetails` vs `customer-details`).
+- [x] Tách logic từ components thành custom hooks
+- [x] Tạo hook `useDeliveredCustomers` từ component `DeliveredCustomers`
+- [x] Tạo hook `useFilterSheet` từ component `FilterSheet`
+- [x] Tạo hook `useToggleTheme` từ component `ToggleThemeButton`
+- [x] Đảm bảo các hooks được đặt tên theo feature
+- [x] Tách business logic từ components vào services
 
----
+#### State Management:
 
-**Lưu ý:**
+- [x] Global state nên dùng Context API
+- [x] Tạo context cho user authentication
+- [x] Tạo context cho theme management
+- [x] Đảm bảo state được quản lý ở đúng cấp độ (local vs global)
 
-- Chỉ lập kế hoạch và checklist, chưa thực hiện refactor ngay.
-- Sẽ bổ sung checklist chi tiết hơn khi phân tích từng phần mã nguồn cụ thể.
+#### Cleanup:
+
+- [ ] Xóa các file không sử dụng
+- [ ] Xóa code trùng lặp
+- [ ] Xóa các assets không sử dụng
+
+#### Naming Conventions:
+
+- [ ] Đảm bảo tên file và thư mục nhất quán
+- [ ] Đảm bảo tên biến và hàm có ý nghĩa và nhất quán
+
+## 3. Checklist Refactor
+
+### Cấu trúc thư mục
+
+- [x] Tạo cấu trúc thư mục mới
+- [x] Di chuyển `PWABadge.tsx` vào thư mục `components/pwa/`
+- [x] Di chuyển mock data từ `static/` sang `mocks/`
+- [x] Tách API calls và business logic thành `api/` và `services/`
+
+### Components/UI
+
+- [x] Di chuyển `ToggleThemeButton` vào `components/shared/`
+- [x] Di chuyển `TopNav` và `BottomNav` vào `components/shared/navigation/`
+- [x] Di chuyển `AuthLayout` vào `components/layouts/`
+- [x] Tách các shared components từ các feature-specific components
+- [x] Không có component trùng lặp giữa các trang
+
+### Hooks & Logic
+
+- [x] Custom hook phải nằm trong `hooks/`, không lẫn vào component
+- [x] Hook chỉ dùng cho 1 feature nên đặt tên rõ ràng (`useFeatureXState`, `useFeatureXLogic`)
+- [x] Không để logic xử lý phức tạp trong component, nên tách ra hook/service
+- [x] Tách API calls và business logic
+
+### State & Context
+
+- [x] Global state nên dùng Context API
+- [x] Tạo context cho user authentication
+- [x] Tạo context cho theme management
+- [x] Đảm bảo state được quản lý ở đúng cấp độ (local vs global)
+
+### Cleanup
+
+- [ ] Xóa các file không sử dụng
+- [ ] Xóa code trùng lặp
+- [ ] Xóa các assets không sử dụng
+- [ ] Đảm bảo không có dead code
+
+### Naming Conventions
+
+- [ ] Tên file và thư mục nhất quán
+- [ ] Tên biến và hàm có ý nghĩa và nhất quán
+- [ ] Components: PascalCase
+- [ ] Functions, variables: camelCase
+- [ ] Constants: UPPER_SNAKE_CASE

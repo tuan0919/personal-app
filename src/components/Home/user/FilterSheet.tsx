@@ -1,18 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { FiX, FiFilter } from "react-icons/fi";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
 import { FilterValues } from "@/api/types";
-
-// Extended filter values for UI
-interface UIFilterValues extends FilterValues {
-  minPrice: number;
-  maxPrice: number;
-  iceCube: boolean; // đá viên
-  iceBlock: boolean; // đá cây
-  paidStatus: "all" | "paid" | "unpaid";
-}
+import { useFilterSheet, UIFilterValues } from "@/hooks/useFilterSheet";
 
 interface FilterSheetProps {
   open: boolean;
@@ -60,91 +52,26 @@ const backdropVariants = {
   },
 };
 
-// Hàm định dạng số
-const formatNumber = (value: number): string => {
-  return value.toLocaleString("vi-VN");
-};
-
-// Hàm chuyển đổi từ chuỗi đã định dạng thành số
-const parseFormattedNumber = (formattedValue: string): number => {
-  // Loại bỏ tất cả các ký tự không phải số
-  const numericValue = formattedValue.replace(/[^\d]/g, "");
-  return numericValue ? parseInt(numericValue, 10) : 0;
-};
-
 export const FilterSheet: React.FC<FilterSheetProps> = ({
   open,
   onClose,
   onApply,
   initial,
 }) => {
-  const [values, setValues] = useState<UIFilterValues>(
-    initial || {
-      minPrice: 0,
-      maxPrice: 1000000,
-      iceCube: true,
-      iceBlock: true,
-      paidStatus: "all",
-    }
-  );
-
-  // State cho giá trị đã định dạng
-  const [formattedMinPrice, setFormattedMinPrice] = useState(
-    formatNumber(values.minPrice)
-  );
-  const [formattedMaxPrice, setFormattedMaxPrice] = useState(
-    formatNumber(values.maxPrice)
-  );
-
-  // Cập nhật giá trị định dạng khi values thay đổi
-  useEffect(() => {
-    setFormattedMinPrice(formatNumber(values.minPrice));
-    setFormattedMaxPrice(formatNumber(values.maxPrice));
-  }, [values.minPrice, values.maxPrice]);
-
-  const handleChange = <K extends keyof UIFilterValues>(
-    key: K,
-    val: UIFilterValues[K]
-  ) => {
-    setValues((prev) => ({ ...prev, [key]: val }));
-  };
-
-  const handleMinPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formattedValue = e.target.value;
-    setFormattedMinPrice(formattedValue);
-    const numericValue = parseFormattedNumber(formattedValue);
-    handleChange("minPrice", numericValue as UIFilterValues["minPrice"]);
-  };
-
-  const handleMaxPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formattedValue = e.target.value;
-    setFormattedMaxPrice(formattedValue);
-    const numericValue = parseFormattedNumber(formattedValue);
-    handleChange("maxPrice", numericValue as UIFilterValues["maxPrice"]);
-  };
+  const {
+    values,
+    formattedMinPrice,
+    formattedMaxPrice,
+    handleChange,
+    handleMinPriceChange,
+    handleMaxPriceChange,
+    handleMinPriceBlur,
+    handleMaxPriceBlur,
+    getApiFilters,
+  } = useFilterSheet({ initial });
 
   const handleApply = () => {
-    // Convert UI filter values to API filter values
-    const apiFilters: FilterValues = {
-      paymentStatus:
-        values.paidStatus === "all" ? undefined : values.paidStatus,
-      productType:
-        values.iceCube && values.iceBlock
-          ? undefined
-          : values.iceCube
-          ? 2
-          : values.iceBlock
-          ? 1
-          : undefined,
-      delivered: undefined, // Can be extended later
-      // Thêm lọc theo khoảng giá
-      priceRange: {
-        min: values.minPrice,
-        max: values.maxPrice,
-      },
-    };
-
-    onApply(apiFilters);
+    onApply(getApiFilters());
     onClose();
   };
 
@@ -152,15 +79,6 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
     if (e.target === e.currentTarget) {
       onClose();
     }
-  };
-
-  // Định dạng lại khi blur
-  const handleMinPriceBlur = () => {
-    setFormattedMinPrice(formatNumber(values.minPrice));
-  };
-
-  const handleMaxPriceBlur = () => {
-    setFormattedMaxPrice(formatNumber(values.maxPrice));
   };
 
   return (
@@ -199,159 +117,142 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
             </div>
 
             {/* Header */}
-            <div className="px-6 pb-4 border-b border-white/20">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30">
-                    <FiFilter className="text-white text-lg" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-white">
-                      Bộ lọc nâng cao
-                    </h3>
-                    <p className="text-sm text-white/70">
-                      Tùy chỉnh kết quả tìm kiếm
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={onClose}
-                  className="w-8 h-8 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors border border-white/30"
-                >
-                  <FiX className="w-4 h-4 text-white" />
-                </button>
+            <div className="flex items-center justify-between px-6 pb-4">
+              <div className="flex items-center gap-2">
+                <FiFilter className="text-white" />
+                <h3 className="text-white font-semibold text-lg">Bộ lọc</h3>
               </div>
+              <button
+                onClick={onClose}
+                className="p-2 rounded-full hover:bg-white/10 transition-colors"
+              >
+                <FiX className="text-white" />
+              </button>
             </div>
 
             {/* Content */}
-            <div className="px-6 py-4 space-y-6">
+            <div className="bg-white rounded-t-3xl p-6 space-y-6">
               {/* Price Range */}
               <div>
-                <label className="block text-sm font-semibold text-white mb-3">
-                  Khoảng giá (₫)
-                </label>
-                <div className="flex items-center gap-3">
-                  <Input
-                    type="text"
-                    value={formattedMinPrice}
-                    onChange={handleMinPriceChange}
-                    onBlur={handleMinPriceBlur}
-                    placeholder="Từ"
-                    className="flex-1 h-12 bg-white/20 backdrop-blur-sm border-white/30 text-white placeholder-white/50 rounded-xl text-center"
-                  />
-                  <span className="text-white/70">-</span>
-                  <Input
-                    type="text"
-                    value={formattedMaxPrice}
-                    onChange={handleMaxPriceChange}
-                    onBlur={handleMaxPriceBlur}
-                    placeholder="Đến"
-                    className="flex-1 h-12 bg-white/20 backdrop-blur-sm border-white/30 text-white placeholder-white/50 rounded-xl text-center"
-                  />
+                <h4 className="font-medium text-gray-700 mb-3">Khoảng giá</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm text-gray-500 mb-1 block">
+                      Từ
+                    </label>
+                    <Input
+                      value={formattedMinPrice}
+                      onChange={handleMinPriceChange}
+                      onBlur={handleMinPriceBlur}
+                      className="border-gray-300"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-500 mb-1 block">
+                      Đến
+                    </label>
+                    <Input
+                      value={formattedMaxPrice}
+                      onChange={handleMaxPriceChange}
+                      onBlur={handleMaxPriceBlur}
+                      className="border-gray-300"
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* Ice Type Toggle */}
+              {/* Product Type */}
               <div>
-                <label className="block text-sm font-semibold text-white mb-3">
-                  Loại đá
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  <label
-                    className={clsx(
-                      "flex items-center gap-3 p-3 rounded-xl border-2 transition-all cursor-pointer backdrop-blur-sm",
-                      values.iceCube
-                        ? "bg-white/30 border-white/50 text-white shadow-lg"
-                        : "bg-white/10 border-white/20 text-white/80 hover:bg-white/20 hover:border-white/30"
-                    )}
-                  >
+                <h4 className="font-medium text-gray-700 mb-3">
+                  Loại sản phẩm
+                </h4>
+                <div className="space-y-2">
+                  <div className="flex items-center">
                     <input
                       type="checkbox"
+                      id="iceCube"
                       checked={values.iceCube}
                       onChange={(e) =>
                         handleChange("iceCube", e.target.checked)
                       }
-                      className="sr-only"
+                      className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                     />
-                    <div className="w-5 h-5 border-2 rounded flex items-center justify-center">
-                      {values.iceCube && (
-                        <div className="w-2 h-2 bg-current rounded-sm" />
-                      )}
-                    </div>
-                    <span className="font-medium">Đá viên</span>
-                  </label>
-                  <label
-                    className={clsx(
-                      "flex items-center gap-3 p-3 rounded-xl border-2 transition-all cursor-pointer backdrop-blur-sm",
-                      values.iceBlock
-                        ? "bg-white/30 border-white/50 text-white shadow-lg"
-                        : "bg-white/10 border-white/20 text-white/80 hover:bg-white/20 hover:border-white/30"
-                    )}
-                  >
+                    <label
+                      htmlFor="iceCube"
+                      className="ml-2 text-gray-700 select-none"
+                    >
+                      Đá viên
+                    </label>
+                  </div>
+                  <div className="flex items-center">
                     <input
                       type="checkbox"
+                      id="iceBlock"
                       checked={values.iceBlock}
                       onChange={(e) =>
                         handleChange("iceBlock", e.target.checked)
                       }
-                      className="sr-only"
+                      className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                     />
-                    <div className="w-5 h-5 border-2 rounded flex items-center justify-center">
-                      {values.iceBlock && (
-                        <div className="w-2 h-2 bg-current rounded-sm" />
-                      )}
-                    </div>
-                    <span className="font-medium">Đá cây</span>
-                  </label>
+                    <label
+                      htmlFor="iceBlock"
+                      className="ml-2 text-gray-700 select-none"
+                    >
+                      Đá cây
+                    </label>
+                  </div>
                 </div>
               </div>
 
               {/* Payment Status */}
               <div>
-                <label className="block text-sm font-semibold text-white mb-3">
-                  Tình trạng thanh toán
-                </label>
-                <div className="grid grid-cols-3 gap-2">
-                  {(
-                    [
-                      { label: "Tất cả", value: "all" },
-                      { label: "Chưa TT", value: "unpaid" },
-                      { label: "Đã TT", value: "paid" },
-                    ] as const
-                  ).map((opt) => (
-                    <button
-                      key={opt.value}
-                      className={clsx(
-                        "py-3 px-2 rounded-xl text-sm font-medium border-2 transition-all backdrop-blur-sm",
-                        values.paidStatus === opt.value
-                          ? "bg-white/30 text-white border-white/50 shadow-lg"
-                          : "bg-white/10 text-white/80 border-white/20 hover:bg-white/20 hover:border-white/30"
-                      )}
-                      onClick={() => handleChange("paidStatus", opt.value)}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
+                <h4 className="font-medium text-gray-700 mb-3">
+                  Trạng thái thanh toán
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => handleChange("paidStatus", "all")}
+                    className={clsx(
+                      "px-4 py-2 rounded-lg border text-sm font-medium transition-colors",
+                      values.paidStatus === "all"
+                        ? "bg-blue-500 text-white border-blue-500"
+                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                    )}
+                  >
+                    Tất cả
+                  </button>
+                  <button
+                    onClick={() => handleChange("paidStatus", "paid")}
+                    className={clsx(
+                      "px-4 py-2 rounded-lg border text-sm font-medium transition-colors",
+                      values.paidStatus === "paid"
+                        ? "bg-blue-500 text-white border-blue-500"
+                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                    )}
+                  >
+                    Đã thanh toán
+                  </button>
+                  <button
+                    onClick={() => handleChange("paidStatus", "unpaid")}
+                    className={clsx(
+                      "px-4 py-2 rounded-lg border text-sm font-medium transition-colors",
+                      values.paidStatus === "unpaid"
+                        ? "bg-blue-500 text-white border-blue-500"
+                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                    )}
+                  >
+                    Chưa thanh toán
+                  </button>
                 </div>
               </div>
-            </div>
 
-            {/* Actions */}
-            <div className="px-6 pb-6 pt-4 border-t border-white/20">
-              <div className="flex gap-3">
-                <button
-                  className="flex-1 py-4 rounded-xl font-semibold bg-gray-500/30 backdrop-blur-sm text-white hover:bg-gray-500/40 transition-colors border border-white/20"
-                  onClick={onClose}
-                >
-                  Đóng
-                </button>
-                <button
-                  className="flex-1 py-4 bg-gradient-to-r from-blue-500/80 to-blue-600/80 backdrop-blur-sm text-white rounded-xl font-semibold shadow-lg hover:from-blue-500/90 hover:to-blue-600/90 transition-all border border-blue-400/30"
-                  onClick={handleApply}
-                >
-                  Áp dụng
-                </button>
-              </div>
+              {/* Apply Button */}
+              <button
+                onClick={handleApply}
+                className="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium rounded-lg shadow-lg hover:from-blue-600 hover:to-indigo-700 transition-colors"
+              >
+                Áp dụng bộ lọc
+              </button>
             </div>
           </motion.div>
         </motion.div>

@@ -1,75 +1,63 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { FiCheckCircle, FiX } from "react-icons/fi";
+// components/Payment/ActionButtons.tsx
+import { motion } from "framer-motion";
+import { FiCheck, FiX, FiCheckSquare } from "react-icons/fi";
 
 interface ActionButtonsProps {
-  selectedUnpaidOrders: number[];
-  selectedPaidOrders: number[];
-  onCollectPayment: () => void;
-  onCancelPayment: () => void;
-  disabled?: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+  onSelectAll: () => void;
+  disabled: boolean;
+  selectedCount: number;
 }
 
 export function ActionButtons({
-  selectedUnpaidOrders,
-  selectedPaidOrders,
-  onCollectPayment,
-  onCancelPayment,
-  disabled = false,
+  onConfirm,
+  onCancel,
+  onSelectAll,
+  disabled,
+  selectedCount,
 }: ActionButtonsProps) {
   return (
-    <div className="space-y-4">
-      <AnimatePresence>
-        {selectedUnpaidOrders.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            transition={{ type: "spring", stiffness: 200, damping: 20 }}
-            className="max-w-md mx-auto"
-          >
-            <motion.button
-              onClick={onCollectPayment}
-              className={`w-full bg-gradient-to-r from-pink-500 to-purple-500 text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-lg transition-all duration-300 flex items-center justify-center space-x-2 backdrop-blur-sm ${
-                disabled ? "opacity-50 cursor-not-allowed" : "hover:shadow-xl"
-              }`}
-              whileHover={disabled ? {} : { scale: 1.02, y: -2 }}
-              whileTap={disabled ? {} : { scale: 0.98 }}
-              disabled={disabled}
-            >
-              <FiCheckCircle className="text-xl" />
-              <span className="text-center">
-                Xác nhận {selectedUnpaidOrders.length} hóa đơn đã thanh toán
-              </span>
-            </motion.button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <AnimatePresence>
-        {selectedPaidOrders.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            transition={{ type: "spring", stiffness: 200, damping: 20 }}
-            className="max-w-md mx-auto"
-          >
-            <motion.button
-              onClick={onCancelPayment}
-              className={`w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-lg transition-all duration-300 flex items-center justify-center space-x-2 backdrop-blur-sm ${
-                disabled ? "opacity-50 cursor-not-allowed" : "hover:shadow-xl"
-              }`}
-              whileHover={disabled ? {} : { scale: 1.02, y: -2 }}
-              whileTap={disabled ? {} : { scale: 0.98 }}
-              disabled={disabled}
-            >
-              <FiX className="text-xl" />
-              <span className="text-center">
-                Hủy xác nhận {selectedPaidOrders.length} hóa đơn đã thanh toán
-              </span>
-            </motion.button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3 }}
+      className="fixed bottom-20 left-0 right-0 flex justify-center z-30"
+    >
+      <div className="bg-white shadow-lg rounded-full px-2 py-2 flex gap-2 border border-gray-200">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-full flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={onConfirm}
+          disabled={disabled || selectedCount === 0}
+        >
+          <FiCheck />
+          <span>Thanh toán {selectedCount > 0 && `(${selectedCount})`}</span>
+        </motion.button>
+
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-full flex items-center gap-2"
+          onClick={onSelectAll}
+          disabled={disabled}
+        >
+          <FiCheckSquare />
+          <span>Chọn tất cả</span>
+        </motion.button>
+
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="bg-red-100 hover:bg-red-200 text-red-600 px-4 py-2 rounded-full flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={onCancel}
+          disabled={disabled || selectedCount === 0}
+        >
+          <FiX />
+          <span>Hủy chọn</span>
+        </motion.button>
+      </div>
+    </motion.div>
   );
 }

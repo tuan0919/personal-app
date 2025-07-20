@@ -1,5 +1,4 @@
 // components/Home/user/DeliveredCustomers.tsx (Fixed Animation)
-import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTruckFast } from "react-icons/fa6";
 import { FiFilter, FiLoader, FiPlus } from "react-icons/fi";
@@ -11,11 +10,11 @@ import {
   fadeVariants,
   sectionVariants,
   containerVariants,
-  pageTransition,
   spinVariants,
 } from "@/components/shared/animations";
 import { useNavigate } from "react-router-dom";
 import { CalendarChooser } from "@/components/shared/CalendarChooser";
+import { useDeliveredCustomers } from "@/hooks/useDeliveredCustomers";
 
 interface DeliveredCustomersProps {
   delivered: Customer[];
@@ -38,97 +37,35 @@ export function DeliveredCustomers({
   onDateChange,
   loading = false,
 }: DeliveredCustomersProps) {
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
-    null
-  );
-  const [showActionPopup, setShowActionPopup] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [isLoading, setIsLoading] = useState(loading);
-
-  // Cập nhật trạng thái loading khi prop loading thay đổi
-  useEffect(() => {
-    setIsLoading(loading);
-  }, [loading]);
-
-  // đảm bảo chỉ xài những đơn đã giao
-  const deliveredList = delivered.filter((c) => c.delivered);
-
-  const perPage = 3;
-  const totalPages = Math.max(1, Math.ceil(deliveredList.length / perPage));
-  const [page, setPage] = useState(1);
-
-  // nếu deliveredList thay đổi mà page vượt quá, reset về 1
-  useEffect(() => {
-    if (page > totalPages) setPage(1);
-  }, [totalPages, page]);
-
-  const startIdx = (page - 1) * perPage;
-  const currentItems = deliveredList.slice(startIdx, startIdx + perPage);
   const navigate = useNavigate();
-
-  const handleCustomerSelect = (customer: Customer) => {
-    if (selectedCustomer?.customerId === customer.customerId) {
-      // Deselect: CHỈ tắt popup, không clear selectedCustomer ngay
-      setShowActionPopup(false);
-      // selectedCustomer sẽ được clear sau khi animation hoàn tất
-    } else {
-      // Select new customer
-      setSelectedCustomer(customer);
-      setShowActionPopup(true);
-    }
-  };
-
-  const handleClosePopup = () => {
-    // CHỈ tắt popup, không clear selectedCustomer ngay
-    setShowActionPopup(false);
-    // selectedCustomer sẽ được clear sau khi animation hoàn tất
-  };
-
-  // Callback khi animation exit hoàn tất
-  const handleAnimationComplete = () => {
-    if (!showActionPopup) {
-      // Chỉ clear selectedCustomer sau khi animation exit hoàn tất
-      setSelectedCustomer(null);
-    }
-  };
-
-  const handleView = (customer: Customer) => {
-    console.log("View customer:", customer);
-    setShowActionPopup(false);
-  };
-
-  const handleEdit = (customer: Customer) => {
-    setShowActionPopup(false);
-    navigate(
-      { pathname: `/order/${customer.customerId}/edit` },
-      {
-        state: customer,
-      }
-    );
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleDelete = (_customer: Customer) => {
-    setShowDeleteConfirm(true);
-    setShowActionPopup(false);
-  };
-
-  const confirmDelete = async () => {
-    if (selectedCustomer) {
-      try {
-        await onDeleteCustomer(selectedCustomer.customerId);
-        setSelectedCustomer(null);
-        setShowDeleteConfirm(false);
-      } catch (error) {
-        console.error("Failed to delete customer:", error);
-        // You could add error handling UI here
-      }
-    }
-  };
+  const {
+    selectedCustomer,
+    showActionPopup,
+    showDeleteConfirm,
+    isLoading,
+    page,
+    totalPages,
+    currentItems,
+    deliveredList,
+    setPage,
+    handleCustomerSelect,
+    handleClosePopup,
+    handleAnimationComplete,
+    handleView,
+    handleEdit,
+    handleDelete,
+    confirmDelete,
+    closeDeleteConfirm,
+    setLoadingState,
+  } = useDeliveredCustomers({
+    delivered,
+    onDeleteCustomer,
+    loading,
+  });
 
   const handleDateChange = (date: Date) => {
     if (onDateChange) {
-      setIsLoading(true); // Set loading state khi chọn ngày mới
+      setLoadingState(true); // Set loading state khi chọn ngày mới
       onDateChange(date);
     }
     console.log("Selected date:", date);
@@ -198,38 +135,33 @@ export function DeliveredCustomers({
             )}
           </AnimatePresence>
 
-          {/* GIỮ NGUYÊN ANIMATION CHUYỂN TRANG GỐC */}
-          <AnimatePresence initial={false} mode="wait">
-            <motion.div
-              key={`page-${page}`}
-              variants={pageTransition}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
-              {currentItems.length === 0 ? (
-                <div className="text-center py-8">
-                  <FaTruckFast className="w-12 h-12 mx-auto text-gray-300 mb-2" />
-                  <p className="text-gray-500">Chưa giao khách nào.</p>
-                </div>
-              ) : (
-                currentItems.map((customer) => (
-                  <SelectableCustomerCard
-                    key={customer.customerId}
-                    customer={customer}
-                    isSelected={
-                      selectedCustomer?.customerId === customer.customerId
-                    }
-                    onSelect={handleCustomerSelect}
-                  />
-                ))
-              )}
-            </motion.div>
-          </AnimatePresence>
+          {/* Empty State */}
+          {!isLoading && currentItems.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <FaTruckFast className="text-gray-300 text-4xl mb-2" />
+              <p className="text-gray-500">
+                Không có đơn hàng nào trong ngày này
+              </p>
+            </div>
+          ) : (
+            // Customer Cards
+            <div className="space-y-3">
+              {currentItems.map((customer) => (
+                <SelectableCustomerCard
+                  key={customer.customerId}
+                  customer={customer}
+                  isSelected={
+                    selectedCustomer?.customerId === customer.customerId
+                  }
+                  onSelect={() => handleCustomerSelect(customer)}
+                />
+              ))}
+            </div>
+          )}
 
-          {/* GIỮ NGUYÊN PAGINATION GỐC */}
+          {/* Pagination */}
           {totalPages > 1 && (
-            <div className="mt-4">
+            <div className="mt-4 flex justify-center">
               <Pagination
                 currentPage={page}
                 totalPages={totalPages}
@@ -237,61 +169,52 @@ export function DeliveredCustomers({
               />
             </div>
           )}
+
+          {/* Action Popup */}
+          <AnimatePresence onExitComplete={handleAnimationComplete}>
+            {showActionPopup && selectedCustomer && (
+              <FloatingActionPopup
+                customer={selectedCustomer}
+                onClose={handleClosePopup}
+                onView={() => handleView(selectedCustomer)}
+                onEdit={() => handleEdit(selectedCustomer)}
+                onDelete={handleDelete}
+              />
+            )}
+          </AnimatePresence>
+
+          {/* Delete Confirmation */}
+          {showDeleteConfirm && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+              <motion.div
+                className="bg-white rounded-xl p-6 max-w-xs w-full"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring" }}
+              >
+                <h3 className="text-lg font-bold mb-2">Xác nhận xóa</h3>
+                <p className="text-gray-600 mb-4">
+                  Bạn có chắc chắn muốn xóa khách hàng này?
+                </p>
+                <div className="flex justify-end gap-2">
+                  <button
+                    className="px-4 py-2 border rounded-lg"
+                    onClick={closeDeleteConfirm}
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-red-500 text-white rounded-lg"
+                    onClick={confirmDelete}
+                  >
+                    Xóa
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
         </motion.div>
       </motion.section>
-
-      {/* POPUP ACTIONS với animation callback */}
-      <FloatingActionPopup
-        isVisible={showActionPopup}
-        customer={selectedCustomer}
-        onClose={handleClosePopup}
-        onView={handleView}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onAnimationComplete={handleAnimationComplete}
-      />
-
-      {/* THÊM DELETE CONFIRMATION */}
-      <AnimatePresence>
-        {showDeleteConfirm && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed drop-shadow-2xl inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-2xl p-6 w-full max-w-sm"
-            >
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                Xác nhận xóa đơn hàng
-              </h3>
-              <p className="text-gray-600 mb-4">
-                Bạn có chắc muốn xóa đơn hàng của{" "}
-                <strong>{selectedCustomer?.customerName}</strong>?
-              </p>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  className="flex-1 py-2 px-4 bg-gray-100 text-gray-700 rounded-lg font-medium"
-                >
-                  Hủy
-                </button>
-                <button
-                  onClick={confirmDelete}
-                  className="flex-1 py-2 px-4 bg-red-500 text-white rounded-lg font-medium"
-                >
-                  Xóa
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 }
