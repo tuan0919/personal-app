@@ -34,7 +34,13 @@ export interface UseHomeStateReturn {
   refetchData: () => Promise<void>;
 }
 
-export function useHomeState(): UseHomeStateReturn {
+interface UseHomeStateProps {
+  initialIsAdmin?: boolean;
+}
+
+export function useHomeState({
+  initialIsAdmin = false,
+}: UseHomeStateProps = {}): UseHomeStateReturn {
   // Filter state
   const [filterOpen, setFilterOpen] = useState(false);
 
@@ -48,7 +54,7 @@ export function useHomeState(): UseHomeStateReturn {
   const [error, setError] = useState<string | null>(null);
 
   // User type state
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(initialIsAdmin);
 
   // Load data function
   const loadData = useCallback(

@@ -22,19 +22,16 @@ interface AdminViewProps {
   };
 }
 
-export function AdminView({ refs, controls }: AdminViewProps) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function AdminView(_props: AdminViewProps) {
+  // Props are received from Home.tsx but not used in this component
+  // They're kept to maintain structural consistency with UserView
   return (
     <>
-      <DailyStatsSection
-        ref={refs.dailyStatsRef}
-        controls={controls.dailyStatsCtrl}
-      />
+      <DailyStatsSection />
       <AdminOrdersView />
-      <WeeklyChartSection ref={refs.chartRef} controls={controls.chartCtrl} />
-      <WeeklyStatsSection
-        ref={refs.weeklyStatsRef}
-        controls={controls.weeklyStatsCtrl}
-      />
+      <WeeklyChartSection />
+      <WeeklyStatsSection />
     </>
   );
 }

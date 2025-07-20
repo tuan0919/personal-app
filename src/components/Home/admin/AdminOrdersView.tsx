@@ -1,25 +1,33 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { FaTruckFast, FaCube, FaIceCream } from "react-icons/fa6";
+import { FaTruckFast } from "react-icons/fa6";
 import { FiFilter, FiLoader } from "react-icons/fi";
-import { FaUserCircle } from "react-icons/fa";
-import { cn } from "@/lib/utils";
 import { CalendarChooser } from "@/components/shared/CalendarChooser";
 import { Pagination } from "@/components/shared/Pagination";
-import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton";
 import { AdminFilterSheet } from "./AdminFilterSheet";
 import {
   fadeVariants,
   sectionVariants,
   containerVariants,
   pageTransition,
-  itemVariants,
 } from "@/components/shared/animations";
 import { useAdminState } from "@/hooks/useAdminState";
-import { useAdminAnimations } from "@/hooks/useAdminAnimations";
+import { AdminOrderCard } from "./AdminOrderCard";
+import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton";
+import { ErrorState } from "@/components/shared/ErrorState";
+import { useState, useEffect } from "react";
 
 export function AdminOrdersView() {
   const { state, actions, computed } = useAdminState();
-  const { controls, variants } = useAdminAnimations();
+  const [showSkeleton, setShowSkeleton] = useState(true);
+
+  useEffect(() => {
+    // Only show the main skeleton on the very first load.
+    // After that, the overlay will be used.
+    if (!state.isLoading) {
+      const timer = setTimeout(() => setShowSkeleton(false), 500); // Wait for skeleton to finish animation
+      return () => clearTimeout(timer);
+    }
+  }, [state.isLoading]);
 
   // Handle animation complete for popup
   const handleAnimationComplete = () => {
@@ -28,32 +36,36 @@ export function AdminOrdersView() {
     }
   };
 
-  // Handle shipper details
+  // Handle shipper details, customer details, edit order...
   const handleShipperDetails = (id: number) => {
     console.log("Xem chi tiết người giao:", id);
     actions.setShowActionPopup(false);
   };
 
-  // Handle customer details
   const handleCustomerDetails = (id: number) => {
     console.log("Xem chi tiết khách hàng:", id);
     actions.setShowActionPopup(false);
   };
 
-  // Handle edit order
   const handleEdit = (id: number) => {
     console.log("Chỉnh sửa đơn hàng:", id);
     actions.setShowActionPopup(false);
   };
 
-  // Show loading skeleton if initial loading
-  if (state.isLoading && computed.paged.length === 0) {
+  if (showSkeleton) {
     return (
       <LoadingSkeleton
         loading={state.isLoading}
         pageName="Quản lý đơn giao đá"
-        onComplete={() => actions.setLoading(false)}
       />
+    );
+  }
+
+  if (state.error) {
+    return (
+      <section className="p-4">
+        <ErrorState error={state.error} onRetry={actions.resetState} />
+      </section>
     );
   }
 
@@ -102,7 +114,7 @@ export function AdminOrdersView() {
         >
           {/* Loading Overlay */}
           <AnimatePresence>
-            {state.isLoading && (
+            {state.isLoading && !showSkeleton && (
               <motion.div
                 className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-2xl z-10 flex flex-col items-center justify-center"
                 variants={fadeVariants}
@@ -117,140 +129,63 @@ export function AdminOrdersView() {
                 >
                   <FiLoader className="w-8 h-8" />
                 </motion.div>
-                <p className="text-gray-600 mt-2 text-sm">
-                  Đang tải dữ liệu...
-                </p>
+                <p className="text-gray-600 mt-2 text-sm">Đang cập nhật...</p>
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* Error State */}
-          {state.error && (
-            <motion.div
-              className="text-center py-8"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <div className="text-red-500 mb-2">
-                <svg
-                  className="w-12 h-12 mx-auto"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-                  />
-                </svg>
-              </div>
-              <p className="text-gray-600">{state.error}</p>
-              <button
-                onClick={actions.resetState}
-                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-              >
-                Thử lại
-              </button>
-            </motion.div>
-          )}
-
           {/* Orders List */}
-          {!state.error && (
-            <AnimatePresence initial={false} mode="wait">
-              <motion.div
-                key={`page-${state.currentPage}-filter-${JSON.stringify(
-                  state.filters
-                )}`}
-                variants={pageTransition}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                className="space-y-2"
-              >
-                {computed.paged.length === 0 ? (
-                  <motion.div
-                    className="text-center py-8"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                  >
-                    <FaTruckFast className="w-12 h-12 mx-auto text-gray-300 mb-2" />
-                    <p className="text-gray-500">
-                      {state.orders.length === 0
-                        ? "Không có đơn giao nào trong ngày này."
-                        : "Không tìm thấy đơn hàng phù hợp với bộ lọc."}
-                    </p>
-                  </motion.div>
-                ) : (
-                  computed.paged.map((order, index) => (
-                    <motion.div
-                      key={order.id}
-                      variants={itemVariants}
-                      initial="hidden"
-                      animate="visible"
-                      transition={{ delay: index * 0.1 }}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className={cn(
-                        "p-3 rounded-lg border cursor-pointer select-none transition-all duration-200",
-                        state.selectedRecord === order.id
-                          ? "bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-300 shadow-md"
-                          : "bg-white/60 border-gray-200 hover:bg-white/80 hover:shadow-sm"
-                      )}
-                      onClick={() => actions.handleOrderSelect(order.id)}
-                    >
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2">
-                          <FaTruckFast className="text-blue-500 text-lg" />
-                          <div>
-                            <p className="font-semibold text-gray-800 text-sm truncate">
-                              {order.customer}
-                            </p>
-                            <p className="text-xs text-gray-500 flex items-center gap-1">
-                              <FaUserCircle className="text-blue-400 text-xs" />
-                              <span className="font-medium">
-                                Người giao:
-                              </span>{" "}
-                              {order.shipper}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-xs text-gray-600 text-right">
-                          <span className="flex items-center gap-1 justify-end">
-                            <FaIceCream className="text-pink-400" />{" "}
-                            {order.daCay}
-                            <FaCube className="text-sky-400 ml-1" />{" "}
-                            {order.daBi}
-                          </span>
-                          <div className="font-medium text-green-600">
-                            {order.revenue.toLocaleString("vi-VN")} ₫
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))
-                )}
-              </motion.div>
-            </AnimatePresence>
-          )}
-
-          {/* Pagination */}
-          {!state.error && computed.totalPages > 1 && (
+          <AnimatePresence initial={false} mode="wait">
             <motion.div
-              className="mt-4"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+              key={`page-${state.currentPage}-filter-${JSON.stringify(
+                state.filters
+              )}`}
+              variants={pageTransition}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="space-y-2"
             >
-              <Pagination
-                currentPage={state.currentPage}
-                totalPages={computed.totalPages}
-                onChange={actions.setCurrentPage}
-              />
+              {computed.paged.length === 0 ? (
+                <motion.div
+                  className="text-center py-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <FaTruckFast className="w-12 h-12 mx-auto text-gray-300 mb-2" />
+                  <p className="text-gray-500">
+                    {state.orders.length === 0
+                      ? "Không có đơn giao nào trong ngày này."
+                      : "Không tìm thấy đơn hàng phù hợp với bộ lọc."}
+                  </p>
+                </motion.div>
+              ) : (
+                computed.paged.map((order) => (
+                  <AdminOrderCard
+                    key={order.customerId}
+                    order={order}
+                    isSelected={state.selectedRecord === order.customerId}
+                    onSelect={actions.handleOrderSelect}
+                  />
+                ))
+              )}
             </motion.div>
-          )}
+          </AnimatePresence>
+
+          {/* Pagination - Luôn hiển thị, bất kể số lượng trang */}
+          <motion.div
+            className="mt-4"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Pagination
+              currentPage={state.currentPage}
+              totalPages={Math.max(1, computed.totalPages)}
+              onChange={actions.setCurrentPage}
+            />
+          </motion.div>
         </motion.div>
       </motion.section>
 
@@ -285,10 +220,10 @@ export function AdminOrdersView() {
                 >
                   <div>
                     <h3 className="font-bold text-slate-800 text-lg">
-                      {computed.selectedOrder.customer}
+                      {computed.selectedOrder.customerName}
                     </h3>
                     <p className="text-sm text-slate-600">
-                      Người giao: {computed.selectedOrder.shipper}
+                      Người giao: {computed.selectedOrder.shipper.name}
                     </p>
                   </div>
                   <button
@@ -317,7 +252,9 @@ export function AdminOrdersView() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0, transition: { delay: 0.1 } }}
                     exit={{ opacity: 0, y: -10 }}
-                    onClick={() => handleEdit(computed.selectedOrder!.id)}
+                    onClick={() =>
+                      handleEdit(computed.selectedOrder!.customerId)
+                    }
                     className="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-amber-50 to-amber-100 text-amber-700 rounded-xl hover:from-amber-100 hover:to-amber-200 transition-all duration-200 font-medium"
                     whileTap={{ scale: 0.98 }}
                     whileHover={{ scale: 1.02 }}
@@ -343,7 +280,9 @@ export function AdminOrdersView() {
                     animate={{ opacity: 1, y: 0, transition: { delay: 0.2 } }}
                     exit={{ opacity: 0, y: -10 }}
                     onClick={() =>
-                      actions.handleDeleteClick(computed.selectedOrder!.id)
+                      actions.handleDeleteClick(
+                        computed.selectedOrder!.customerId
+                      )
                     }
                     className="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-red-50 to-red-100 text-red-700 rounded-xl hover:from-red-100 hover:to-red-200 transition-all duration-200 font-medium"
                     whileTap={{ scale: 0.98 }}
@@ -370,7 +309,7 @@ export function AdminOrdersView() {
                     animate={{ opacity: 1, y: 0, transition: { delay: 0.3 } }}
                     exit={{ opacity: 0, y: -10 }}
                     onClick={() =>
-                      handleShipperDetails(computed.selectedOrder!.id)
+                      handleShipperDetails(computed.selectedOrder!.shipper.id)
                     }
                     className="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-indigo-50 to-indigo-100 text-indigo-700 rounded-xl hover:from-indigo-100 hover:to-indigo-200 transition-all duration-200 font-medium"
                     whileTap={{ scale: 0.98 }}
@@ -397,7 +336,7 @@ export function AdminOrdersView() {
                     animate={{ opacity: 1, y: 0, transition: { delay: 0.4 } }}
                     exit={{ opacity: 0, y: -10 }}
                     onClick={() =>
-                      handleCustomerDetails(computed.selectedOrder!.id)
+                      handleCustomerDetails(computed.selectedOrder!.customerId)
                     }
                     className="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-green-50 to-green-100 text-green-700 rounded-xl hover:from-green-100 hover:to-green-200 transition-all duration-200 font-medium"
                     whileTap={{ scale: 0.98 }}
@@ -446,7 +385,7 @@ export function AdminOrdersView() {
               </h3>
               <p className="text-gray-600 mb-4">
                 Bạn có chắc muốn xóa đơn hàng của{" "}
-                <strong>{computed.selectedOrder?.customer}</strong>?
+                <strong>{computed.selectedOrder?.customerName}</strong>?
               </p>
 
               <div className="flex gap-3">

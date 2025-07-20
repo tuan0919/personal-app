@@ -16,9 +16,9 @@ function App() {
     <>
       <AnimatePresence mode="wait">
         <Routes>
-          <Route path="/" element={<Navigate to="/sign-in" replace />} />
+          <Route path="/" element={<Navigate to="/signin" replace />} />
           <Route path="/home" element={<Home />} />
-          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/about" element={<About />} />
           <Route path="/order/new" element={<CreateNewOrder />} />

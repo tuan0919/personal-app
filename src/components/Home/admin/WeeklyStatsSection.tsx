@@ -1,6 +1,5 @@
 // /components/Home/WeeklyStatsSection.tsx
-import { forwardRef } from "react";
-import { motion, LegacyAnimationControls } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   FaMoneyBillWave,
   FaArrowUp,
@@ -9,22 +8,14 @@ import {
   FaCube,
 } from "react-icons/fa6";
 import { StatCard } from "./StatCard";
-import { weeklyStats } from "@/static/mock-data";
+import { weeklyStats } from "@/static/admin/mockChartData";
 import { containerVariants } from "@/components/shared/animations";
 
-interface WeeklyStatsSectionProps {
-  controls: LegacyAnimationControls;
-}
-
-export const WeeklyStatsSection = forwardRef<
-  HTMLDivElement,
-  WeeklyStatsSectionProps
->(({ controls }, ref) => {
+export const WeeklyStatsSection = () => {
   return (
     <motion.section
-      ref={ref}
       initial="hidden"
-      animate={controls}
+      animate="visible"
       variants={containerVariants}
       className="mb-4"
     >
@@ -74,6 +65,6 @@ export const WeeklyStatsSection = forwardRef<
       </div>
     </motion.section>
   );
-});
+};
 
 WeeklyStatsSection.displayName = "WeeklyStatsSection";

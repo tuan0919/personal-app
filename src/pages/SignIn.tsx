@@ -37,16 +37,25 @@ export function SignIn() {
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    if (data.username === "admin" && data.password === "123") {
-      toast.success("Đăng nhập thành công", {
-        description: "Chào mừng quay trở lại!",
-      });
-      navigate("/home");
+    const { username, password } = data;
+    let isAdmin = false;
+
+    if (username === "admin" && password === "123") {
+      isAdmin = true;
+    } else if (username === "user" && password === "123") {
+      isAdmin = false;
     } else {
       toast.error("Đăng nhập thất bại", {
         description: "Tên đăng nhập hoặc mật khẩu không đúng",
       });
+      return;
     }
+
+    toast.success("Đăng nhập thành công", {
+      description: `Chào mừng ${username}!`,
+    });
+
+    navigate("/home", { state: { isAdmin } });
   }
 
   const handleSocialLogin = (provider: string) => {

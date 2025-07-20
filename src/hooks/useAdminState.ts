@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { format } from "date-fns";
-import { allOrders } from "@/static/mock-data";
+import { allCustomers, Customer } from "@/static/admin/mockCustomers";
 
-// Filter values for admin
 interface AdminFilterValues {
   minPrice: number;
   maxPrice: number;
@@ -16,8 +15,8 @@ interface AdminFilterValues {
 
 interface AdminState {
   isLoading: boolean;
-  orders: typeof allOrders;
-  filteredOrders: typeof allOrders;
+  orders: Customer[];
+  filteredOrders: Customer[];
   selectedDate: Date;
   currentPage: number;
   selectedRecord: number | null;
@@ -50,14 +49,14 @@ interface UseAdminStateReturn {
   };
   computed: {
     totalPages: number;
-    paged: typeof allOrders;
-    selectedOrder: (typeof allOrders)[number] | undefined;
+    paged: Customer[];
+    selectedOrder: Customer | undefined;
   };
 }
 
 export const useAdminState = (): UseAdminStateReturn => {
   const [state, setState] = useState<AdminState>({
-    isLoading: false,
+    isLoading: true, // Only one loading state, start with true
     orders: [],
     filteredOrders: [],
     selectedDate: new Date(),
@@ -79,82 +78,63 @@ export const useAdminState = (): UseAdminStateReturn => {
     error: null,
   });
 
-  const ordersPerPage = 4;
+  const ordersPerPage = 5; // Giảm số lượng đơn hàng mỗi trang để dễ dàng kiểm tra phân trang
 
-  // Load orders for selected date
+  // Effect to load and filter data
   useEffect(() => {
-    const loadOrders = async () => {
-      setState((prev) => ({ ...prev, isLoading: true, error: null }));
+    setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
+    const timer = setTimeout(() => {
       try {
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 800));
-
         const dateStr = format(state.selectedDate, "yyyy-MM-dd");
-        const ordersToday = allOrders.filter((o) => o.date === dateStr);
+        const ordersToday = allCustomers.filter((o) => o.date === dateStr);
+
+        const filtered = ordersToday.filter((order) => {
+          if (
+            state.filters.customerFilter &&
+            !order.customerName
+              .toLowerCase()
+              .includes(state.filters.customerFilter.toLowerCase())
+          )
+            return false;
+          if (
+            state.filters.shipperFilter &&
+            !order.shipper.name
+              .toLowerCase()
+              .includes(state.filters.shipperFilter.toLowerCase())
+          )
+            return false;
+          if (
+            state.filters.deliveryStatus !== "all" &&
+            (state.filters.deliveryStatus === "delivered") !== order.delivered
+          )
+            return false;
+          if (
+            state.filters.paymentStatus !== "all" &&
+            order.paymentStatus !== state.filters.paymentStatus
+          )
+            return false;
+          return true;
+        });
 
         setState((prev) => ({
           ...prev,
           orders: ordersToday,
-          isLoading: false,
+          filteredOrders: filtered,
+          isLoading: false, // Simply turn off loading when done
+          currentPage: 1,
         }));
       } catch {
         setState((prev) => ({
           ...prev,
-          error: "Không thể tải dữ liệu đơn hàng",
+          error: "Failed to load data",
           isLoading: false,
         }));
       }
-    };
+    }, 1200); // Increased delay slightly to better see the effect
 
-    loadOrders();
-  }, [state.selectedDate]);
-
-  // Filter orders based on current filters
-  useEffect(() => {
-    const filtered = state.orders.filter((order) => {
-      // Lọc theo khách hàng
-      if (
-        state.filters.customerFilter &&
-        !order.customer
-          .toLowerCase()
-          .includes(state.filters.customerFilter.toLowerCase())
-      ) {
-        return false;
-      }
-
-      // Lọc theo người giao
-      if (
-        state.filters.shipperFilter &&
-        !order.shipper
-          .toLowerCase()
-          .includes(state.filters.shipperFilter.toLowerCase())
-      ) {
-        return false;
-      }
-
-      // Lọc theo khoảng giá
-      if (
-        order.revenue < state.filters.minPrice ||
-        order.revenue > state.filters.maxPrice
-      ) {
-        return false;
-      }
-
-      // Lọc theo loại đá
-      if (!state.filters.iceCube && !state.filters.iceBlock) {
-        return false;
-      }
-
-      return true;
-    });
-
-    setState((prev) => ({
-      ...prev,
-      filteredOrders: filtered,
-      currentPage: 1, // Reset to first page when filters change
-    }));
-  }, [state.orders, state.filters]);
+    return () => clearTimeout(timer);
+  }, [state.selectedDate, state.filters]);
 
   const actions = {
     setLoading: useCallback((loading: boolean) => {
@@ -163,6 +143,7 @@ export const useAdminState = (): UseAdminStateReturn => {
 
     setSelectedDate: useCallback((date: Date) => {
       setState((prev) => ({ ...prev, selectedDate: date, currentPage: 1 }));
+      // Refetch or filter data based on new date if needed
     }, []),
 
     setCurrentPage: useCallback((page: number) => {
@@ -197,16 +178,10 @@ export const useAdminState = (): UseAdminStateReturn => {
     }, []),
 
     resetState: useCallback(() => {
-      setState({
-        isLoading: false,
-        orders: [],
-        filteredOrders: [],
+      setState((prevState) => ({
+        ...prevState,
+        isLoading: true, // Just trigger loading on reset
         selectedDate: new Date(),
-        currentPage: 1,
-        selectedRecord: null,
-        showActionPopup: false,
-        showDeleteConfirm: false,
-        showFilterSheet: false,
         filters: {
           minPrice: 0,
           maxPrice: 1000000,
@@ -218,7 +193,7 @@ export const useAdminState = (): UseAdminStateReturn => {
           customerFilter: "",
         },
         error: null,
-      });
+      }));
     }, []),
 
     handleOrderSelect: useCallback(
@@ -250,61 +225,44 @@ export const useAdminState = (): UseAdminStateReturn => {
     }, []),
 
     confirmDelete: useCallback(async () => {
-      if (state.selectedRecord) {
-        try {
-          setState((prev) => ({ ...prev, isLoading: true }));
+      if (state.selectedRecord === null) return;
+      console.log("Deleting order with ID:", state.selectedRecord);
+      // Simulate API call
+      await new Promise((res) => setTimeout(res, 500));
 
-          // Simulate API call
-          await new Promise((resolve) => setTimeout(resolve, 500));
-
-          // Remove order from list
-          setState((prev) => ({
-            ...prev,
-            orders: prev.orders.filter((o) => o.id !== state.selectedRecord),
-            selectedRecord: null,
-            showDeleteConfirm: false,
-            isLoading: false,
-          }));
-        } catch {
-          setState((prev) => ({
-            ...prev,
-            error: "Không thể xóa đơn hàng",
-            isLoading: false,
-          }));
-        }
-      }
+      setState((prev) => ({
+        ...prev,
+        orders: prev.orders.filter(
+          (o) => o.customerId !== state.selectedRecord
+        ),
+        showDeleteConfirm: false,
+        selectedRecord: null,
+      }));
     }, [state.selectedRecord]),
 
     handleDateChange: useCallback((date: Date) => {
-      setState((prev) => ({
-        ...prev,
-        selectedDate: date,
-        currentPage: 1,
-        isLoading: true,
-      }));
+      setState((prev) => ({ ...prev, selectedDate: date, currentPage: 1 }));
     }, []),
 
     handleApplyFilter: useCallback((values: AdminFilterValues) => {
       setState((prev) => ({
         ...prev,
         filters: values,
-        isLoading: true,
+        showFilterSheet: false,
+        currentPage: 1,
       }));
     }, []),
   };
 
   const computed = {
-    totalPages: Math.max(
-      1,
-      Math.ceil(state.filteredOrders.length / ordersPerPage)
-    ),
+    totalPages: Math.ceil(state.filteredOrders.length / ordersPerPage),
     paged: state.filteredOrders.slice(
       (state.currentPage - 1) * ordersPerPage,
       state.currentPage * ordersPerPage
     ),
-    selectedOrder: state.selectedRecord
-      ? state.orders.find((o) => o.id === state.selectedRecord)
-      : undefined,
+    selectedOrder: state.orders.find(
+      (o) => o.customerId === state.selectedRecord
+    ),
   };
 
   return { state, actions, computed };

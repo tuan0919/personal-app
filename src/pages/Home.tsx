@@ -7,10 +7,15 @@ import { useHomeState } from "@/hooks/useHomeState";
 import { HomeLayout } from "@/components/Home/HomeLayout";
 import { UserView } from "@/components/Home/UserView";
 import { AdminView } from "@/components/Home/AdminView";
+import { useLocation } from "react-router-dom";
 export function Home() {
+  const location = useLocation();
+  const isAdminFromState = location.state?.isAdmin || false;
+
   // Custom hooks for state management
-  const homeState = useHomeState();
-  const { shouldSuggest, handleClose, handleInstall } = usePWASuggestion();
+  const homeState = useHomeState({ initialIsAdmin: isAdminFromState });
+  const { showPWAPrompt, handleInstallPWA, handleClosePWAPrompt } =
+    usePWASuggestion();
   const { refs, controls } = useHomeAnimations();
 
   return (
@@ -24,9 +29,9 @@ export function Home() {
 
       {/* PWA Suggestion Dialog */}
       <PWASuggestionDialog
-        open={shouldSuggest}
-        onClose={handleClose}
-        onInstall={handleInstall}
+        open={!!showPWAPrompt}
+        onClose={handleClosePWAPrompt}
+        onInstall={handleInstallPWA}
       />
 
       {/* Main Content */}

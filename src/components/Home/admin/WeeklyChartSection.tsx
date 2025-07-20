@@ -1,23 +1,14 @@
 // /components/Home/WeeklyChartSection.tsx
-import { forwardRef } from "react";
-import { motion, LegacyAnimationControls } from "framer-motion";
+import { motion } from "framer-motion";
 import { WeeklyRevenueAreaChart } from "./WeeklyRevenueAreaChart";
-import { weeklyRevenueChart } from "@/static/mock-data";
+import { weeklyRevenueChart } from "@/static/admin/mockChartData";
 import { slideInVariants } from "@/components/shared/animations";
 
-interface WeeklyChartSectionProps {
-  controls: LegacyAnimationControls;
-}
-
-export const WeeklyChartSection = forwardRef<
-  HTMLDivElement,
-  WeeklyChartSectionProps
->(({ controls }, ref) => {
+export const WeeklyChartSection = () => {
   return (
     <motion.section
-      ref={ref}
       initial="hidden"
-      animate={controls}
+      animate="visible"
       variants={slideInVariants}
       className="mb-4"
     >
@@ -33,6 +24,6 @@ export const WeeklyChartSection = forwardRef<
       </motion.div>
     </motion.section>
   );
-});
+};
 
 WeeklyChartSection.displayName = "WeeklyChartSection";
