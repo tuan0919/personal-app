@@ -120,7 +120,13 @@ export const useAdminState = (): UseAdminStateReturn => {
         setState((prev) => ({
           ...prev,
           orders: ordersToday,
-          filteredOrders: filtered,
+          filteredOrders: filtered.filter((order) => {
+            const price = order.amount * 10000;
+            if (price < state.filters.minPrice || price > state.filters.maxPrice) return false;
+            if (!state.filters.iceCube && order.productType === 2) return false;
+            if (!state.filters.iceBlock && order.productType === 1) return false;
+            return true;
+          }),
           isLoading: false, // Simply turn off loading when done
           currentPage: 1,
         }));

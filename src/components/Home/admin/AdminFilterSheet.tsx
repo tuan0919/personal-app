@@ -106,6 +106,22 @@ export const AdminFilterSheet: React.FC<AdminFilterSheetProps> = ({
     setFormattedMaxPrice(formatNumber(values.maxPrice));
   }, [values.minPrice, values.maxPrice]);
 
+  // Reset filter values when sheet opens
+  useEffect(() => {
+    if (open) {
+      setValues(initial || {
+        minPrice: 0,
+        maxPrice: 1000000,
+        iceCube: true,
+        iceBlock: true,
+        paymentStatus: "all",
+        deliveryStatus: "all",
+        shipperFilter: "",
+        customerFilter: "",
+      });
+    }
+  }, [open, initial]);
+
   const handleChange = <K extends keyof AdminFilterValues>(
     key: K,
     val: AdminFilterValues[K]

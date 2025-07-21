@@ -1,7 +1,7 @@
 import { DailyStatsSection } from "@/components/Home/admin/DailyStatsSection";
-import { AdminOrdersView } from "@/components/Home/admin/AdminOrdersView";
 import { WeeklyChartSection } from "@/components/Home/admin/WeeklyChartSection";
 import { WeeklyStatsSection } from "@/components/Home/admin/WeeklyStatsSection";
+import { OrdersSection } from "./admin/OrdersSection";
 
 // Type for framer-motion animation controls
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,9 +29,9 @@ export function AdminView(_props: AdminViewProps) {
   return (
     <>
       <DailyStatsSection />
-      <AdminOrdersView />
-      <WeeklyChartSection />
+      <OrdersSection />
       <WeeklyStatsSection />
+      <WeeklyChartSection />
     </>
   );
 }
