@@ -1,7 +1,7 @@
 // /hooks/useOrdersLogic.ts
 import { useState } from "react";
 import { format } from "date-fns";
-import { allOrders } from "@/static/mock-data";
+import { mockOrders } from "@/static/mockPayment";
 
 export function useOrdersLogic() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -11,7 +11,7 @@ export function useOrdersLogic() {
 
   // Filter & paginate
   const dateStr = format(selectedDate, "yyyy-MM-dd");
-  const ordersToday = allOrders.filter((o) => o.date === dateStr);
+  const ordersToday = mockOrders.filter((o) => o.deliveryDate === dateStr);
   const totalPages = Math.max(1, Math.ceil(ordersToday.length / ordersPerPage));
   const paged = ordersToday.slice(
     (currentPage - 1) * ordersPerPage,

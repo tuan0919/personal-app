@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import AttendNavbar from "@/components/CreateNewOrder/AttendNavbar";
+import ActivityHistoryNavbar from "@/components/ActivityHistory/ActivityHistoryNavbar";
 import {
   FaPlus,
   FaEdit,
@@ -140,7 +140,7 @@ export default function ActivityHistory() {
           className="min-h-screen flex flex-col bg-[url('https://maxartkiller.com/website/gomobileux2/HTML/assets/img/bgshapes.png')]"
           key="content"
         >
-          <AttendNavbar />
+          <ActivityHistoryNavbar />
           <motion.main
             className="flex-1 overflow-y-auto px-2 pt-4 pb-24 sm:px-4"
             initial={{ opacity: 0 }}

@@ -1,12 +1,8 @@
-import { FaIceCream } from "react-icons/fa6";
+import { FaHistory } from "react-icons/fa";
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-/**
- * @deprecated This component is deprecated.
- * Use CreateNewOrderLayout instead which includes the navigation functionality.
- */
-export default function AttendNavbar() {
+export default function ActivityHistoryNavbar() {
   const navigate = useNavigate();
 
   return (
@@ -19,9 +15,9 @@ export default function AttendNavbar() {
       >
         <FaArrowLeft className="text-pink-400 text-xl" />
       </button>
-      <FaIceCream className="text-pink-400 text-2xl" />
+      <FaHistory className="text-pink-400 text-2xl" />
       <span className="text-lg font-bold text-gray-800 tracking-wide">
-        Thêm thông tin giao hàng
+        Lịch sử hoạt động
       </span>
     </nav>
   );

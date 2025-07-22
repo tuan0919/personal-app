@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiPackage, FiCalendar } from "react-icons/fi";
 import { FaSpinner } from "react-icons/fa";
