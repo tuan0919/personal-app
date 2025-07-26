@@ -12,7 +12,7 @@ import {
 } from "recharts";
 import { FaMoneyBillWave } from "react-icons/fa";
 import { fadeInUp } from "@/components/shared/animations";
-import { useCustomerDetailsAnimation } from "@/hooks/useCustomerDetailsAnimation";
+import { useCustomerDetailsAnimation } from "@/animations/useCustomerDetailsAnimation";
 
 interface WeeklyRevenue {
   week: string;

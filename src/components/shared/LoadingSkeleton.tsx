@@ -79,55 +79,27 @@ export function LoadingSkeleton({
   loading = true,
   pageName = "Trang chủ",
 }: LoadingSkeletonProps) {
-  const [progress, setProgress] = useState(0);
-  const [startTime] = useState(Date.now());
   const [loadingStage, setLoadingStage] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-
-      // If still loading, simulate progress based on time
+      // If still loading, cycle through loading stages
       if (loading) {
-        // Simulate realistic API progress stages
-        let newProgress = 0;
-        let newStage = 0;
-
-        if (elapsed < 2000) {
-          // Initial connection (0-2s)
-          newProgress = (elapsed / 2000) * 20;
-          newStage = 0;
-        } else if (elapsed < 10000) {
-          // Data fetching (2-10s)
-          newProgress = 20 + ((elapsed - 2000) / 8000) * 50;
-          newStage = 1;
-        } else if (elapsed < 30000) {
-          // Processing (10-30s)
-          newProgress = 70 + ((elapsed - 10000) / 20000) * 25;
-          newStage = 2;
-        } else {
-          // Finalizing (30s+)
-          newProgress = 95 + Math.min((elapsed - 30000) / 10000, 4);
-          newStage = 3;
-        }
-
-        setProgress(Math.min(newProgress, 99)); // Cap at 99% while loading
-        setLoadingStage(newStage);
+        setLoadingStage((prevStage) => (prevStage + 1) % 4);
       } else {
-        // Loading finished, complete to 100%
-        setProgress(100);
+        // Loading finished
         clearInterval(interval);
         setTimeout(() => {
           onComplete?.();
         }, 300);
       }
-    }, 100); // Update every 100ms for smoother progress
+    }, 2000); // Change stage every 2 seconds
 
     return () => clearInterval(interval);
-  }, [loading, startTime, onComplete]);
+  }, [loading, onComplete]);
 
-  // Get detailed loading text based on stage and progress
-  const getLoadingText = (stage: number, progress: number) => {
+  // Get detailed loading text based on stage
+  const getLoadingText = (stage: number) => {
     const stageTexts = [
       `Đang kết nối đến máy chủ...`,
       `Đang tải dữ liệu ${pageName}...`,
@@ -135,21 +107,11 @@ export function LoadingSkeleton({
       `Đang hoàn thiện thông tin...`,
     ];
 
-    const currentText = stageTexts[stage] || "Đang xử lý...";
-
-    if (progress >= 99) {
-      return "Sắp hoàn tất...";
-    }
-
-    return currentText;
+    return stageTexts[stage] || "Đang xử lý...";
   };
 
   // Get subtitle based on stage
-  const getSubtitle = (stage: number, progress: number) => {
-    if (progress >= 99) {
-      return `Chuẩn bị hiển thị ${pageName}...`;
-    }
-
+  const getSubtitle = (stage: number) => {
     const subtitles = [
       "Thiết lập kết nối an toàn",
       `Tải thông tin ${pageName}`,
@@ -229,7 +191,7 @@ export function LoadingSkeleton({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.6 }}
         >
-          {getLoadingText(loadingStage, progress)}
+          {getLoadingText(loadingStage)}
         </motion.h2>
 
         <motion.p
@@ -238,7 +200,7 @@ export function LoadingSkeleton({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7, duration: 0.6 }}
         >
-          {getSubtitle(loadingStage, progress)}
+          {getSubtitle(loadingStage)}
         </motion.p>
 
         {/* Animated Dots */}
@@ -257,31 +219,6 @@ export function LoadingSkeleton({
               className="w-3 h-3 rounded-full bg-white/70 shadow-md shadow-white/10"
             />
           ))}
-        </motion.div>
-
-        {/* Progress Bar */}
-        <motion.div
-          className="w-72 sm:w-96 h-2 bg-white/20 rounded-full overflow-hidden mx-auto mb-4"
-          initial={{ opacity: 0, scaleX: 0.8 }}
-          animate={{ opacity: 1, scaleX: 1 }}
-          transition={{ delay: 1.1, duration: 0.8 }}
-        >
-          <motion.div
-            className="h-full bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 rounded-full"
-            initial={{ width: "0%" }}
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.5 }}
-          />
-        </motion.div>
-
-        {/* Progress Percentage */}
-        <motion.div
-          className="text-white/90 text-sm font-medium tracking-wider"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.3, duration: 0.6 }}
-        >
-          {Math.floor(progress)}%
         </motion.div>
       </div>
     </motion.div>

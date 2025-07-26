@@ -1,57 +1,40 @@
-import { Customer } from "@/api";
 import { GetOrderPaymentButton } from "@/components/Home/user/GetOrderPaymentButton";
 import { ActivityHistoryButton } from "@/components/Home/user/ActivityHistoryButton";
 import { DeliveredCustomers } from "@/components/Home/user/DeliveredCustomers";
-import { BaseViewProps } from "./types";
 import { useViewLoadingState } from "@/hooks/useViewLoadingState";
 import { ViewStateWrapper } from "./ViewStateWrapper";
+import { useUserState } from "@/hooks/useUserState";
+import { FilterSheet } from "@/components/Home/user/FilterSheet";
 
-interface UserViewProps extends BaseViewProps {
-  deliveredCustomers: Customer[];
-  loading: boolean;
-  error: string | null;
-  onDeleteCustomer: (customerId: number) => Promise<void>;
-  onUpdateCustomer: (
-    customerId: number,
-    updates: Partial<Customer>
-  ) => Promise<void>;
-  onFilterClick?: () => void;
-  selectedDate?: Date;
-  onDateChange?: (date: Date) => void;
-}
+export function UserView() {
+  const { state, actions } = useUserState();
 
-export function UserView({
-  deliveredCustomers,
-  loading,
-  error,
-  onDeleteCustomer,
-  onUpdateCustomer,
-  onRetry,
-  onFilterClick,
-  selectedDate,
-  onDateChange,
-}: UserViewProps) {
-  const { showLoading, handleLoadingComplete } = useViewLoadingState(loading);
+  const { showLoading, handleLoadingComplete } = useViewLoadingState(state.loading);
 
   return (
     <ViewStateWrapper
       showLoading={showLoading}
-      loading={loading}
-      error={error}
+      loading={state.loading}
+      error={state.error}
       onLoadingComplete={handleLoadingComplete}
-      onRetry={onRetry}
+      onRetry={actions.refetchData}
       pageName="Trang chủ"
     >
       <GetOrderPaymentButton />
       <ActivityHistoryButton />
       <DeliveredCustomers
-        onDeleteCustomer={onDeleteCustomer}
-        onUpdateCustomer={onUpdateCustomer}
-        delivered={deliveredCustomers}
-        onFilterClick={onFilterClick}
-        selectedDate={selectedDate}
-        onDateChange={onDateChange}
-        loading={loading}
+        onDeleteCustomer={actions.handleDeleteCustomer}
+        onUpdateCustomer={actions.handleUpdateCustomer}
+        delivered={state.deliveredCustomers}
+        onFilterClick={() => actions.setFilterOpen(true)}
+        selectedDate={state.selectedDate}
+        onDateChange={actions.handleDateChange}
+        loading={state.loading}
+      />
+      <FilterSheet
+        open={state.filterOpen}
+        onClose={() => actions.setFilterOpen(false)}
+        onApply={actions.handleApplyFilter}
       />
     </ViewStateWrapper>
   );

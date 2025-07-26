@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { motion } from "framer-motion";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { fadeInLeft } from "@/components/shared/animations";
-import { useCustomerDetailsAnimation } from "@/hooks/useCustomerDetailsAnimation";
+import { useCustomerDetailsAnimation } from "@/animations/useCustomerDetailsAnimation";
 
 interface Location {
   lat: number;

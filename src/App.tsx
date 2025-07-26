@@ -10,6 +10,7 @@ import { CustomerDetails } from "./pages/CustomerDetails";
 import { Payment } from "./pages/Payment";
 import { EditOrder } from "./pages/EditOrder";
 import ActivityHistory from "./pages/ActivityHistory";
+import { CustomerManagement } from "./pages/CustomerManagement";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/customer/:id" element={<CustomerDetails />} />
           <Route path="/payment" element={<Payment />} />
           <Route path="/activity-history" element={<ActivityHistory />} />
+          <Route path="/admin/customer-management" element={<CustomerManagement />} />
           <Route path="*" element={<div>404 Not Found</div>} />
         </Routes>
       </AnimatePresence>

@@ -11,7 +11,7 @@ import { TabSlider } from "@/components/ActivityHistory/TabSlider";
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton";
 import { containerVariants } from "@/components/shared/animations";
 import { useActivityHistoryState } from "@/hooks/useActivityHistoryState";
-import { useActivityHistoryAnimations } from "@/hooks/useActivityHistoryAnimations";
+import { useActivityHistoryAnimations } from "@/animations/useActivityHistoryAnimations";
 import { useEffect, useRef, useCallback } from "react";
 
 const ICON_MAP = {

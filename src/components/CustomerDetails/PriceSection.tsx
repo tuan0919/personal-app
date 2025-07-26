@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { motion } from "framer-motion";
 import { FaDollarSign, FaCube, FaIceCream } from "react-icons/fa";
 import { fadeInUp } from "@/components/shared/animations";
-import { useCustomerDetailsAnimation } from "@/hooks/useCustomerDetailsAnimation";
+import { useCustomerDetailsAnimation } from "@/animations/useCustomerDetailsAnimation";
 
 interface Price {
   daCay: number;

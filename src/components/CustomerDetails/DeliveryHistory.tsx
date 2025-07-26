@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/pagination";
 import { cn } from "@/lib/utils";
 import { fadeInUp, staggerChildren } from "@/components/shared/animations";
-import { useCustomerDetailsAnimation } from "@/hooks/useCustomerDetailsAnimation";
+import { useCustomerDetailsAnimation } from "@/animations/useCustomerDetailsAnimation";
 
 interface Delivery {
   date: string;

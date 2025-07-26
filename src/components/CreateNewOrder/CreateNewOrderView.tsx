@@ -27,7 +27,7 @@ import {
 import {
   AnimationControlsType,
   AnimationRefs,
-} from "@/hooks/useCreateNewOrderAnimations";
+} from "@/animations/useCreateNewOrderAnimations";
 
 interface CreateNewOrderViewProps {
   refs: AnimationRefs;

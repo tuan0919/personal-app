@@ -93,7 +93,7 @@ export const usePWASuggestion = () => {
   }, [deferredPrompt]);
 
   return {
-    showPWAPrompt: showPrompt && !isAppInstalled && deferredPrompt,
+    showPWAPrompt: showPrompt && !isAppInstalled && !!deferredPrompt,
     handleInstallPWA: handleInstallClick,
     handleClosePWAPrompt: handleClosePrompt,
   };
