@@ -1,47 +1,32 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiPackage, FiCalendar } from "react-icons/fi";
-import { FaSpinner } from "react-icons/fa";
-import { PaymentStatistics } from "@/components/Payment/PaymentStatistics";
-import { OrderCard } from "@/components/Payment/OrderCard";
+import { PaymentStatistics } from "./PaymentStatistics";
+import { OrderCard } from "./OrderCard";
+import { DailyRevenue } from "./DailyRevenue";
 import { Pagination } from "@/components/shared/Pagination";
-import { ActionButtons } from "@/components/Payment/ActionButtons";
-import { ConfirmDialog } from "@/components/Payment/ConfirmDialog";
-import { CancelDialog } from "@/components/Payment/CancelDialog";
+import { ActionButtons } from "./ActionButtons";
+import { ConfirmDialog } from "./ConfirmDialog";
+import { CancelDialog } from "./CancelDialog";
 import { CalendarChooser } from "@/components/shared/CalendarChooser";
-import { Order } from "@/static/mockPayment";
+import { usePaymentContext } from "@/contexts";
 
-interface PaymentViewProps {
-  loading: boolean;
-  filtering: boolean; // Trạng thái đang lọc dữ liệu
-  error: string | null;
-  orders: Order[];
-  currentPage: number;
-  setCurrentPage: (page: number) => void;
-  selectedUnpaidOrders: number[];
-  selectedPaidOrders: number[];
-  actualPayments: Record<number, number>;
-  handleActualPaymentChange: (orderId: number, value: number) => void;
-  handleOrderSelect: (orderId: number, isPaid: boolean) => void;
-  selectedDate: Date;
-  setSelectedDate: (date: Date) => void;
-}
-
-export function PaymentView({
-  loading,
-  filtering,
-  error,
-  orders,
-  currentPage,
-  setCurrentPage,
-  selectedUnpaidOrders,
-  selectedPaidOrders,
-  actualPayments,
-  handleActualPaymentChange,
-  handleOrderSelect,
-  selectedDate,
-  setSelectedDate,
-}: PaymentViewProps) {
+export function PaymentView() {
+  // Get all payment state from context
+  const {
+    loading,
+    filtering,
+    error,
+    orders,
+    currentPage,
+    setCurrentPage,
+    selectedUnpaidOrders,
+    selectedPaidOrders,
+    actualPayments,
+    handleActualPaymentChange,
+    handleOrderSelect,
+    selectedDate,
+    setSelectedDate,
+  } = usePaymentContext();
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
@@ -163,47 +148,37 @@ export function PaymentView({
             className="text-center mb-6"
           >
             <h1 className="text-3xl font-bold text-gray-800 mb-2">
-              Thu Tiền Đơn Hàng
+              Quản lý hóa đơn
             </h1>
-            <p className="text-gray-600">
-              Quản lý thanh toán các đơn hàng đã giao
-            </p>
+            <p className="text-gray-600">Quản lý các hóa đơn đã giao</p>
           </motion.div>
+          <h2 className="text-xl mb-4 underline underline-offset-4 font-semibold text-gray-800 flex items-center">
+            Số tiền thu trong ngày
+          </h2>
+          <DailyRevenue className="mb-6" />
 
+          <h2 className="text-xl mb-4 underline underline-offset-4 font-semibold text-gray-800 flex items-center">
+            Danh sách đơn hàng
+          </h2>
           {/* Statistics Cards - Compact Grid Layout */}
           <PaymentStatistics
             selectedUnpaidAmount={statistics.selectedUnpaidAmount}
             totalUnpaidAmount={statistics.totalUnpaidAmount}
             totalUnpaidOrders={statistics.totalUnpaidOrders}
           />
-
+          <div className="justify-between mb-6 flex items-center">
+            <h2 className="font-semibold flex items-center gap-2 text-gray-800">
+              Ngày giao hàng:
+            </h2>
+            <CalendarChooser date={selectedDate} onChange={setSelectedDate} />
+          </div>
           {/* Orders Section - Wrapped in unified container */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white/70 rounded-3xl p-6 shadow-lg border border-pink-100 mb-6"
+            className="mb-5"
           >
-            <div className="flex flex-wrap items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-gray-800 flex items-center">
-                <FiPackage className="mr-2 text-pink-600" />
-                Danh sách đơn hàng
-              </h2>
-              <div className="flex items-center gap-2 mt-2 sm:mt-0">
-                {filtering && (
-                  <div className="flex items-center mr-2 text-pink-500">
-                    <FaSpinner className="animate-spin mr-1 h-4 w-4" />
-                    <span className="text-xs">Đang lọc...</span>
-                  </div>
-                )}
-                <FiCalendar className="text-pink-500 mr-1 h-4 w-4" />
-                <CalendarChooser
-                  date={selectedDate}
-                  onChange={setSelectedDate}
-                />
-              </div>
-            </div>
-
             {currentOrders.length > 0 ? (
               <>
                 <div className={`space-y-4 ${filtering ? "opacity-50" : ""}`}>

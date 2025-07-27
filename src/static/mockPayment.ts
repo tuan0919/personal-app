@@ -14,6 +14,7 @@ export interface Order {
   products: Product[];
   totalAmount: number;
   isPaid: boolean;
+  paymentCollectedDate?: string; // yyyy-mm-dd - ngày thu tiền (chỉ có khi isPaid = true)
   notes: string;
 }
 
@@ -44,6 +45,7 @@ const mockOrders: Order[] = [
     products: [{ type: "Đá viên", quantity: 3, price: 15000 }],
     totalAmount: 45000,
     isPaid: true,
+    paymentCollectedDate: "2025-07-27",
     notes: "",
   },
   {
@@ -95,6 +97,7 @@ const mockOrders: Order[] = [
     products: [{ type: "Đá cây", quantity: 3, price: 10000 }],
     totalAmount: 30000,
     isPaid: true,
+    paymentCollectedDate: "2025-07-26",
     notes: "",
   },
   // Thêm đơn hàng cho ngày 2025-07-19 (hôm nay)
@@ -123,6 +126,7 @@ const mockOrders: Order[] = [
     products: [{ type: "Đá cây", quantity: 8, price: 10000 }],
     totalAmount: 80000,
     isPaid: true,
+    paymentCollectedDate: "2025-07-27",
     notes: "",
   },
   {
@@ -179,6 +183,7 @@ const mockOrders: Order[] = [
     ],
     totalAmount: 180000,
     isPaid: true,
+    paymentCollectedDate: "2025-07-27",
     notes: "",
   },
   {

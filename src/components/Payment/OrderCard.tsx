@@ -42,7 +42,7 @@ export function OrderCard({
     <motion.div
       variants={cardVariants}
       layout
-      className={`backdrop-blur-sm rounded-2xl bg-white/30 p-6 shadow-md border-2 transition-all duration-300 cursor-pointer
+      className={`backdrop-blur-sm rounded-2xl bg-white/80 p-6 shadow-md border-2 transition-all duration-300 cursor-pointer
         ${
           order.isPaid
             ? isSelected
@@ -107,6 +107,14 @@ export function OrderCard({
             {formatDate(order.deliveryDate)} - {order.deliveryTime}
           </span>
         </div>
+        {order.isPaid && order.paymentCollectedDate && (
+          <div className="flex items-center space-x-2 text-gray-600">
+            <FaMoneyBillTransfer className="text-green-500 flex-shrink-0" />
+            <span className="text-sm whitespace-nowrap">
+              Thu tiền: {formatDate(order.paymentCollectedDate)}
+            </span>
+          </div>
+        )}
       </div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
         <div className="flex items-center space-x-2">
