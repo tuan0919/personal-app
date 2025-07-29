@@ -1,4 +1,4 @@
-import { Customer, FilterValues } from "./types";
+import { Customer, FilterValues } from "../types";
 import { format } from "date-fns";
 
 // Mock data - in a real app this would come from a backend API

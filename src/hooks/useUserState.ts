@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { CustomerService, Customer, FilterValues } from "@/api";
+import { CustomerService, Customer, FilterValues } from "@/api/user";
 import { format } from "date-fns";
 
 interface UserState {

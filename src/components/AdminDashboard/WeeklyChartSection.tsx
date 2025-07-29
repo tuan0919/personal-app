@@ -1,10 +1,14 @@
 // /components/Home/WeeklyChartSection.tsx
 import { motion } from "framer-motion";
-import { WeeklyRevenueAreaChart } from "./WeeklyRevenueAreaChart";
-import { weeklyRevenueChart } from "@/static/admin/mockChartData";
 import { slideInVariants } from "@/components/shared/animations";
+import { WeeklyRevenueAreaChart } from "./WeeklyRevenueAreaChart";
+import { WeeklyRevenueChart } from "@/types/admin/dashboard-page-types";
 
-export const WeeklyChartSection = () => {
+export const WeeklyChartSection = ({
+  chartData,
+}: {
+  chartData: WeeklyRevenueChart[];
+}) => {
   return (
     <motion.section
       initial="hidden"
@@ -20,7 +24,7 @@ export const WeeklyChartSection = () => {
         transition={{ duration: 0.2 }}
         className="bg-white/80 backdrop-blur-md border border-white/40 rounded-2xl shadow p-3"
       >
-        <WeeklyRevenueAreaChart data={weeklyRevenueChart} />
+        <WeeklyRevenueAreaChart data={chartData} />
       </motion.div>
     </motion.section>
   );

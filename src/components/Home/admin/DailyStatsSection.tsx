@@ -1,7 +1,7 @@
 // /components/Home/DailyStatsSection.tsx
 import { motion } from "framer-motion";
 import { FaIceCream, FaCube, FaMoneyBillWave } from "react-icons/fa6";
-import { StatCard } from "./StatCard";
+import { StatCard } from "../../AdminDashboard/StatCard";
 import { dailySummary } from "@/static/admin/mockChartData";
 import {
   containerVariants,

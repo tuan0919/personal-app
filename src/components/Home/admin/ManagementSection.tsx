@@ -1,11 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import {
-  FiUsers,
-  FiUserPlus,
-  FiTrendingUp,
-  FiTerminal,
-} from "react-icons/fi";
+import { FiUsers, FiUserPlus, FiTrendingUp, FiTerminal } from "react-icons/fi";
 
 const managementItems = [
   {
@@ -13,24 +8,28 @@ const managementItems = [
     text: "Quản lý Khách hàng",
     key: "customer",
     gradient: "from-blue-500 to-teal-400",
+    to: "/admin/customer-management",
   },
   {
     icon: FiUserPlus,
     text: "Quản lý nhân viên",
     key: "employee",
     gradient: "from-orange-400 to-pink-500",
+    to: "/admin/employee-management",
   },
   {
     icon: FiTrendingUp,
     text: "Thống kê",
     key: "stats",
     gradient: "from-purple-500 to-indigo-600",
+    to: "/admin/dashboard",
   },
   {
     icon: FiTerminal,
     text: "Xem logs hệ thống",
     key: "logs",
     gradient: "from-green-400 to-cyan-500",
+    to: "/admin/logs",
   },
 ];
 
@@ -61,7 +60,9 @@ export function ManagementSection() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
     >
-      <h3 className="text-lg font-bold mb-3 text-gray-700 dark:text-gray-300">Mục quản lý:</h3>
+      <h3 className="text-lg font-bold mb-3 text-gray-700 dark:text-gray-300">
+        Mục quản lý:
+      </h3>
       <div className="grid grid-cols-2 gap-3">
         {managementItems.map((item, index) => (
           <motion.div
@@ -70,7 +71,7 @@ export function ManagementSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 * index + 0.3 }}
           >
-                        <Link to={item.key === 'customer' ? '/admin/customer-management' : '#'}>
+            <Link to={item.to}>
               <ManagementButton
                 icon={item.icon}
                 text={item.text}

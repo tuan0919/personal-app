@@ -8,10 +8,10 @@ import {
   FaCube,
 } from "react-icons/fa6";
 import { StatCard } from "./StatCard";
-import { weeklyStats } from "@/static/admin/mockChartData";
 import { containerVariants } from "@/components/shared/animations";
+import { WeeklyStats } from "@/types/admin/dashboard-page-types";
 
-export const WeeklyStatsSection = () => {
+export const WeeklyStatsSection = ({ stats }: { stats: WeeklyStats }) => {
   return (
     <motion.section
       initial="hidden"
@@ -29,38 +29,38 @@ export const WeeklyStatsSection = () => {
             <FaMoneyBillWave className="text-white text-xl drop-shadow-sm" />
           }
           title="Doanh thu tuần"
-          value={`${weeklyStats.totalRevenue.toLocaleString("vi-VN")} ₫`}
+          value={`${stats.totalRevenue.toLocaleString("vi-VN")} ₫`}
           extra={
             <span className="flex items-center text-xs">
               <FaArrowUp className="text-green-200 drop-shadow-sm" /> +
-              {weeklyStats.growthRate}%
+              {stats.growthRate}%
             </span>
           }
         />
         <StatCard
           gradient="from-violet-500 via-purple-400 to-indigo-500"
           icon={
-            weeklyStats.growthRate > 0 ? (
+            stats.growthRate > 0 ? (
               <FaArrowUp className="text-white text-xl drop-shadow-sm" />
             ) : (
               <FaArrowDown className="text-white text-xl drop-shadow-sm" />
             )
           }
           title="Tăng trưởng"
-          value={`${weeklyStats.growthRate}%`}
+          value={`${stats.growthRate}%`}
           subtitle="so với tuần trước"
         />
         <StatCard
           gradient="from-pink-500 via-rose-400 to-pink-600"
           icon={<FaIceCream className="text-white text-xl drop-shadow-sm" />}
           title="Đá cây tuần"
-          value={`${weeklyStats.totalDaCay.toLocaleString("vi-VN")} cây`}
+          value={`${stats.totalDaCay.toLocaleString("vi-VN")} cây`}
         />
         <StatCard
           gradient="from-blue-500 via-sky-400 to-cyan-500"
           icon={<FaCube className="text-white text-xl drop-shadow-sm" />}
           title="Đá bi tuần"
-          value={`${weeklyStats.totalDaBi.toLocaleString("vi-VN")} bịch`}
+          value={`${stats.totalDaBi.toLocaleString("vi-VN")} bịch`}
         />
       </div>
     </motion.section>

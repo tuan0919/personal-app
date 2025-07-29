@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { CustomerService, Customer } from "@/api";
+import { CustomerService } from "@/api/admin/customerService";
+import { Customer } from "@/types/admin/customer-management-page-types";
 
 interface CustomerManagementState {
   customers: Customer[];
@@ -45,7 +46,9 @@ export const useCustomerManagement = () => {
 
   const filteredCustomers = state.customers.filter(
     (customer) =>
-      customer.customerName.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
+      customer.customerName
+        .toLowerCase()
+        .includes(state.searchTerm.toLowerCase()) ||
       customer.address.toLowerCase().includes(state.searchTerm.toLowerCase())
   );
 
