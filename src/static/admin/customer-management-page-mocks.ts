@@ -8,6 +8,7 @@ export const mockCustomers: Customer[] = [
     phoneNumber: "0901234567",
     price1: 12000,
     price2: 25000,
+    avatar: "https://i.pravatar.cc/150?u=1",
   },
   {
     customerId: 2,
@@ -16,6 +17,7 @@ export const mockCustomers: Customer[] = [
     phoneNumber: "0912345678",
     price1: 10000,
     price2: 20000,
+    avatar: "https://i.pravatar.cc/150?u=2",
   },
   {
     customerId: 3,
@@ -24,6 +26,7 @@ export const mockCustomers: Customer[] = [
     phoneNumber: "0987654321",
     price1: 15000,
     price2: 30000,
+    avatar: "https://i.pravatar.cc/150?u=3",
   },
   {
     customerId: 4,
@@ -32,6 +35,7 @@ export const mockCustomers: Customer[] = [
     phoneNumber: "0123456789",
     price1: 9000,
     price2: 18000,
+    avatar: "https://i.pravatar.cc/150?u=4",
   },
   {
     customerId: 5,
@@ -40,6 +44,7 @@ export const mockCustomers: Customer[] = [
     phoneNumber: "0999888777",
     price1: 11000,
     price2: 22000,
+    avatar: "https://i.pravatar.cc/150?u=5",
   },
   {
     customerId: 6,
@@ -48,6 +53,7 @@ export const mockCustomers: Customer[] = [
     phoneNumber: "0977123456",
     price1: 13000,
     price2: 27000,
+    avatar: "https://i.pravatar.cc/150?u=6",
   },
   {
     customerId: 7,
@@ -56,6 +62,7 @@ export const mockCustomers: Customer[] = [
     phoneNumber: "0932123456",
     price1: 14000,
     price2: 26000,
+    avatar: "https://i.pravatar.cc/150?u=7",
   },
   {
     customerId: 8,
@@ -64,5 +71,6 @@ export const mockCustomers: Customer[] = [
     phoneNumber: "0909123456",
     price1: 12000,
     price2: 24000,
+    avatar: "https://i.pravatar.cc/150?u=8",
   },
 ];

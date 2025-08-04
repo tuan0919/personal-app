@@ -12,6 +12,7 @@ import { EditOrder } from "./pages/EditOrder";
 import ActivityHistory from "./pages/ActivityHistory";
 import { CustomerManagement } from "./pages/CustomerManagement";
 import { AdminDashboard } from "./pages/AdminDashboard";
+import { CustomerEdit } from "./pages/CustomerEdit";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
             path="/admin/customer-management"
             element={<CustomerManagement />}
           />
+          <Route path="/admin/customer-management/edit/:id" element={<CustomerEdit />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="*" element={<div>404 Not Found</div>} />
         </Routes>

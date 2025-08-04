@@ -5,6 +5,7 @@ export interface Customer {
   phoneNumber: string;
   price1: number;
   price2: number;
+  avatar?: string;
 }
 
 export interface FilterValues {

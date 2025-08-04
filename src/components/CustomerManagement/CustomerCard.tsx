@@ -2,13 +2,14 @@ import { Customer } from "@/types/admin/customer-management-page-types";
 import { motion } from "framer-motion";
 import { FiEdit, FiTrash2, FiEye, FiPhone } from "react-icons/fi";
 import { FaCube, FaRegSquare } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface CustomerCardProps {
   customer: Customer;
 }
 
 export const CustomerCard = ({ customer }: CustomerCardProps) => {
+  const navigate = useNavigate();
   return (
     <motion.div
       layout
@@ -20,7 +21,7 @@ export const CustomerCard = ({ customer }: CustomerCardProps) => {
     >
       <div className="h-24 flex items-center justify-center">
         <img
-          src={`https://i.pravatar.cc/150?u=${customer.customerId}`}
+          src={customer.avatar || `https://i.pravatar.cc/150?u=${customer.customerId}`}
           alt={customer.customerName}
           className="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-gray-600 shadow-md"
         />
@@ -66,7 +67,10 @@ export const CustomerCard = ({ customer }: CustomerCardProps) => {
             <FiEye size={20} />
           </button>
         </Link>
-        <button className="w-10 h-10 rounded-full flex items-center justify-center bg-green-100/80 dark:bg-green-900/50 text-green-600 dark:text-green-300 hover:bg-green-200/80 dark:hover:bg-green-800/60 transition-all duration-300 transform hover:scale-110">
+        <button 
+          onClick={() => navigate(`/admin/customer-management/edit/${customer.customerId}`)}
+          className="w-10 h-10 rounded-full flex items-center justify-center bg-green-100/80 dark:bg-green-900/50 text-green-600 dark:text-green-300 hover:bg-green-200/80 dark:hover:bg-green-800/60 transition-all duration-300 transform hover:scale-110"
+        >
           <FiEdit size={20} />
         </button>
         <button className="w-10 h-10 rounded-full flex items-center justify-center bg-red-100/80 dark:bg-red-900/50 text-red-500 dark:text-red-400 hover:bg-red-200/80 dark:hover:bg-red-800/60 transition-all duration-300 transform hover:scale-110">
