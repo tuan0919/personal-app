@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useCustomerEdit } from "@/hooks/useCustomerEdit";
 import { CustomerEditLayout } from "@/components/CustomerEdit/CustomerEditLayout";
 import { CustomerEditForm } from "@/components/CustomerEdit/CustomerEditForm";
@@ -8,8 +8,13 @@ import { CustomerEditFormValues } from "@/types/admin/customer-edit-page-types";
 
 const CustomerEditView = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const customerId = id ? parseInt(id, 10) : 0;
   const { state, actions } = useCustomerEdit(customerId);
+
+  const handleCancel = () => {
+    navigate(-1); // Go back to the previous page
+  };
 
   const handleSubmit = (data: CustomerEditFormValues) => {
     actions.updateCustomer(data);
@@ -40,6 +45,7 @@ const CustomerEditView = () => {
           <CustomerEditForm 
             customer={state.customer} 
             onSubmit={handleSubmit} 
+            onCancel={handleCancel}
             isSubmitting={state.isSubmitting} 
           />
           
