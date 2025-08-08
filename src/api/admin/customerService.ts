@@ -1,6 +1,7 @@
 import { mockCustomers } from "@/static/admin/customer-management-page-mocks";
 import { CustomerEditFormValues } from "@/types/admin/customer-edit-page-types";
 import { Customer } from "@/types/admin/customer-management-page-types";
+import { CustomerNewFormValues } from "@/types/admin/customer-new-page-types";
 import { delay } from "@/utils/delay";
 
 export class CustomerService {
@@ -34,6 +35,32 @@ export class CustomerService {
       avatar: data.avatar || mockCustomers[customerIndex].avatar,
     };
 
+    return true;
+  }
+
+  static async createCustomer(data: CustomerNewFormValues): Promise<Customer> {
+    await delay(1000);
+    const newId = mockCustomers.length
+      ? Math.max(...mockCustomers.map((c) => c.customerId)) + 1
+      : 1;
+    const newCustomer: Customer = {
+      customerId: newId,
+      customerName: data.customerName,
+      address: data.address,
+      phoneNumber: data.phoneNumber,
+      price1: data.price1,
+      price2: data.price2,
+      avatar: data.avatar || `https://i.pravatar.cc/150?u=${newId}`,
+    };
+    mockCustomers.push(newCustomer);
+    return { ...newCustomer };
+  }
+
+  static async deleteCustomer(id: number): Promise<boolean> {
+    await delay(500);
+    const index = mockCustomers.findIndex((c) => c.customerId === id);
+    if (index === -1) return false;
+    mockCustomers.splice(index, 1);
     return true;
   }
 }

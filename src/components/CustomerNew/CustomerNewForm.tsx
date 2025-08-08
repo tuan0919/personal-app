@@ -1,12 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion } from "framer-motion";
 import { FaUser, FaMapMarkerAlt, FaPhone, FaTag } from "react-icons/fa";
 
-import { Customer } from "@/types/admin/customer-management-page-types";
-import { CustomerEditFormValues } from "@/types/admin/customer-edit-page-types";
+import { CustomerNewFormValues } from "@/types/admin/customer-new-page-types";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,23 +35,21 @@ const formSchema = z.object({
   avatar: z.string().optional(),
 });
 
-interface CustomerEditFormProps {
-  customer: Customer | null;
-  onSubmit: (data: CustomerEditFormValues) => void;
+interface CustomerNewFormProps {
+  onSubmit: (data: CustomerNewFormValues) => void;
   onCancel: () => void;
   isSubmitting: boolean;
 }
 
-export const CustomerEditForm = ({
-  customer,
+export const CustomerNewForm = ({
   onSubmit,
   onCancel,
   isSubmitting,
-}: CustomerEditFormProps) => {
+}: CustomerNewFormProps) => {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
-  const form = useForm<CustomerEditFormValues>({
+  const form = useForm<CustomerNewFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       customerName: "",
@@ -64,21 +61,7 @@ export const CustomerEditForm = ({
     },
   });
 
-  useEffect(() => {
-    if (customer) {
-      form.reset({
-        customerName: customer.customerName,
-        address: customer.address,
-        phoneNumber: customer.phoneNumber,
-        price1: customer.price1,
-        price2: customer.price2,
-        avatar: customer.avatar,
-      });
-      setAvatarPreview(customer.avatar || null);
-    }
-  }, [customer, form]);
-
-  const handleFormSubmit = (values: CustomerEditFormValues) => {
+  const handleFormSubmit = (values: CustomerNewFormValues) => {
     onSubmit(values);
   };
 
@@ -103,16 +86,6 @@ export const CustomerEditForm = ({
     }
   };
 
-  if (!customer) {
-    return (
-      <div className="text-center py-16 bg-white/30 dark:bg-gray-800/30 backdrop-blur-sm rounded-xl">
-        <p className="text-gray-600 dark:text-gray-300">
-          Không tìm thấy khách hàng.
-        </p>
-      </div>
-    );
-  }
-
   return (
     <>
       <motion.div
@@ -129,9 +102,9 @@ export const CustomerEditForm = ({
             <img
               src={
                 avatarPreview ||
-                `https://i.pravatar.cc/150?u=${customer.customerId}`
+                `https://i.pravatar.cc/150?u=new`
               }
-              alt={customer.customerName}
+              alt="new-customer"
               className="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-gray-600 shadow-md mb-4"
             />
             <input
@@ -143,9 +116,9 @@ export const CustomerEditForm = ({
             />
             <label
               htmlFor="avatar-upload"
-              className="cursor-pointer text-sm text-pink-600 hover:underline"
+              className="cursor-pointer px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-full shadow hover:shadow-lg transition-all duration-300"
             >
-              Thay đổi ảnh đại diện
+              Tải ảnh đại diện
             </label>
           </div>
 
@@ -201,7 +174,7 @@ export const CustomerEditForm = ({
                   disabled={isSubmitting}
                   className="flex-1 py-2 rounded-xl bg-gradient-to-r from-pink-500 via-pink-400 to-pink-600 text-white font-bold text-xs sm:text-base shadow"
                 >
-                  {isSubmitting ? "Đang lưu..." : "Lưu thay đổi"}
+                  {isSubmitting ? "Đang tạo..." : "Tạo khách hàng"}
                 </Button>
 
                 <Button
@@ -222,8 +195,8 @@ export const CustomerEditForm = ({
         open={isAlertOpen}
         onClose={() => setIsAlertOpen(false)}
         onConfirm={form.handleSubmit(handleFormSubmit)}
-        title="Xác nhận lưu thay đổi?"
-        message="Bạn có chắc chắn muốn lưu các thông tin đã thay đổi cho khách hàng này không?"
+        title="Xác nhận tạo khách hàng?"
+        message="Bạn có chắc chắn muốn tạo khách hàng mới với các thông tin đã nhập?"
       />
     </>
   );
@@ -233,10 +206,10 @@ import { Control } from "react-hook-form";
 
 // Prop types for the helper component
 interface FormFieldItemProps {
-  name: keyof CustomerEditFormValues;
+  name: keyof CustomerNewFormValues;
   label: string;
   icon: React.ElementType;
-  control: Control<CustomerEditFormValues>;
+  control: Control<CustomerNewFormValues>;
   type?: string;
 }
 

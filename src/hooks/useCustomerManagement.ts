@@ -44,6 +44,24 @@ export const useCustomerManagement = () => {
     setState((prev) => ({ ...prev, searchTerm: term }));
   };
 
+  const deleteCustomer = async (id: number) => {
+    try {
+      // Clear previous error state
+      setState((prev) => ({ ...prev, error: null }));
+      const ok = await CustomerService.deleteCustomer(id);
+      if (ok) {
+        setState((prev) => ({
+          ...prev,
+          customers: prev.customers.filter((c) => c.customerId !== id),
+        }));
+      } else {
+        setState((prev) => ({ ...prev, error: "Không thể xóa khách hàng." }));
+      }
+    } catch {
+      setState((prev) => ({ ...prev, error: "Không thể xóa khách hàng." }));
+    }
+  };
+
   const filteredCustomers = state.customers.filter(
     (customer) =>
       customer.customerName
@@ -60,6 +78,7 @@ export const useCustomerManagement = () => {
     actions: {
       handleSearch,
       refetch: fetchCustomers,
+      deleteCustomer,
     },
   };
 };

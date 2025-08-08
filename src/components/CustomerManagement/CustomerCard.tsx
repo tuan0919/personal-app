@@ -3,13 +3,17 @@ import { motion } from "framer-motion";
 import { FiEdit, FiTrash2, FiEye, FiPhone } from "react-icons/fi";
 import { FaCube, FaRegSquare } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 interface CustomerCardProps {
   customer: Customer;
+  onDelete?: (id: number) => void | Promise<void>;
 }
 
-export const CustomerCard = ({ customer }: CustomerCardProps) => {
+export const CustomerCard = ({ customer, onDelete }: CustomerCardProps) => {
   const navigate = useNavigate();
+  const [confirmOpen, setConfirmOpen] = useState(false);
   return (
     <motion.div
       layout
@@ -73,10 +77,23 @@ export const CustomerCard = ({ customer }: CustomerCardProps) => {
         >
           <FiEdit size={20} />
         </button>
-        <button className="w-10 h-10 rounded-full flex items-center justify-center bg-red-100/80 dark:bg-red-900/50 text-red-500 dark:text-red-400 hover:bg-red-200/80 dark:hover:bg-red-800/60 transition-all duration-300 transform hover:scale-110">
+        <button 
+          onClick={() => setConfirmOpen(true)}
+          className="w-10 h-10 rounded-full flex items-center justify-center bg-red-100/80 dark:bg-red-900/50 text-red-500 dark:text-red-400 hover:bg-red-200/80 dark:hover:bg-red-800/60 transition-all duration-300 transform hover:scale-110"
+        >
           <FiTrash2 size={20} />
         </button>
       </div>
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Xóa khách hàng"
+        message={`Bạn có chắc chắn muốn xóa khách hàng "${customer.customerName}"?`}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={() => {
+          setConfirmOpen(false);
+          onDelete?.(customer.customerId);
+        }}
+      />
     </motion.div>
   );
 };

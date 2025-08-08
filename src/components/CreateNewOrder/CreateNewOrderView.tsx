@@ -19,7 +19,7 @@ import {
 } from "@/components/shared/animations";
 import { CustomerCombobox } from "./CustomerCombobox";
 import { cn } from "@/lib/utils";
-import { ConfirmDialog } from "./ConfirmDialog";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import {
   formSchema,
   useCreateNewOrderState,
