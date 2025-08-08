@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { FaUserCircle, FaPhoneAlt, FaMapMarkerAlt } from "react-icons/fa";
+import { FaPhoneAlt, FaMapMarkerAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { fadeInUp } from "@/components/shared/animations";
 import { useCustomerDetailsAnimation } from "@/animations/useCustomerDetailsAnimation";
@@ -9,6 +9,7 @@ interface Customer {
   username: string;
   phone: string;
   address: string;
+  avatar: string;
 }
 
 interface CustomerInfoProps {
@@ -29,8 +30,12 @@ export function CustomerInfo({ customer }: CustomerInfoProps) {
     >
       <div className="flex items-center gap-4">
         <div className="bg-gradient-to-r from-pink-500 to-green-400 rounded-full p-1">
-          <div className="bg-white rounded-full p-2">
-            <FaUserCircle className="h-12 w-12 text-pink-500" />
+          <div className="bg-white rounded-full p-2 overflow-hidden">
+            <img
+              src={customer.avatar}
+              alt={customer.name}
+              className="h-12 w-12 rounded-full object-cover"
+            />
           </div>
         </div>
         <div>
