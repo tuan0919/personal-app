@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { FiUsers, FiUserPlus, FiTrendingUp, FiTerminal } from "react-icons/fi";
+import { ReceiptIcon } from "lucide-react";
 
 const managementItems = [
   {
@@ -30,6 +31,13 @@ const managementItems = [
     key: "logs",
     gradient: "from-green-400 to-cyan-500",
     to: "/admin/logs",
+  },
+  {
+    icon: ReceiptIcon,
+    text: "Quản lý hóa đơn",
+    key: "order",
+    gradient: "from-yellow-400 to-orange-500",
+    to: "/admin/order-management",
   },
 ];
 
