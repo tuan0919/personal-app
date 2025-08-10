@@ -1,7 +1,6 @@
-import React from "react";
 import { ConfirmDialog as SharedConfirmDialog } from "@/components/shared/ConfirmDialog";
 
-export interface ConfirmDialogProps {
+export interface CustomConfirmDialogProps {
   open: boolean;
   message: string;
   title?: string;
@@ -9,6 +8,6 @@ export interface ConfirmDialogProps {
   onConfirm: () => void;
 }
 
-export const ConfirmDialog: React.FC<ConfirmDialogProps> = (props) => {
+export const CustomConfirmDialog = (props: CustomConfirmDialogProps) => {
   return <SharedConfirmDialog {...props} />;
 };

@@ -10,32 +10,24 @@ import {
 } from "react-icons/fa";
 import { FaBoxesPacking, FaTruckFast } from "react-icons/fa6";
 import { cn } from "@/lib/utils";
-import { Customer } from "@/static/admin/mockCustomers";
+import { Order } from "@/types/admin/order-management-page-types";
 import { cardVariants } from "@/components/shared/animations";
 
-const PRICE_MAP: Record<number, number> = {
-  1: 10000,
-  2: 15000,
-};
-const PRODUCT_TYPE_NAMES: Record<number, string> = {
-  1: "Đá cây",
-  2: "Đá viên",
+const PRODUCT_TYPE_LABELS: Record<Order["orderType"], string> = {
+  "ĐÁ CÂY": "Đá cây",
+  "ĐÁ BI": "Đá viên",
 };
 
-interface AdminOrderCardProps {
-  order: Customer;
+interface OrderCardProps {
+  order: Order;
   isSelected: boolean;
   onSelect: (orderId: number) => void;
 }
 
-export function AdminOrderCard({
-  order,
-  isSelected,
-  onSelect,
-}: AdminOrderCardProps) {
-  const unitPrice = PRICE_MAP[order.productType] || 0;
-  const totalPrice = unitPrice * order.amount;
-  const productTypeName = PRODUCT_TYPE_NAMES[order.productType] || "Sản phẩm";
+export function OrderCard({ order, isSelected, onSelect }: OrderCardProps) {
+  const unitPrice = order.price || 0;
+  const totalPrice = unitPrice * (order.amount || 0);
+  const productTypeName = PRODUCT_TYPE_LABELS[order.orderType] || "Sản phẩm";
 
   return (
     <motion.div
@@ -50,16 +42,16 @@ export function AdminOrderCard({
           ? "border-blue-500 shadow-lg shadow-blue-100"
           : "border-gray-200 hover:border-blue-300"
       )}
-      onClick={() => onSelect(order.customerId)}
+      onClick={() => onSelect(order.customer.id)}
       whileTap={{ scale: 0.98 }}
     >
       <div className="flex items-center justify-between mb-2">
         <h3 className="font-bold text-slate-800 text-lg">
-          {order.customerName}
+          {order.customer.name}
         </h3>
         <div className="flex items-center gap-1 text-blue-600">
           <FaClock className="text-xs" />
-          <span className="text-xs font-medium">{order.deliveryTime}</span>
+          <span className="text-xs font-medium">{order.deliveredTime}</span>
         </div>
       </div>
 
@@ -103,7 +95,7 @@ export function AdminOrderCard({
         <span className="font-bold text-slate-900 text-base">
           Tổng: {totalPrice.toLocaleString("vi-VN")}đ
         </span>
-        {order.paymentStatus === "paid" ? (
+        {order.payStatus === "ĐÃ THANH TOÁN" ? (
           <div className="flex items-center gap-1 px-2 py-1 bg-emerald-100 rounded-full">
             <FaCheckCircle className="text-emerald-600 text-sm" />
             <span className="text-xs font-semibold text-emerald-700">

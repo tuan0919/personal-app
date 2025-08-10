@@ -1,7 +1,7 @@
 import { FiUsers, FiArrowLeft } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
-export const CustomerManagementNavbar = () => {
+export const Navbar = () => {
   const navigate = useNavigate();
 
   return (

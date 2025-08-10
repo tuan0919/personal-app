@@ -3,22 +3,21 @@ import { FaTruckFast } from "react-icons/fa6";
 import { FiFilter, FiLoader } from "react-icons/fi";
 import { CalendarChooser } from "@/components/shared/CalendarChooser";
 import { Pagination } from "@/components/shared/Pagination";
-import { AdminFilterSheet } from "./AdminFilterSheet";
 import {
   fadeVariants,
   sectionVariants,
   containerVariants,
   pageTransition,
 } from "@/components/shared/animations";
-import { useAdminState } from "@/hooks/useAdminState";
-import { AdminOrderCard } from "./AdminOrderCard";
+import { useOrderManagement } from "@/hooks/useOrderManagement";
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { useState, useEffect } from "react";
-import { Customer } from "@/static/admin/mockCustomers";
+import { Order } from "@/types/admin/order-management-page-types";
+import { FilterSheet, OrderCard } from ".";
 
-export function OrdersSection() {
-  const { state, actions, computed } = useAdminState();
+export function OrderSection() {
+  const { state, actions, computed } = useOrderManagement();
   const [showSkeleton, setShowSkeleton] = useState(true);
 
   useEffect(() => {
@@ -146,12 +145,12 @@ export function OrdersSection() {
                   <p className="text-gray-500">Không có đơn hàng nào.</p>
                 </div>
               ) : (
-                computed.paged.map((order: Customer) => (
-                  <AdminOrderCard
-                    key={order.customerId}
+                computed.paged.map((order: Order) => (
+                  <OrderCard
+                    key={order.customer.id}
                     order={order}
-                    isSelected={state.selectedRecord === order.customerId}
-                    onSelect={() => actions.setSelectedRecord(order.customerId)}
+                    isSelected={state.selectedRecord === order.customer.id}
+                    onSelect={(id) => actions.setSelectedRecord(id)}
                   />
                 ))
               )}
@@ -185,7 +184,7 @@ export function OrdersSection() {
             <div className="max-w-md mx-auto">
               <div className="flex justify-between items-center mb-3">
                 <h3 className="font-semibold text-gray-800">
-                  Đơn hàng: {computed.selectedOrder.customerName}
+                  Đơn hàng: {computed.selectedOrder.customer.name}
                 </h3>
                 <button
                   onClick={() => actions.setShowActionPopup(false)}
@@ -212,7 +211,9 @@ export function OrdersSection() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0, transition: { delay: 0.1 } }}
                   exit={{ opacity: 0, y: -10 }}
-                  onClick={() => handleEdit(computed.selectedOrder!.customerId)}
+                  onClick={() =>
+                    handleEdit(computed.selectedOrder!.customer.id)
+                  }
                   className="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 rounded-xl hover:from-blue-100 hover:to-blue-200 transition-all duration-200 font-medium"
                   whileTap={{ scale: 0.98 }}
                   whileHover={{ scale: 1.02 }}
@@ -290,7 +291,7 @@ export function OrdersSection() {
                   animate={{ opacity: 1, y: 0, transition: { delay: 0.4 } }}
                   exit={{ opacity: 0, y: -10 }}
                   onClick={() =>
-                    handleCustomerDetails(computed.selectedOrder!.customerId)
+                    handleCustomerDetails(computed.selectedOrder!.customer.id)
                   }
                   className="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-green-50 to-green-100 text-green-700 rounded-xl hover:from-green-100 hover:to-green-200 transition-all duration-200 font-medium"
                   whileTap={{ scale: 0.98 }}
@@ -306,7 +307,7 @@ export function OrdersSection() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 0 0 9.288 0M15 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm6 3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM7 10a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"
                     />
                   </svg>
                   <span>Chi tiết khách hàng (quản trị viên)</span>
@@ -338,7 +339,7 @@ export function OrdersSection() {
               </h3>
               <p className="text-gray-600 mb-4">
                 Bạn có chắc muốn xóa đơn hàng của{" "}
-                <strong>{computed.selectedOrder?.customerName}</strong>?
+                <strong>{computed.selectedOrder?.customer.name}</strong>?
               </p>
 
               <div className="flex gap-3">
@@ -361,7 +362,7 @@ export function OrdersSection() {
       </AnimatePresence>
 
       {/* Admin Filter Sheet */}
-      <AdminFilterSheet
+      <FilterSheet
         open={state.showFilterSheet}
         onClose={() => actions.setShowFilterSheet(false)}
         onApply={actions.handleApplyFilter}

@@ -36,19 +36,19 @@ const formSchema = z.object({
   avatar: z.string().optional(),
 });
 
-interface CustomerEditFormProps {
+interface EditFormProps {
   customer: Customer | null;
   onSubmit: (data: CustomerEditFormValues) => void;
   onCancel: () => void;
   isSubmitting: boolean;
 }
 
-export const CustomerEditForm = ({
+export const EditForm = ({
   customer,
   onSubmit,
   onCancel,
   isSubmitting,
-}: CustomerEditFormProps) => {
+}: EditFormProps) => {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 

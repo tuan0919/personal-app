@@ -7,7 +7,7 @@ import {
   FaIceCream,
   FaCube,
 } from "react-icons/fa6";
-import { StatCard } from "./StatCard";
+import { StatCard } from "../OrderManagement/StatCard";
 import { containerVariants } from "@/components/shared/animations";
 import { WeeklyStats } from "@/types/admin/dashboard-page-types";
 

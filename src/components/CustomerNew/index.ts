@@ -1,3 +1,4 @@
-export { CustomerNewLayout } from "./CustomerNewLayout";
-export { CustomerNewNavbar } from "./CustomerNewNavbar";
-export { CustomerNewForm } from "./CustomerNewForm";
+export { Layout } from "./Layout";
+export { Navbar } from "./Navbar";
+export { NewForm } from "./NewForm";
+export { View } from "./View";

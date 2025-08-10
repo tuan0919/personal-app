@@ -1,16 +1,3 @@
-export interface Customer {
-  customerId: number;
-  customerName: string;
-  address: string;
-  phoneNumber: string;
-  price1: number;
-  price2: number;
-  avatar?: string;
-}
+import { Customer } from "@/static/admin/customer-management-page-mocks";
 
-export interface FilterValues {
-  priceRange?: {
-    min: number;
-    max: number;
-  };
-}
+export type { Customer };

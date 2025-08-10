@@ -1,12 +1,12 @@
-import { FiUserPlus, FiArrowLeft, FiSave } from "react-icons/fi";
+import { FiUser, FiArrowLeft, FiSave } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
-interface CustomerNewNavbarProps {
+interface NavbarProps {
   onSave?: () => void;
   isSubmitting?: boolean;
 }
 
-export const CustomerNewNavbar = ({ onSave, isSubmitting }: CustomerNewNavbarProps) => {
+export const Navbar = ({ onSave, isSubmitting }: NavbarProps) => {
   const navigate = useNavigate();
 
   return (
@@ -20,20 +20,27 @@ export const CustomerNewNavbar = ({ onSave, isSubmitting }: CustomerNewNavbarPro
         >
           <FiArrowLeft className="text-blue-500 text-xl" />
         </button>
-        <FiUserPlus className="text-blue-500 text-2xl" />
+        <FiUser className="text-blue-500 text-2xl" />
         <span className="text-lg font-bold text-gray-800 tracking-wide">
-          Thêm Khách hàng
+          Chỉnh sửa Khách hàng
         </span>
       </div>
+
       {onSave && (
         <button
           type="button"
           aria-label="Lưu"
           onClick={onSave}
           disabled={isSubmitting}
-          className={`p-2 rounded-full transition ${isSubmitting ? 'bg-gray-200' : 'hover:bg-green-100 bg-green-50'}`}
+          className={`p-2 rounded-full transition ${
+            isSubmitting ? "bg-gray-200" : "hover:bg-green-100 bg-green-50"
+          }`}
         >
-          <FiSave className={`text-xl ${isSubmitting ? 'text-gray-500' : 'text-green-500'}`} />
+          <FiSave
+            className={`text-xl ${
+              isSubmitting ? "text-gray-500" : "text-green-500"
+            }`}
+          />
         </button>
       )}
     </nav>

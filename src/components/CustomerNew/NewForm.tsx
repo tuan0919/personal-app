@@ -4,9 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion } from "framer-motion";
 import { FaUser, FaMapMarkerAlt, FaPhone, FaTag } from "react-icons/fa";
-
 import { CustomerNewFormValues } from "@/types/admin/customer-new-page-types";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -22,6 +20,7 @@ import {
   containerVariants,
   itemVariants,
 } from "@/components/shared/animations";
+import { Control } from "react-hook-form";
 
 // Schema for form validation
 const formSchema = z.object({
@@ -35,17 +34,13 @@ const formSchema = z.object({
   avatar: z.string().optional(),
 });
 
-interface CustomerNewFormProps {
+interface NewFormProps {
   onSubmit: (data: CustomerNewFormValues) => void;
   onCancel: () => void;
   isSubmitting: boolean;
 }
 
-export const CustomerNewForm = ({
-  onSubmit,
-  onCancel,
-  isSubmitting,
-}: CustomerNewFormProps) => {
+export const NewForm = ({ onSubmit, onCancel, isSubmitting }: NewFormProps) => {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
@@ -100,10 +95,7 @@ export const CustomerNewForm = ({
         >
           <div className="flex flex-col items-center mb-6">
             <img
-              src={
-                avatarPreview ||
-                `https://i.pravatar.cc/150?u=new`
-              }
+              src={avatarPreview || `https://i.pravatar.cc/150?u=new`}
               alt="new-customer"
               className="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-gray-600 shadow-md mb-4"
             />
@@ -201,8 +193,6 @@ export const CustomerNewForm = ({
     </>
   );
 };
-
-import { Control } from "react-hook-form";
 
 // Prop types for the helper component
 interface FormFieldItemProps {

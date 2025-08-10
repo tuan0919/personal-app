@@ -1,14 +1,14 @@
 // /components/Home/DailyStatsSection.tsx
 import { motion } from "framer-motion";
 import { FaIceCream, FaCube, FaMoneyBillWave } from "react-icons/fa6";
-import { StatCard } from "../../AdminDashboard/StatCard";
 import { dailySummary } from "@/static/admin/mockChartData";
 import {
   containerVariants,
   slideInVariants,
 } from "@/components/shared/animations";
+import { StatCard } from ".";
 
-export const DailyStatsSection = () => {
+export function DailyStatsSection() {
   const statsData = [
     {
       gradient: "from-pink-500 via-pink-400 to-rose-500",
@@ -44,6 +44,4 @@ export const DailyStatsSection = () => {
       ))}
     </motion.section>
   );
-};
-
-DailyStatsSection.displayName = "DailyStatsSection";
+}

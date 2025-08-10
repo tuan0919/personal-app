@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
 
 // Filter values for admin
-interface AdminFilterValues {
+interface FilterValues {
   minPrice: number;
   maxPrice: number;
   iceCube: boolean; // đá viên
@@ -16,11 +16,11 @@ interface AdminFilterValues {
   customerFilter: string; // Lọc theo khách hàng
 }
 
-interface AdminFilterSheetProps {
+interface FilterSheetProps {
   open: boolean;
   onClose: () => void;
-  onApply: (values: AdminFilterValues) => void;
-  initial?: AdminFilterValues;
+  onApply: (values: FilterValues) => void;
+  initial?: FilterValues;
 }
 
 const sheetVariants = {
@@ -73,13 +73,13 @@ const parseFormattedNumber = (formattedValue: string): number => {
   return numericValue ? parseInt(numericValue, 10) : 0;
 };
 
-export const AdminFilterSheet: React.FC<AdminFilterSheetProps> = ({
+export function FilterSheet({
   open,
   onClose,
   onApply,
   initial,
-}) => {
-  const [values, setValues] = useState<AdminFilterValues>(
+}: FilterSheetProps) {
+  const [values, setValues] = useState<FilterValues>(
     initial || {
       minPrice: 0,
       maxPrice: 1000000,
@@ -109,22 +109,24 @@ export const AdminFilterSheet: React.FC<AdminFilterSheetProps> = ({
   // Reset filter values when sheet opens
   useEffect(() => {
     if (open) {
-      setValues(initial || {
-        minPrice: 0,
-        maxPrice: 1000000,
-        iceCube: true,
-        iceBlock: true,
-        paymentStatus: "all",
-        deliveryStatus: "all",
-        shipperFilter: "",
-        customerFilter: "",
-      });
+      setValues(
+        initial || {
+          minPrice: 0,
+          maxPrice: 1000000,
+          iceCube: true,
+          iceBlock: true,
+          paymentStatus: "all",
+          deliveryStatus: "all",
+          shipperFilter: "",
+          customerFilter: "",
+        }
+      );
     }
   }, [open, initial]);
 
-  const handleChange = <K extends keyof AdminFilterValues>(
+  const handleChange = <K extends keyof FilterValues>(
     key: K,
-    val: AdminFilterValues[K]
+    val: FilterValues[K]
   ) => {
     setValues((prev) => ({ ...prev, [key]: val }));
   };
@@ -419,4 +421,4 @@ export const AdminFilterSheet: React.FC<AdminFilterSheetProps> = ({
       )}
     </AnimatePresence>
   );
-};
+}

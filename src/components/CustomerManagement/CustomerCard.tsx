@@ -25,7 +25,10 @@ export const CustomerCard = ({ customer, onDelete }: CustomerCardProps) => {
     >
       <div className="h-24 flex items-center justify-center">
         <img
-          src={customer.avatar || `https://i.pravatar.cc/150?u=${customer.customerId}`}
+          src={
+            customer.avatar ||
+            `https://i.pravatar.cc/150?u=${customer.customerId}`
+          }
           alt={customer.customerName}
           className="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-gray-600 shadow-md"
         />
@@ -71,13 +74,15 @@ export const CustomerCard = ({ customer, onDelete }: CustomerCardProps) => {
             <FiEye size={20} />
           </button>
         </Link>
-        <button 
-          onClick={() => navigate(`/admin/customer-management/edit/${customer.customerId}`)}
+        <button
+          onClick={() =>
+            navigate(`/admin/customer-management/edit/${customer.customerId}`)
+          }
           className="w-10 h-10 rounded-full flex items-center justify-center bg-green-100/80 dark:bg-green-900/50 text-green-600 dark:text-green-300 hover:bg-green-200/80 dark:hover:bg-green-800/60 transition-all duration-300 transform hover:scale-110"
         >
           <FiEdit size={20} />
         </button>
-        <button 
+        <button
           onClick={() => setConfirmOpen(true)}
           className="w-10 h-10 rounded-full flex items-center justify-center bg-red-100/80 dark:bg-red-900/50 text-red-500 dark:text-red-400 hover:bg-red-200/80 dark:hover:bg-red-800/60 transition-all duration-300 transform hover:scale-110"
         >
