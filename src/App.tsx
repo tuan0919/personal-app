@@ -1,20 +1,22 @@
 import "./App.css";
 import { Route, Routes, Navigate } from "react-router-dom";
-import { Home } from "./pages/Home";
+import { Home } from "./pages/general/Home";
 import About from "./pages/About";
-import { SignIn } from "./pages/SignIn";
-import { SignUp } from "./pages/SignUp";
+import { SignIn } from "./pages/general/SignIn";
+import { SignUp } from "./pages/general/SignUp";
 import { CreateNewOrder } from "./pages/CreateNewOrder";
 import { AnimatePresence } from "framer-motion";
-import { CustomerDetails } from "./pages/CustomerDetails";
+import { CustomerDetails } from "./pages/admin/CustomerDetails";
 import { Payment } from "./pages/Payment";
-import { EditOrder } from "./pages/EditOrder";
 import ActivityHistory from "./pages/ActivityHistory";
-import { CustomerManagement } from "./pages/CustomerManagement";
-import { AdminDashboard } from "./pages/AdminDashboard";
-import { CustomerEdit } from "./pages/CustomerEdit";
-import { CustomerNew } from "./pages/CustomerNew";
-import { OrderManagement } from "./pages/OrderManagement";
+import {
+  AdminDashboard,
+  CustomerEdit,
+  CustomerManagement,
+  CustomerNew,
+  EditOrder,
+  OrderManagement,
+} from "@/pages/admin";
 
 function App() {
   return (

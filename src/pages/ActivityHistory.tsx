@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import ActivityHistoryNavbar from "@/components/ActivityHistory/ActivityHistoryNavbar";
+import ActivityHistoryNavbar from "@/components/user/ActivityHistory/ActivityHistoryNavbar";
 import {
   FaPlus,
   FaEdit,
@@ -7,7 +7,7 @@ import {
   FaTimesCircle,
   FaSpinner,
 } from "react-icons/fa";
-import { TabSlider } from "@/components/ActivityHistory/TabSlider";
+import { TabSlider } from "@/components/user/ActivityHistory/TabSlider";
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton";
 import { containerVariants } from "@/components/shared/animations";
 import { useActivityHistoryState } from "@/hooks/useActivityHistoryState";

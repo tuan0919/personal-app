@@ -1,6 +1,6 @@
 // CreateNewOrder.tsx
-import { CreateNewOrderLayout } from "@/components/CreateNewOrder/CreateNewOrderLayout";
-import { CreateNewOrderView } from "@/components/CreateNewOrder/CreateNewOrderView";
+import { CreateNewOrderLayout } from "@/components/user/CreateNewOrder/CreateNewOrderLayout";
+import { CreateNewOrderView } from "@/components/user/CreateNewOrder/CreateNewOrderView";
 import { motion } from "framer-motion";
 import { useCreateNewOrderAnimations } from "@/animations/useCreateNewOrderAnimations";
 import { containerVariants } from "@/components/shared/animations";
