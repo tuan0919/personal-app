@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PaymentStatistics } from "./PaymentStatistics";
 import { OrderCard } from "./OrderCard";
@@ -10,53 +10,33 @@ import { CancelDialog } from "./CancelDialog";
 import { CalendarChooser } from "@/components/shared/CalendarChooser";
 import { usePaymentContext } from "@/contexts";
 
-export function PaymentView() {
+export function View() {
   // Get all payment state from context
   const {
-    loading,
-    filtering,
-    error,
-    orders,
-    currentPage,
-    setCurrentPage,
-    selectedUnpaidOrders,
-    selectedPaidOrders,
-    actualPayments,
-    handleActualPaymentChange,
-    handleOrderSelect,
-    selectedDate,
-    setSelectedDate,
+    state: {
+      loading,
+      filtering,
+      error,
+      orders,
+      currentPage,
+      selectedUnpaidOrders,
+      selectedPaidOrders,
+      actualPayments,
+      selectedDate,
+    },
+    actions: {
+      setCurrentPage,
+      setSelectedDate,
+      handleActualPaymentChange,
+      handleOrderSelect
+    },
+    selectors: {
+      totalPages,
+      currentOrders
+    }
   } = usePaymentContext();
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
-
-  const ordersPerPage = 4;
-
-  // Tính toán thống kê
-  const statistics = useMemo(() => {
-    const unpaidOrders = orders.filter((order) => !order.isPaid);
-    const totalUnpaidAmount = unpaidOrders.reduce(
-      (sum, order) => sum + order.totalAmount,
-      0
-    );
-    const selectedUnpaidAmount = selectedUnpaidOrders.reduce((sum, orderId) => {
-      const order = orders.find((o) => o.id === orderId);
-      return sum + (order ? order.totalAmount : 0);
-    }, 0);
-    const selectedPaidAmount = selectedPaidOrders.reduce((sum, orderId) => {
-      const order = orders.find((o) => o.id === orderId);
-      return sum + (order ? order.totalAmount : 0);
-    }, 0);
-
-    return {
-      totalUnpaidOrders: unpaidOrders.length,
-      totalUnpaidAmount,
-      selectedUnpaidOrdersCount: selectedUnpaidOrders.length,
-      selectedUnpaidAmount,
-      selectedPaidOrdersCount: selectedPaidOrders.length,
-      selectedPaidAmount,
-    };
-  }, [orders, selectedUnpaidOrders, selectedPaidOrders]);
 
   // Chuẩn bị dữ liệu chi tiết cho ConfirmDialog
   const orderDetails = selectedUnpaidOrders
@@ -103,14 +83,7 @@ export function PaymentView() {
     actual: number;
     diffPercent: number;
   }[];
-
-  // Phân trang
-  const totalPages = Math.ceil(orders.length / ordersPerPage);
-  const currentOrders = orders.slice(
-    (currentPage - 1) * ordersPerPage,
-    currentPage * ordersPerPage
-  );
-
+  
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
   };
@@ -161,11 +134,7 @@ export function PaymentView() {
             Danh sách đơn hàng
           </h2>
           {/* Statistics Cards - Compact Grid Layout */}
-          <PaymentStatistics
-            selectedUnpaidAmount={statistics.selectedUnpaidAmount}
-            totalUnpaidAmount={statistics.totalUnpaidAmount}
-            totalUnpaidOrders={statistics.totalUnpaidOrders}
-          />
+          <PaymentStatistics/>
           <div className="justify-between mb-6 flex items-center">
             <h2 className="font-semibold flex items-center gap-2 text-gray-800">
               Ngày giao hàng:
@@ -235,7 +204,7 @@ export function PaymentView() {
           <ConfirmDialog
             open={showConfirmDialog}
             count={selectedUnpaidOrders.length}
-            total={statistics.selectedUnpaidAmount}
+            total={0}
             onClose={() => setShowConfirmDialog(false)}
             onConfirm={confirmPayment}
             orderDetails={orderDetails}
@@ -244,7 +213,7 @@ export function PaymentView() {
           <CancelDialog
             open={showCancelDialog}
             count={selectedPaidOrders.length}
-            total={statistics.selectedPaidAmount}
+            total={0}
             onClose={() => setShowCancelDialog(false)}
             onConfirm={confirmCancelPayment}
             orderDetails={cancelOrderDetails}

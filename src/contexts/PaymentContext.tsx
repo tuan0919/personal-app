@@ -1,8 +1,8 @@
 import { createContext, useContext, ReactNode } from "react";
-import { usePaymentState, UsePaymentStateReturn } from "@/hooks/usePaymentState";
+import { usePaymentState } from "@/hooks/usePaymentState";
 
 // Context types for Payment - using the same type as the hook return
-type PaymentContextType = UsePaymentStateReturn;
+type PaymentContextType = ReturnType<typeof usePaymentState>;
 
 // Create context
 const PaymentContext = createContext<PaymentContextType | undefined>(undefined);

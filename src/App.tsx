@@ -7,7 +7,7 @@ import { SignUp } from "./pages/general/SignUp";
 import { CreateNewOrder } from "./pages/CreateNewOrder";
 import { AnimatePresence } from "framer-motion";
 import { CustomerDetails } from "./pages/admin/CustomerDetails";
-import { Payment } from "./pages/Payment";
+import { Payment } from "./pages/user/Payment";
 import ActivityHistory from "./pages/ActivityHistory";
 import {
   AdminDashboard,

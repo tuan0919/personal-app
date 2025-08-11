@@ -1,18 +1,11 @@
+import { usePaymentContext } from "@/contexts";
 import { formatCurrency } from "@/utils/formatter";
 import { motion } from "framer-motion";
 import { FiDollarSign, FiClock, FiCheck } from "react-icons/fi";
 
-interface PaymentStatisticsProps {
-  totalUnpaidAmount: number;
-  totalUnpaidOrders: number;
-  selectedUnpaidAmount: number;
-}
-
-export function PaymentStatistics({
-  totalUnpaidAmount,
-  totalUnpaidOrders,
-  selectedUnpaidAmount,
-}: PaymentStatisticsProps) {
+export function PaymentStatistics() {
+  const { selectors } = usePaymentContext();
+  const { statistics } = selectors;
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -27,7 +20,7 @@ export function PaymentStatistics({
           </div>
           <p className="text-gray-600 text-xs mb-1">Tổng tiền cần thu</p>
           <p className="text-lg font-bold text-pink-600">
-            {formatCurrency(totalUnpaidAmount)}
+            {formatCurrency(statistics.totalUnpaidAmount)}
           </p>
         </div>
       </div>
@@ -38,7 +31,7 @@ export function PaymentStatistics({
           </div>
           <p className="text-gray-600 text-xs mb-1">Đơn chưa thanh toán</p>
           <p className="text-lg font-bold text-orange-600">
-            {totalUnpaidOrders}
+            {statistics.totalUnpaidOrders}
           </p>
         </div>
       </div>
@@ -49,7 +42,7 @@ export function PaymentStatistics({
           </div>
           <p className="text-gray-600 text-xs mb-1">Đã chọn thu</p>
           <p className="text-lg font-bold text-green-600">
-            {formatCurrency(selectedUnpaidAmount)}
+            {formatCurrency(statistics.selectedUnpaidAmount)}
           </p>
         </div>
       </div>

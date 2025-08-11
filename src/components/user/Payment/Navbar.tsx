@@ -2,7 +2,7 @@ import { FaMoneyBillTransfer } from "react-icons/fa6";
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-export default function PaymentNavbar() {
+export function Navbar() {
   const navigate = useNavigate();
 
   return (
