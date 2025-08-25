@@ -1,5 +1,5 @@
 import { mockOrders } from "@/static/admin/order-management-page-mocks";
-import { Order } from "@/types/admin/order-management-page-types";
+import { Order } from "@/types/api/admin/order-management-page-types";
 import { delay } from "@/utils/delay";
 
 export class OrderService {

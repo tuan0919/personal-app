@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { CustomerService } from "@/api/admin";
-import type { Customer } from "@/types/admin/customer-management-page-types";
-import type { CustomerNewFormValues } from "@/types/admin/customer-new-page-types";
+import type { Customer } from "@/types/api/admin/customer-management-page-types";
+import type { CustomerNewFormValues } from "@/types/api/admin/customer-new-page-types";
 
 interface CustomerNewState {
   isSubmitting: boolean;

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { CustomerService } from "@/api/admin/customerService";
-import { Customer } from "@/types/admin/customer-management-page-types";
+import { CustomerService } from "@/api/admin/customer.service";
+import { Customer } from "@/types/api/admin/customer-management-page-types";
 
 interface CustomerManagementState {
   customers: Customer[];

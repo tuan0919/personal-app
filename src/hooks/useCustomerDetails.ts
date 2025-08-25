@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { CustomerService } from "@/api/admin";
-import type { Customer as AdminCustomer } from "@/types/admin/customer-management-page-types";
+import type { Customer as AdminCustomer } from "@/types/api/admin/customer-management-page-types";
 
 interface CustomerDetailsState {
   loading: boolean;

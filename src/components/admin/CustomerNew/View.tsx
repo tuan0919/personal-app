@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FiAlertCircle } from "react-icons/fi";
 import { useCustomerNew } from "@/hooks/useCustomerNew";
-import type { CustomerNewFormValues } from "@/types/admin/customer-new-page-types";
+import type { CustomerNewFormValues } from "@/types/api/admin/customer-new-page-types";
 import { NewForm } from ".";
 
 export const View = () => {

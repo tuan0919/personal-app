@@ -1,4 +1,4 @@
-import { Order } from "@/types/admin/order-management-page-types";
+import { Order } from "@/types/api/admin/order-management-page-types";
 import { useCallback, useEffect, useState } from "react";
 import { format } from "date-fns";
 import { OrderService } from "@/api/admin/orderService";

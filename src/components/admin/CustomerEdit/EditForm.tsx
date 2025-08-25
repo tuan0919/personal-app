@@ -5,8 +5,8 @@ import { z } from "zod";
 import { motion } from "framer-motion";
 import { FaUser, FaMapMarkerAlt, FaPhone, FaTag } from "react-icons/fa";
 
-import { Customer } from "@/types/admin/customer-management-page-types";
-import { CustomerEditFormValues } from "@/types/admin/customer-edit-page-types";
+import { Customer } from "@/types/api/admin/customer-management-page-types";
+import { CustomerEditFormValues } from "@/types/api/admin/customer-edit-page-types";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

@@ -9,7 +9,7 @@ import {
 } from "react-icons/fa6";
 import { StatCard } from "../OrderManagement/StatCard";
 import { containerVariants } from "@/components/shared/animations";
-import { WeeklyStats } from "@/types/admin/dashboard-page-types";
+import { WeeklyStats } from "@/types/api/admin/dashboard-page-types";
 
 export const WeeklyStatsSection = ({ stats }: { stats: WeeklyStats }) => {
   return (

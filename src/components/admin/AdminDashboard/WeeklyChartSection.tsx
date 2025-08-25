@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { slideInVariants } from "@/components/shared/animations";
 import { WeeklyRevenueAreaChart } from "./WeeklyRevenueAreaChart";
-import { WeeklyRevenueChart } from "@/types/admin/dashboard-page-types";
+import { WeeklyRevenueChart } from "@/types/api/admin/dashboard-page-types";
 
 export const WeeklyChartSection = ({
   chartData,

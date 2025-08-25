@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa";
 import { FaBoxesPacking, FaTruckFast } from "react-icons/fa6";
 import { cn } from "@/lib/utils";
-import { Order } from "@/types/admin/order-management-page-types";
+import { Order } from "@/types/api/admin/order-management-page-types";
 import { cardVariants } from "@/components/shared/animations";
 
 const PRODUCT_TYPE_LABELS: Record<Order["orderType"], string> = {

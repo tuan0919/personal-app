@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useCustomerEdit } from "@/hooks/useCustomerEdit";
 import { motion } from "framer-motion";
 import { FiLoader, FiAlertCircle } from "react-icons/fi";
-import { CustomerEditFormValues } from "@/types/admin/customer-edit-page-types";
+import { CustomerEditFormValues } from "@/types/api/admin/customer-edit-page-types";
 import { EditForm } from ".";
 
 export const View = () => {

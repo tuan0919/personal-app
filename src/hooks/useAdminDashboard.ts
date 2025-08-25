@@ -3,7 +3,7 @@ import {
   DailySummary,
   WeeklyStats,
   WeeklyRevenueChart,
-} from "@/types/admin/dashboard-page-types";
+} from "@/types/api/admin/dashboard-page-types";
 import { useState, useCallback } from "react";
 
 interface AdminDashboardState {

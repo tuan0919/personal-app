@@ -1,4 +1,4 @@
-import { Customer } from "@/types/admin/customer-management-page-types";
+import { Customer } from "@/types/api/admin/customer-management-page-types";
 import { motion } from "framer-motion";
 import { FiEdit, FiTrash2, FiEye, FiPhone } from "react-icons/fi";
 import { FaCube, FaRegSquare } from "react-icons/fa";

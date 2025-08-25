@@ -5,7 +5,7 @@ import {
   WeeklyRevenueChart,
   weeklyStats,
   WeeklyStats,
-} from "@/types/admin/dashboard-page-types";
+} from "@/types/api/admin/dashboard-page-types";
 import { delay } from "@/utils/delay";
 
 export class DashboardService {

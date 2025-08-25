@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { Customer } from "@/types/admin/customer-management-page-types";
-import { CustomerEditFormValues } from "@/types/admin/customer-edit-page-types";
+import { Customer } from "@/types/api/admin/customer-management-page-types";
+import { CustomerEditFormValues } from "@/types/api/admin/customer-edit-page-types";
 import { CustomerService } from "@/api/admin";
 
 interface CustomerEditState {

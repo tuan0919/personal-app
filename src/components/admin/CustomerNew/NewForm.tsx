@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion } from "framer-motion";
 import { FaUser, FaMapMarkerAlt, FaPhone, FaTag } from "react-icons/fa";
-import { CustomerNewFormValues } from "@/types/admin/customer-new-page-types";
+import { CustomerNewFormValues } from "@/types/api/admin/customer-new-page-types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {

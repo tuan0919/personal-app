@@ -13,7 +13,7 @@ import { useOrderManagement } from "@/hooks/useOrderManagement";
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { useState, useEffect } from "react";
-import { Order } from "@/types/admin/order-management-page-types";
+import { Order } from "@/types/api/admin/order-management-page-types";
 import { FilterSheet, OrderCard } from ".";
 
 export function OrderSection() {
